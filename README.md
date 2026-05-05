@@ -331,35 +331,31 @@ Aceasta etapa imbunatateste utilizarea meniului digital, deoarece clientul poate
 
 #### Ziua 14 din plan - Filtre tematice pentru client
 
-In aceasta etapa meniul clientului a fost extins cu filtre tematice utile pentru alegerea produselor in functie de preferinte sau restrictii alimentare.
+In aceasta etapa meniul clientului a fost extins cu filtre tematice utile pentru alegerea produselor in functie de preferinte alimentare si tipul de carne.
 
 In entitatea `Product.java` au fost adaugate campuri noi:
 
-- `allergens`
 - `vegetarian`
 - `vegan`
 - `meatType`
 
 Dupa repornirea backend-ului, Hibernate a actualizat automat tabela `products`, adaugand coloanele:
 
-- `allergens`
 - `vegetarian`
 - `vegan`
 - `meat_type`
 
 Datele demo din MySQL au fost actualizate pentru fiecare produs. De exemplu:
 
-- Pizza Margherita: `gluten,lactoza`, vegetarian, fara carne;
-- Pizza Diavola: `gluten,lactoza`, carne de porc;
-- Paste Carbonara: `gluten,lactoza,oua`, carne de porc;
-- Paste Bolognese: `gluten,lactoza`, carne de vita;
-- Apa plata si Limonada: vegan, fara alergeni, fara carne;
+- Pizza Margherita: vegetarian, fara carne;
+- Pizza Diavola: carne de porc;
+- Paste Carbonara: carne de porc;
+- Paste Bolognese: carne de vita;
+- Apa plata si Limonada: produse vegane, fara carne;
 - Tiramisu si Papanasi: produse vegetariene, dar nu vegane.
 
 In frontend au fost adaugate filtre noi:
 
-- fara gluten;
-- fara lactoza;
 - vegetarian;
 - vegan;
 - tip carne.
@@ -377,15 +373,13 @@ Filtrarea a fost realizata in `ClientMenuPage.jsx`, pe baza datelor primite din 
 
 Verificari manuale efectuate:
 
-- filtrul `Fara gluten` elimina produsele care contin gluten;
-- filtrul `Fara lactoza` elimina produsele care contin lactoza;
 - filtrul `Vegetarian` afiseaza produsele vegetariene;
 - filtrul `Vegan` afiseaza doar produsele vegane;
 - filtrul `Tip carne = porc` afiseaza Pizza Diavola si Paste Carbonara;
 - filtrul `Tip carne = vita` afiseaza Paste Bolognese;
 - filtrul `Fara carne` afiseaza produsele cu `meat_type = none`.
 
-Aceasta etapa demonstreaza ca meniul digital nu este doar o lista de produse, ci ajuta clientul sa ia o decizie mai rapida si mai potrivita.
+Aceasta etapa demonstreaza ca meniul digital nu este doar o lista de produse, ci ajuta clientul sa aleaga mai rapid produsele in functie de preferinte alimentare si tipul de carne.
 
 #### Ziua 15 din plan - Backend pentru feedback anonim
 
@@ -520,7 +514,7 @@ A fost realizata partea principala pentru client:
 - conectarea frontend-ului la backend;
 - afisarea produselor reale din MySQL;
 - filtrare dupa categorie, pret si disponibilitate;
-- filtrare dupa alergeni, vegetarian, vegan si tip carne;
+- filtrare dupa vegetarian, vegan si tip carne;
 - feedback anonim salvat in baza de date.
 
 Dupa aceasta etapa, partea de client este functionala la nivel de baza si poate fi demonstrata complet: clientul consulta meniul, filtreaza produsele si poate trimite feedback anonim.
