@@ -1,6 +1,8 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:8080/api/products";
+const FEEDBACK_URL = "http://localhost:8080/api/feedback";
+const ORDERS_URL = "http://localhost:8080/api/orders";
 
 export const getAllProducts = () => {
   return axios.get(API_URL);
@@ -15,5 +17,9 @@ export const getProductsByCategory = (categoryId) => {
 };
 
 export const saveFeedback = (feedback) => {
-  return axios.post("http://localhost:8080/api/feedback", feedback);
+  return axios.post(FEEDBACK_URL, feedback);
+};
+
+export const createOrder = (order) => {
+  return axios.post(ORDERS_URL, order);
 };

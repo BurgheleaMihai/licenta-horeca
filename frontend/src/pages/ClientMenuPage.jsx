@@ -8,14 +8,15 @@ function ClientMenuPage() {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [withoutGluten, setWithoutGluten] = useState(false);
-  const [withoutLactose, setWithoutLactose] = useState(false);
   const [onlyVegetarian, setOnlyVegetarian] = useState(false);
   const [onlyVegan, setOnlyVegan] = useState(false);
   const [selectedMeatType, setSelectedMeatType] = useState("ALL");
   const [feedbackRating, setFeedbackRating] = useState(5);
   const [feedbackComment, setFeedbackComment] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
+
+  const params = new URLSearchParams(window.location.search);
+  const sessionCode = params.get("session");
 
   useEffect(() => {
     getAllProducts()
@@ -30,25 +31,26 @@ function ClientMenuPage() {
       });
   }, []);
 
-const handleFeedbackSubmit = (event) => {
-  event.preventDefault();
+  const handleFeedbackSubmit = (event) => {
+    event.preventDefault();
 
-  const feedback = {
-    rating: Number(feedbackRating),
-    comment: feedbackComment
+    const feedback = {
+      rating: Number(feedbackRating),
+      comment: feedbackComment
+    };
+
+    saveFeedback(feedback)
+      .then(() => {
+        setFeedbackMessage("Feedback-ul a fost trimis cu succes.");
+        setFeedbackRating(5);
+        setFeedbackComment("");
+      })
+      .catch((error) => {
+        console.error("Eroare la trimiterea feedback-ului:", error);
+        setFeedbackMessage("Feedback-ul nu a putut fi trimis.");
+      });
   };
 
-  saveFeedback(feedback)
-    .then(() => {
-      setFeedbackMessage("Feedback-ul a fost trimis cu succes.");
-      setFeedbackRating(5);
-      setFeedbackComment("");
-    })
-    .catch((error) => {
-      console.error("Eroare la trimiterea feedback-ului:", error);
-      setFeedbackMessage("Feedback-ul nu a putut fi trimis.");
-    });
-};
   const categories = [
     "ALL",
     ...new Set(
@@ -58,43 +60,33 @@ const handleFeedbackSubmit = (event) => {
     )
   ];
 
-const filteredProducts = products.filter((product) => {
-  const allergens = product.allergens || "";
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "ALL" || product.category?.name === selectedCategory;
 
-  const matchesCategory =
-    selectedCategory === "ALL" || product.category?.name === selectedCategory;
+    const matchesPrice =
+      maxPrice === "" || Number(product.price) <= Number(maxPrice);
 
-  const matchesPrice =
-    maxPrice === "" || Number(product.price) <= Number(maxPrice);
+    const matchesAvailability = !onlyAvailable || product.available;
 
-  const matchesAvailability = !onlyAvailable || product.available;
+    const matchesVegetarian =
+      !onlyVegetarian || product.vegetarian === true;
 
-  const matchesGluten =
-    !withoutGluten || !allergens.includes("gluten");
+    const matchesVegan =
+      !onlyVegan || product.vegan === true;
 
-  const matchesLactose =
-    !withoutLactose || !allergens.includes("lactoza");
+    const matchesMeatType =
+      selectedMeatType === "ALL" || product.meatType === selectedMeatType;
 
-  const matchesVegetarian =
-    !onlyVegetarian || product.vegetarian === true;
-
-  const matchesVegan =
-    !onlyVegan || product.vegan === true;
-
-  const matchesMeatType =
-    selectedMeatType === "ALL" || product.meatType === selectedMeatType;
-
-  return (
-    matchesCategory &&
-    matchesPrice &&
-    matchesAvailability &&
-    matchesGluten &&
-    matchesLactose &&
-    matchesVegetarian &&
-    matchesVegan &&
-    matchesMeatType
-  );
-});
+    return (
+      matchesCategory &&
+      matchesPrice &&
+      matchesAvailability &&
+      matchesVegetarian &&
+      matchesVegan &&
+      matchesMeatType
+    );
+  });
 
   if (loading) {
     return (
@@ -128,6 +120,16 @@ const filteredProducts = products.filter((product) => {
         </p>
       </header>
 
+      {sessionCode ? (
+        <div className="session-info">
+          Sesiune masă: {sessionCode}
+        </div>
+      ) : (
+        <div className="session-warning">
+          Nu există cod de sesiune în link.
+        </div>
+      )}
+
       <section className="filters-section">
         <div className="filter-group">
           <label>Categorie</label>
@@ -160,23 +162,6 @@ const filteredProducts = products.filter((product) => {
             onChange={(event) => setOnlyAvailable(event.target.checked)}
           />
           Afiseaza doar produse disponibile
-        </label>
-        <label className="checkbox-filter">
-          <input
-            type="checkbox"
-            checked={withoutGluten}
-            onChange={(event) => setWithoutGluten(event.target.checked)}
-          />
-          Fara gluten
-        </label>
-
-        <label className="checkbox-filter">
-          <input
-            type="checkbox"
-            checked={withoutLactose}
-            onChange={(event) => setWithoutLactose(event.target.checked)}
-          />
-          Fara lactoza
         </label>
 
         <label className="checkbox-filter">
@@ -261,6 +246,7 @@ const filteredProducts = products.filter((product) => {
               <option value="1">1 - Foarte slab</option>
             </select>
           </div>
+
           <div className="feedback-comment-group">
             <label>Comentariu</label>
             <textarea

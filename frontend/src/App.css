@@ -222,3 +222,93 @@ body {
   font-weight: bold;
   color: green;
 }
+
+.session-info {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  font-weight: 600;
+}
+
+.session-warning {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #fff3cd;
+  color: #856404;
+  font-weight: 600;
+}
+
+.cart-section {
+  max-width: 520px;
+  margin: 24px auto 0;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+}
+
+.cart-section h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr 70px 90px 70px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cart-item p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.cart-item input {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.cart-total {
+  margin-top: 12px;
+  font-size: 16px;
+}
+
+.add-to-cart-button,
+.submit-order-button,
+.remove-cart-button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-weight: 600;
+}
+
+.add-to-cart-button {
+  background-color: #2563eb;
+  color: white;
+}
+
+.submit-order-button {
+  margin-top: 12px;
+  background-color: #16a34a;
+  color: white;
+}
+
+.remove-cart-button {
+  background-color: #dc2626;
+  color: white;
+}
+
+.order-message {
+  margin-top: 12px;
+  font-weight: 600;
+}

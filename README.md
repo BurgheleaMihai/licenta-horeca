@@ -520,3 +520,325 @@ A fost realizata partea principala pentru client:
 Dupa aceasta etapa, partea de client este functionala la nivel de baza si poate fi demonstrata complet: clientul consulta meniul, filtreaza produsele si poate trimite feedback anonim.
 
 Status: finalizat.
+
+--- 
+
+---
+
+### Ziua 6 - Flux backend pentru comenzi si teste automate
+
+In ziua 6 au fost realizate activitatile corespunzatoare zilelor 18-24 din planul de lucru al licentei. Accentul a fost pus pe implementarea fluxului backend pentru comenzi, testarea acestuia si pregatirea legaturii cu interfata care va fi folosita ulterior de ospatar.
+
+#### Ziua 18 din plan - Citirea codului de sesiune din link
+
+In pagina clientului a fost adaugata citirea codului de sesiune din URL. Aceasta pregateste aplicatia pentru fluxul viitor bazat pe cod QR.
+
+Exemplu de link:
+
+`http://localhost:5173/?session=ABC123`
+
+In `ClientMenuPage.jsx` a fost adaugata logica pentru citirea parametrului `session` din link:
+
+```javascript
+const params = new URLSearchParams(window.location.search);
+const sessionCode = params.get("session");
+```
+
+Daca linkul contine un cod de sesiune, acesta este afisat in pagina clientului. Daca linkul nu contine cod de sesiune, pagina afiseaza un mesaj de avertizare.
+
+Aceasta etapa nu implementeaza inca generarea codului QR, ci doar pregateste interfata clientului pentru momentul in care linkul va fi generat pentru fiecare masa.
+
+#### Ziua 19 din plan - Entitati pentru comenzi
+
+Au fost create entitatile necesare pentru gestionarea comenzilor:
+
+- `Order.java`
+- `OrderItem.java`
+- `OrderStatus.java`
+
+Entitatea `Order` reprezinta comanda principala si contine:
+
+- `id`
+- `createdAt`
+- `status`
+- `totalPrice`
+- lista de produse comandate
+
+Entitatea `OrderItem` reprezinta un produs inclus intr-o comanda si contine:
+
+- `id`
+- `quantity`
+- `unitPrice`
+- `subtotal`
+- legatura cu `Order`
+- legatura cu `Product`
+
+Enum-ul `OrderStatus` contine statusurile posibile ale unei comenzi:
+
+- `NEW`
+- `IN_PREPARATION`
+- `READY`
+- `SERVED`
+- `CANCELLED`
+
+Dupa repornirea backend-ului, Hibernate a creat automat in MySQL tabelele:
+
+- `orders`
+- `order_items`
+
+Au fost create si cheile externe:
+
+- `order_items.order_id -> orders.id`
+- `order_items.product_id -> products.id`
+
+#### Ziua 20 din plan - Repository-uri pentru comenzi
+
+Au fost create repository-urile:
+
+- `OrderRepository.java`
+- `OrderItemRepository.java`
+
+`OrderRepository` extinde `JpaRepository` si permite accesul la comenzile salvate in baza de date.
+
+`OrderItemRepository` extinde `JpaRepository` si permite accesul la produsele incluse in comenzi.
+
+Dupa adaugarea repository-urilor, Spring Boot a detectat 9 repository-uri JPA, fata de 7 anterior. Acest lucru a confirmat ca noile repository-uri au fost incarcate corect de aplicatie.
+
+#### Ziua 21 din plan - Service pentru comenzi
+
+A fost creat fisierul:
+
+- `OrderService.java`
+
+Acesta contine logica de business pentru comenzi.
+
+Functionalitati implementate in `OrderService`:
+
+- crearea unei comenzi;
+- cautarea produselor dupa id;
+- verificarea existentei produselor;
+- verificarea disponibilitatii produselor;
+- calcularea subtotalului pentru fiecare produs;
+- calcularea totalului comenzii;
+- setarea statusului initial `NEW`;
+- salvarea comenzii in baza de date;
+- citirea tuturor comenzilor;
+- schimbarea statusului unei comenzi.
+
+Pentru trimiterea produselor comandate a fost folosita clasa interna:
+
+- `OrderItemRequest`
+
+Aceasta contine:
+
+- `productId`
+- `quantity`
+
+#### Ziua 22 din plan - Controller pentru comenzi
+
+A fost creat fisierul:
+
+- `OrderController.java`
+
+Acesta expune endpoint-urile REST pentru comenzi.
+
+Endpoint-uri implementate:
+
+```http
+POST /api/orders
+GET /api/orders
+PATCH /api/orders/{orderId}/status
+```
+
+`POST /api/orders` permite crearea unei comenzi noi.
+
+`GET /api/orders` permite citirea comenzilor salvate.
+
+`PATCH /api/orders/{orderId}/status` permite schimbarea statusului unei comenzi.
+
+Pentru evitarea unei bucle infinite la transformarea obiectelor in JSON, in `OrderItem.java` a fost adaugat `@JsonIgnore` pe legatura inapoi catre `Order`.
+
+#### Ziua 23 din plan - Schimbarea statusului comenzii
+
+A fost implementata schimbarea statusului unei comenzi prin endpoint-ul:
+
+```http
+PATCH /api/orders/{orderId}/status
+```
+
+Exemplu de testare:
+
+```powershell
+Invoke-RestMethod -Uri "http://localhost:8080/api/orders/1/status?status=READY" -Method Patch
+```
+
+Prin acest endpoint, statusul unei comenzi poate fi schimbat din `NEW` in alte stari, de exemplu:
+
+- `IN_PREPARATION`
+- `READY`
+- `SERVED`
+- `CANCELLED`
+
+Aceasta functionalitate pregateste proiectul pentru etapele urmatoare, unde vor fi implementate interfetele pentru ospatar si bucatarie.
+
+#### Ziua 24 din plan - Testarea comenzii backend
+
+Fluxul de comanda a fost testat mai intai din PowerShell.
+
+Exemplu de request trimis catre backend:
+
+```powershell
+$body = @{
+    items = @(
+        @{
+            productId = 1
+            quantity = 2
+        }
+    )
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod -Uri "http://localhost:8080/api/orders" -Method Post -Body $body -ContentType "application/json"
+```
+
+Rezultatul a confirmat crearea unei comenzi cu:
+
+- `status = NEW`
+- `quantity = 2`
+- `unitPrice = 32.00`
+- `subtotal = 64.00`
+- `totalPrice = 64.00`
+
+Apoi statusul comenzii a fost schimbat la `READY` si verificat in browser la endpoint-ul:
+
+`http://localhost:8080/api/orders`
+
+In MySQL Workbench au fost verificate tabelele:
+
+```sql
+SELECT * FROM orders;
+SELECT * FROM order_items;
+```
+
+Verificarea a confirmat ca datele au fost salvate corect in tabelele `orders` si `order_items`.
+
+#### Verificare temporara din interfata React
+
+Pentru a testa mai usor fluxul tehnic de creare comanda, a fost adaugat temporar un cos de comanda in pagina React.
+
+Aceasta integrare a fost folosita pentru verificare functionala, dar in arhitectura finala comanda va fi creata din interfata ospatarului, nu din pagina clientului.
+
+In `productApi.js` a fost adaugata functia:
+
+```javascript
+export const createOrder = (order) => {
+  return axios.post(ORDERS_URL, order);
+};
+```
+
+In `ClientMenuPage.jsx` au fost adaugate temporar:
+
+- `cartItems`
+- `orderMessage`
+- `handleAddToCart(product)`
+- `handleRemoveFromCart(productId)`
+- `handleQuantityChange(productId, quantity)`
+- `handleSubmitOrder()`
+- calculul `cartTotal`
+
+Fluxul verificat a fost:
+
+`React -> createOrder() -> POST /api/orders -> OrderController -> OrderService -> OrderRepository -> MySQL`
+
+Prin aceasta verificare s-a confirmat ca backend-ul de comenzi functioneaza si poate fi reutilizat ulterior in interfata ospatarului.
+
+#### Verificare comanda in MySQL
+
+A fost trimisa o comanda de test din interfata React. Comanda a continut mai multe produse, iar totalul a fost calculat corect.
+
+Exemplu verificat:
+
+- Paste Bolognese: `36.00 lei`
+- Tiramisu: `22.00 lei`
+- Limonada: `15.00 lei`
+
+Total:
+
+`36.00 + 22.00 + 15.00 = 73.00 lei`
+
+In tabela `orders` a aparut comanda cu:
+
+- `id = 2`
+- `status = NEW`
+- `total_price = 73.00`
+
+In tabela `order_items` au aparut produsele asociate comenzii, fiecare cu `quantity`, `unit_price`, `subtotal`, `order_id` si `product_id`.
+
+A fost testata si o alta comanda, cu totalul:
+
+`38.00 + 8.00 = 46.00 lei`
+
+In tabela `orders`, aceasta a aparut cu:
+
+- `id = 3`
+- `status = NEW`
+- `total_price = 46.00`
+
+Aceste verificari confirma ca suma subtotalurilor din `order_items` este egala cu `total_price` din `orders`.
+
+#### Teste automate adaugate
+
+In aceasta etapa au fost adaugate mai multe teste automate pentru zonele critice ale proiectului.
+
+Teste existente si noi:
+
+- `ProductServiceTest.java` -> 1 test
+- `OrderServiceTest.java` -> 3 teste
+- `FeedbackServiceTest.java` -> 2 teste
+- `FeedbackControllerTest.java` -> 2 teste
+- `OrderControllerTest.java` -> 2 teste
+
+Total teste automate utile:
+
+`10 teste`
+
+Zone acoperite de teste:
+
+- listarea produselor disponibile;
+- salvarea feedback-ului anonim;
+- listarea feedback-urilor;
+- testarea endpoint-ului `POST /api/feedback`;
+- testarea endpoint-ului `GET /api/feedback`;
+- crearea unei comenzi cu total corect;
+- respingerea produselor indisponibile;
+- schimbarea statusului unei comenzi;
+- testarea endpoint-ului `POST /api/orders`;
+- testarea endpoint-ului `PATCH /api/orders/{orderId}/status`.
+
+Rezultatele testelor:
+
+- `OrderServiceTest` -> 3/3 teste trecute;
+- `FeedbackServiceTest` -> 2/2 teste trecute;
+- `FeedbackControllerTest` -> 2/2 teste trecute;
+- `OrderControllerTest` -> 2/2 teste trecute;
+- `ProductServiceTest` -> 1/1 test trecut.
+
+#### Concluzie ziua 6
+
+In ziua 6 au fost finalizate activitatile corespunzatoare zilelor 18-24 din plan.
+
+A fost implementat fluxul backend de baza pentru comenzi:
+
+- citirea codului de sesiune din link;
+- entitati pentru comenzi;
+- repository-uri pentru comenzi;
+- service pentru creare comanda si calcul total;
+- controller REST pentru comenzi;
+- schimbarea statusului comenzii;
+- salvarea comenzilor in MySQL;
+- verificarea comenzilor in `orders` si `order_items`;
+- testare temporara din interfata React;
+- 10 teste automate utile pentru produse, feedback si comenzi.
+
+In arhitectura finala, pagina clientului ramane folosita pentru consultarea meniului, filtrarea produselor si feedback anonim, iar fluxul de creare a comenzii va fi mutat in interfata ospatarului.
+
+Status: finalizat.
