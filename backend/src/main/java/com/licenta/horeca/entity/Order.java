@@ -25,9 +25,13 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "table_session_id")
+    private TableSession tableSession;
+
     public Order() {
         this.createdAt = LocalDateTime.now();
-        this.status = OrderStatus.NEW;
+        this.status = OrderStatus.NOUA;
         this.totalPrice = BigDecimal.ZERO;
     }
 
@@ -57,6 +61,14 @@ public class Order {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public TableSession getTableSession() {
+        return tableSession;
+    }
+
+    public void setTableSession(TableSession tableSession) {
+        this.tableSession = tableSession;
     }
 
     public List<OrderItem> getItems() {

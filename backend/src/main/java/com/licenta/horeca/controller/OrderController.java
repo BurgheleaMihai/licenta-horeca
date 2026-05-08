@@ -1,6 +1,7 @@
 package com.licenta.horeca.controller;
 
 import com.licenta.horeca.entity.Order;
+import com.licenta.horeca.entity.OrderItem;
 import com.licenta.horeca.enums.OrderStatus;
 import com.licenta.horeca.service.OrderService;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody CreateOrderRequest request) {
-        return orderService.createOrder(request.getItems());
+        return orderService.createOrder(request.getSessionCode(), request.getItems());
     }
 
     @GetMapping
@@ -28,16 +29,48 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-    @PatchMapping("/{orderId}/status")
+    @GetMapping("/active")
+    public List<Order> getActiveOrders() {
+        return orderService.getActiveOrders();
+    }
+
+    @GetMapping("/kitchen")
+    public List<Order> getKitchenOrders() {
+        return orderService.getKitchenOrders();
+    }
+
+    @GetMapping("/bar")
+    public List<Order> getBarOrders() {
+        return orderService.getBarOrders();
+    }
+
+    @PutMapping("/{orderId}/status")
     public Order updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestParam OrderStatus status
+            @RequestBody UpdateOrderStatusRequest request
     ) {
-        return orderService.updateOrderStatus(orderId, status);
+        return orderService.updateOrderStatus(orderId, request.getStatus());
+    }
+
+    @PutMapping("/items/{itemId}/status")
+    public OrderItem updateOrderItemStatus(
+            @PathVariable Long itemId,
+            @RequestBody UpdateOrderStatusRequest request
+    ) {
+        return orderService.updateOrderItemStatus(itemId, request.getStatus());
     }
 
     public static class CreateOrderRequest {
+        private String sessionCode;
         private List<OrderService.OrderItemRequest> items;
+
+        public String getSessionCode() {
+            return sessionCode;
+        }
+
+        public void setSessionCode(String sessionCode) {
+            this.sessionCode = sessionCode;
+        }
 
         public List<OrderService.OrderItemRequest> getItems() {
             return items;
@@ -45,6 +78,18 @@ public class OrderController {
 
         public void setItems(List<OrderService.OrderItemRequest> items) {
             this.items = items;
+        }
+    }
+
+    public static class UpdateOrderStatusRequest {
+        private OrderStatus status;
+
+        public OrderStatus getStatus() {
+            return status;
+        }
+
+        public void setStatus(OrderStatus status) {
+            this.status = status;
         }
     }
 }

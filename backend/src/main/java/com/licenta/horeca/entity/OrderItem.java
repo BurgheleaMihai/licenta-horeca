@@ -3,6 +3,7 @@ package com.licenta.horeca.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.licenta.horeca.enums.OrderStatus;
 
 @Entity
 @Table(name = "order_items")
@@ -17,6 +18,9 @@ public class OrderItem {
     private BigDecimal unitPrice;
 
     private BigDecimal subtotal;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @JsonIgnore
     @ManyToOne
@@ -35,6 +39,7 @@ public class OrderItem {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+        this.status = OrderStatus.NOUA;
     }
 
     public Long getId() {
@@ -63,6 +68,14 @@ public class OrderItem {
 
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public Order getOrder() {

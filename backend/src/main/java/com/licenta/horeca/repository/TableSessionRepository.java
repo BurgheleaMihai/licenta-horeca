@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface TableSessionRepository extends JpaRepository<TableSession, Long> {
 
     Optional<TableSession> findBySessionCode(String sessionCode);
+
+    Optional<TableSession> findBySessionCodeAndActiveTrue(String sessionCode);
 }

@@ -842,3 +842,258 @@ A fost implementat fluxul backend de baza pentru comenzi:
 In arhitectura finala, pagina clientului ramane folosita pentru consultarea meniului, filtrarea produselor si feedback anonim, iar fluxul de creare a comenzii va fi mutat in interfata ospatarului.
 
 Status: finalizat.
+
+---
+
+### Ziua 7 - Modul ospatar, bucatarie, bar si actualizare teste automate
+
+In ziua 7 au fost continuate functionalitatile pentru fluxul operational al restaurantului. Accentul a fost pus pe separarea interfetelor pentru ospatar, bucatarie si bar, pe legarea comenzilor de mesele restaurantului si pe actualizarea testelor automate dupa modificarea logicii comenzilor.
+
+#### Pagina pentru ospatar
+
+A fost creata pagina:
+
+- `WaiterPage.jsx`
+
+Aceasta este disponibila pe ruta:
+
+`http://localhost:5173/waiter`
+
+Pagina ospatarului incarca date reale din backend si afiseaza:
+
+- mesele restaurantului;
+- comenzile active;
+- masa asociata fiecarei comenzi;
+- statusul general al comenzii;
+- produsele din comanda;
+- statusul fiecarui produs;
+- totalul comenzii.
+
+Pentru incarcarea meselor a fost creat fisierul:
+
+- `tableApi.js`
+
+Acesta foloseste endpoint-urile pentru mese si permite afisarea meselor in interfata ospatarului.
+
+Pentru comenzi a fost folosit fisierul:
+
+- `orderApi.js`
+
+Acesta contine functii pentru apelarea endpoint-urilor de comenzi.
+
+Au fost implementate actiuni pentru ospatar:
+
+- trimiterea unei comenzi la preparare;
+- marcarea unei comenzi gata ca servita.
+
+Fluxul verificat pentru ospatar este:
+
+`NOUA -> IN_PREPARARE -> GATA -> SERVITA`
+
+In pagina ospatarului produsele sunt grupate in:
+
+- preparate;
+- bauturi.
+
+Astfel, ospatarul poate vedea comanda completa, dar si statusul fiecarei parti a comenzii.
+
+#### Legarea comenzilor de mese
+
+A fost adaugata legatura dintre comanda si sesiunea mesei.
+
+In entitatea `Order.java` a fost adaugata legatura cu:
+
+- `TableSession`
+
+Astfel, o comanda poate fi asociata cu o sesiune de masa, iar prin sesiune se poate identifica masa de la care provine comanda.
+
+In baza de date a fost adaugata coloana:
+
+- `table_session_id`
+
+in tabela:
+
+- `orders`
+
+A fost creata o sesiune de test pentru masa 1, cu codul:
+
+- `TEST123`
+
+Comanda creata prin aceasta sesiune a fost verificata in MySQL si in interfata ospatarului. In pagina ospatarului, comanda a fost afisata cu masa corespunzatoare.
+
+#### Separarea intre bucatarie si bar
+
+Initial, pagina de bucatarie afisa toate produsele aflate in preparare. Ulterior, logica a fost extinsa pentru a separa produsele in functie de categorie:
+
+- bucatarie pentru preparate;
+- bar pentru bauturi.
+
+Au fost create paginile:
+
+- `KitchenPage.jsx`
+- `BarPage.jsx`
+
+Rutele folosite sunt:
+
+- `http://localhost:5173/kitchen`
+- `http://localhost:5173/bar`
+
+Pagina de bucatarie afiseaza doar produsele care nu fac parte din categoria `Bauturi`.
+
+Pagina de bar afiseaza doar produsele din categoria `Bauturi`.
+
+Pentru bucatarie si bar au fost adaugate endpoint-uri dedicate:
+
+```http
+GET /api/orders/kitchen
+GET /api/orders/bar
+```
+
+Ambele endpoint-uri returneaza comenzile aflate in starea `IN_PREPARARE`, iar filtrarea produselor este facuta in frontend in functie de categoria produsului.
+
+#### Status separat pentru produsele din comanda
+
+Pentru a permite gestionarea separata a preparatelor si bauturilor, a fost adaugat status separat pentru fiecare produs din comanda.
+
+In entitatea `OrderItem.java` a fost adaugat campul:
+
+- `status`
+
+Acesta foloseste acelasi enum:
+
+- `OrderStatus`
+
+Astfel, fiecare produs dintr-o comanda poate avea status propriu.
+
+Exemplu:
+
+- Pizza Margherita -> `GATA`
+- Apa plata -> `IN_PREPARARE`
+- Comanda generala -> `IN_PREPARARE`
+
+Comanda generala devine `GATA` doar dupa ce toate produsele din comanda au statusul `GATA`.
+
+Aceasta regula a fost implementata in `OrderService.java`, prin metoda care actualizeaza statusul unui produs din comanda.
+
+A fost adaugat endpoint-ul:
+
+```http
+PUT /api/orders/items/{itemId}/status
+```
+
+Acesta permite actualizarea statusului unui singur produs din comanda.
+
+#### Flux final intre ospatar, bucatarie si bar
+
+Fluxul final verificat este:
+
+1. Clientul intra in meniu printr-un link care contine codul de sesiune.
+2. Comanda este asociata cu sesiunea mesei.
+3. Ospatarul vede comanda noua in panoul sau.
+4. Ospatarul trimite comanda la preparare.
+5. Bucataria vede doar preparatele.
+6. Barul vede doar bauturile.
+7. Bucataria marcheaza preparatele ca gata.
+8. Barul marcheaza bauturile ca gata.
+9. Comanda generala devine `GATA` doar dupa ce toate produsele sunt gata.
+10. Ospatarul marcheaza comanda ca `SERVITA`.
+
+Fluxul rezultat este:
+
+`NOUA -> IN_PREPARARE -> GATA -> SERVITA`
+
+La nivel de produse, fluxul este gestionat separat prin `OrderItem.status`.
+
+#### Afisare FCFS pentru bucatarie si bar
+
+Pentru bucatarie si bar, comenzile sunt afisate dupa principiul FCFS.
+
+FCFS inseamna ca prima comanda intrata in sistem este prima afisata in lista.
+
+Pentru aceasta, in `OrderRepository.java` au fost adaugate metode de citire ordonate dupa `createdAt`.
+
+Au fost folosite metode de forma:
+
+- `findByStatusOrderByCreatedAtAsc(...)`
+- `findByStatusInOrderByCreatedAtAsc(...)`
+
+Astfel, comenzile sunt returnate din backend in ordinea in care au fost create.
+
+In interfata pentru bucatarie si bar nu mai este afisat id-ul real al comenzii din baza de date. In schimb, comenzile sunt afisate cu o numerotare simpla in interfata:
+
+- Comanda 1
+- Comanda 2
+- Comanda 3
+
+Aceasta numerotare este folosita doar vizual si nu modifica id-urile reale din baza de date.
+
+Pentru ospatar, pagina pastreaza informatia despre masa, deoarece ospatarul trebuie sa stie unde trebuie dusa comanda.
+
+#### Actualizare teste automate
+
+Dupa modificarile facute asupra comenzilor, au fost actualizate si testele automate.
+
+A fost actualizat `OrderServiceTest.java`, astfel incat sa acopere noua logica:
+
+- crearea unei comenzi cu `sessionCode`;
+- calcularea corecta a totalului;
+- setarea statusului initial `NOUA` pentru comanda;
+- setarea statusului initial `NOUA` pentru fiecare `OrderItem`;
+- respingerea unui produs indisponibil;
+- respingerea unei sesiuni invalide;
+- schimbarea statusului comenzii;
+- trecerea unei comenzi in `IN_PREPARARE`;
+- trecerea item-urilor in `IN_PREPARARE`;
+- marcarea unui singur item ca `GATA`;
+- pastrarea comenzii in `IN_PREPARARE` daca nu toate item-urile sunt gata;
+- trecerea comenzii in `GATA` doar cand toate item-urile sunt `GATA`;
+- citirea comenzilor active in ordine FCFS;
+- citirea comenzilor pentru bucatarie in ordine FCFS;
+- citirea comenzilor pentru bar in ordine FCFS.
+
+Rezultat:
+
+- `OrderServiceTest` -> 10/10 teste trecute.
+
+A fost actualizat si `OrderControllerTest.java`, astfel incat sa acopere endpoint-urile folosite de ospatar, bucatarie si bar.
+
+Au fost testate:
+
+- `POST /api/orders`
+- `PUT /api/orders/{orderId}/status`
+- `GET /api/orders/active`
+- `GET /api/orders/kitchen`
+- `GET /api/orders/bar`
+- `PUT /api/orders/items/{itemId}/status`
+
+Rezultat:
+
+- `OrderControllerTest` -> 6/6 teste trecute.
+
+Dupa rularea tuturor testelor proiectului, rezultatul final a fost:
+
+- 26/26 teste trecute.
+
+#### Concluzie ziua 7
+
+#### Concluzie ziua 7
+
+In ziua 7 a fost extins si actualizat fluxul de gestionare a comenzilor, prin introducerea paginilor pentru ospatar, bucatarie si bar.
+
+Au fost realizate urmatoarele:
+- actualizarea paginii pentru ospatar;
+- crearea paginii pentru bucatarie;
+- crearea paginii pentru bar;
+- legarea comenzilor de sesiunea mesei;
+- afisarea mesei in panoul ospatarului;
+- separarea preparatelor de bauturi;
+- introducerea unui status separat pentru fiecare produs din comanda;
+- implementarea regulii prin care o comanda devine `GATA` doar dupa ce toate produsele din comanda sunt gata;
+- afisarea comenzilor in ordine FCFS;
+- actualizarea testelor automate;
+- rularea tuturor testelor proiectului cu rezultatul `26/26` teste trecute.
+
+Dupa aceasta etapa, fluxul principal dintre ospatar, bucatarie si bar este functional. Ospatarul poate trimite comenzile la preparare, bucataria poate finaliza preparatele, barul poate finaliza bauturile, iar comanda devine gata doar dupa ce toate produsele au fost finalizate.
+
+Status: finalizat.
+

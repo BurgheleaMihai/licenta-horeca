@@ -23,3 +23,11 @@ export const saveFeedback = (feedback) => {
 export const createOrder = (order) => {
   return axios.post(ORDERS_URL, order);
 };
+
+export const getAllOrders = () => {
+  return axios.get(ORDERS_URL);
+};
+
+export const updateOrderStatus = (orderId, status) => {
+  return axios.patch(`${ORDERS_URL}/${orderId}/status?status=${status}`);
+};
