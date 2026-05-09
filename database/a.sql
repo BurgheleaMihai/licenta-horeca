@@ -1,1 +1,0 @@
-SELECT * FROM auxiliary_supplies;
