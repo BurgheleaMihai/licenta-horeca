@@ -12,6 +12,11 @@ function WaiterPage() {
     loadOrders();
   }, []);
 
+  const handleLogout = () => {
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+  };
+
   const loadTables = () => {
     getAllTables()
       .then((response) => {
@@ -75,6 +80,10 @@ function WaiterPage() {
         <p>
           Aceasta pagina este folosita pentru gestionarea meselor si a comenzilor active.
         </p>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
 
       {errorMessage && (

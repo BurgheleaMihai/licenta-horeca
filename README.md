@@ -1097,3 +1097,533 @@ Dupa aceasta etapa, fluxul principal dintre ospatar, bucatarie si bar este funct
 
 Status: finalizat.
 
+---
+
+### Ziua 8 - Autentificare pe roluri, manager, admin, senzori si stoc auxiliar
+
+In ziua 8 au fost implementate functionalitati importante pentru separarea rolurilor din aplicatie si pentru extinderea partii de monitorizare si administrare. Accentul a fost pus pe autentificarea angajatilor, protejarea paginilor in functie de rol, adaugarea panourilor pentru manager si admin, simularea senzorilor de intrare-iesire si gestionarea stocului auxiliar.
+
+#### Autentificare pe roluri
+
+A fost implementat un sistem simplu de autentificare pentru angajati.
+
+Au fost create DTO-urile:
+
+- `LoginRequest.java`
+- `LoginResponse.java`
+
+`LoginRequest` este folosit pentru datele trimise din frontend catre backend la autentificare:
+
+- email;
+- parola.
+
+`LoginResponse` este folosit pentru raspunsul trimis inapoi catre frontend dupa autentificare:
+
+- id-ul utilizatorului;
+- numele complet;
+- email-ul;
+- rolul utilizatorului.
+
+A fost creat service-ul:
+
+- `AuthService.java`
+
+Acesta verifica:
+
+- existenta utilizatorului dupa email;
+- parola introdusa;
+- daca utilizatorul este activ;
+- rolul asociat utilizatorului.
+
+A fost creat controller-ul:
+
+- `AuthController.java`
+
+Acesta expune endpoint-ul:
+
+```http
+POST /api/auth/login
+```
+
+Endpoint-ul a fost testat din PowerShell cu un request de login pentru manager:
+
+```powershell
+$body = @{
+    email = "manager@test.com"
+    password = "1234"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+-Uri "http://localhost:8080/api/auth/login" `
+-Method Post `
+-Body $body `
+-ContentType "application/json"
+```
+
+Rezultatul a confirmat ca backend-ul returneaza corect datele utilizatorului autentificat, inclusiv rolul acestuia.
+
+#### Utilizatori si roluri demo
+
+In baza de date au fost pregatite rolurile:
+
+- `WAITER`
+- `KITCHEN`
+- `BAR`
+- `MANAGER`
+- `ADMIN`
+
+Pentru testare au fost creati utilizatori demo:
+
+- `waiter@test.com` - rol `WAITER`
+- `kitchen@test.com` - rol `KITCHEN`
+- `bar@test.com` - rol `BAR`
+- `manager@test.com` - rol `MANAGER`
+- `admin@test.com` - rol `ADMIN`
+
+Parola folosita pentru utilizatorii demo este:
+
+```text
+1234
+```
+
+#### Login in frontend si redirect dupa rol
+
+In frontend a fost creata pagina:
+
+- `LoginPage.jsx`
+
+Aceasta permite introducerea email-ului si parolei.
+
+A fost creat fisierul API:
+
+- `authApi.js`
+
+Acesta trimite datele de autentificare catre backend prin endpoint-ul:
+
+```http
+POST /api/auth/login
+```
+
+Dupa autentificare, datele utilizatorului sunt salvate in `localStorage`.
+
+In functie de rol, aplicatia redirectioneaza utilizatorul catre pagina corespunzatoare:
+
+- `WAITER` -> `/waiter`
+- `KITCHEN` -> `/kitchen`
+- `BAR` -> `/bar`
+- `MANAGER` -> `/manager`
+- `ADMIN` -> `/admin`
+
+In `App.jsx` au fost adaugate verificari pentru protejarea paginilor. Daca un utilizator incearca sa acceseze o pagina pentru care nu are rolul potrivit, aplicatia il trimite inapoi la pagina de login.
+
+Au fost verificate manual urmatoarele cazuri:
+
+- ospatarul intra doar in pagina `/waiter`;
+- bucataria intra doar in pagina `/kitchen`;
+- barul intra doar in pagina `/bar`;
+- managerul intra doar in pagina `/manager`;
+- adminul intra doar in pagina `/admin`;
+- managerul nu poate intra manual pe `/admin`;
+- adminul nu poate intra manual pe `/manager`.
+
+A fost adaugat si buton de logout pe paginile interne. La logout, utilizatorul este sters din `localStorage` si este trimis inapoi la pagina de login.
+
+#### Panou manager
+
+A fost creata pagina:
+
+- `ManagerPage.jsx`
+
+Aceasta este disponibila pe ruta:
+
+```text
+http://localhost:5173/manager
+```
+
+Pagina managerului are rol operational si este folosita pentru monitorizarea comenzilor si a ocuparii restaurantului.
+
+Managerul vede:
+
+- numarul de comenzi active;
+- numarul de comenzi servite;
+- totalul vanzarilor pentru comenzile servite;
+- ratingul mediu al feedback-urilor;
+- datele de ocupare estimate din senzori;
+- statusul operational pe zone;
+- comenzile active;
+- feedback-ul clientilor.
+
+Pentru zona operationala au fost calculate urmatoarele valori:
+
+- comenzi noi pentru ospatar;
+- comenzi aflate in preparare pentru bucatarie/bar;
+- comenzi gata pentru ospatar.
+
+Managerul nu modifica datele de senzori si nu controleaza toate componentele aplicatiei. Rolul sau este de supraveghere operationala si de sprijin pentru luarea deciziilor.
+
+#### Panou admin
+
+A fost creata pagina:
+
+- `AdminPage.jsx`
+
+Aceasta este disponibila pe ruta:
+
+```text
+http://localhost:5173/admin
+```
+
+Pagina adminului este separata de pagina managerului si este orientata spre analiza si administrare.
+
+Adminul vede:
+
+- filtrare pe perioada;
+- comenzi finalizate;
+- total vanzari;
+- produse vandute;
+- rating mediu;
+- produse auxiliare semnalate lipsa in depozit;
+- top produse vandute;
+- recomandare simpla pentru stoc.
+
+Adminul nu vede comenzile active, deoarece acestea tin de activitatea operationala a managerului.
+
+Filtrarea comenzilor se poate face dupa:
+
+- toate comenzile;
+- comenzile de azi;
+- comenzile din ultimele 7 zile.
+
+#### Senzori intrare-iesire
+
+A fost implementat backend-ul pentru evenimentele de trafic ale clientilor.
+
+A fost creat enum-ul:
+
+- `TrafficEventType.java`
+
+Acesta contine:
+
+- `ENTRY`
+- `EXIT`
+
+A fost creata entitatea:
+
+- `TrafficEvent.java`
+
+Aceasta contine:
+
+- id;
+- tipul evenimentului;
+- data si ora evenimentului.
+
+Hibernate a creat tabela:
+
+- `traffic_events`
+
+A fost creat repository-ul:
+
+- `TrafficEventRepository.java`
+
+A fost creat service-ul:
+
+- `TrafficEventService.java`
+
+Acesta permite:
+
+- salvarea unui eveniment de intrare;
+- salvarea unui eveniment de iesire;
+- citirea tuturor evenimentelor;
+- calcularea numarului total de intrari;
+- calcularea numarului total de iesiri;
+- calcularea ocuparii estimate.
+
+Ocuparea estimata se calculeaza astfel:
+
+```text
+ocupare estimata = intrari - iesiri
+```
+
+Daca iesirile sunt mai multe decat intrarile, ocuparea estimata este limitata la `0`.
+
+A fost creat controller-ul:
+
+- `TrafficEventController.java`
+
+Endpoint-uri implementate:
+
+```http
+POST /api/traffic/entry
+POST /api/traffic/exit
+GET /api/traffic
+GET /api/traffic/summary
+```
+
+Endpoint-urile au fost testate din PowerShell. Testarea a confirmat ca:
+
+- evenimentele `ENTRY` sunt salvate corect;
+- evenimentele `EXIT` sunt salvate corect;
+- summary-ul returneaza intrari, iesiri si ocuparea estimata.
+
+#### Simulator senzori
+
+A fost creata pagina frontend:
+
+- `SensorSimulatorPage.jsx`
+
+Ruta folosita este:
+
+```text
+http://localhost:5173/sensor-simulator
+```
+
+Aceasta pagina este folosita doar pentru simularea evenimentelor de intrare si iesire.
+
+A fost creat fisierul API:
+
+- `trafficApi.js`
+
+Acesta contine functii pentru:
+
+- citirea summary-ului de trafic;
+- simularea unei intrari;
+- simularea unei iesiri.
+
+Pagina simulatorului afiseaza:
+
+- numarul de intrari;
+- numarul de iesiri;
+- ocuparea estimata.
+
+De asemenea, pagina are doua butoane:
+
+- `Simuleaza intrare`
+- `Simuleaza iesire`
+
+Dupa apasarea butoanelor, datele sunt salvate in backend si sunt vizibile in pagina managerului.
+
+Separarea este urmatoarea:
+
+- simulatorul genereaza evenimente;
+- managerul doar vede rezultatul.
+
+#### Stoc auxiliar
+
+A fost implementata functionalitatea pentru produse auxiliare, folosita pentru comunicarea dintre manager si admin.
+
+A fost creata entitatea:
+
+- `AuxiliarySupply.java`
+
+Aceasta contine:
+
+- id;
+- nume produs auxiliar;
+- categorie;
+- statusul disponibilitatii in depozit;
+- data semnalarii lipsei.
+
+Hibernate a creat tabela:
+
+- `auxiliary_supplies`
+
+A fost creat repository-ul:
+
+- `AuxiliarySupplyRepository.java`
+
+Acesta permite citirea tuturor produselor auxiliare si citirea produselor care lipsesc din depozit.
+
+A fost creat service-ul:
+
+- `AuxiliarySupplyService.java`
+
+Acesta permite:
+
+- citirea tuturor produselor auxiliare;
+- citirea produselor auxiliare lipsa;
+- marcarea unui produs ca lipsa in depozit;
+- marcarea unui produs ca disponibil in depozit.
+
+A fost creat controller-ul:
+
+- `AuxiliarySupplyController.java`
+
+Endpoint-uri implementate:
+
+```http
+GET /api/auxiliary-supplies
+GET /api/auxiliary-supplies/unavailable
+PUT /api/auxiliary-supplies/{supplyId}/mark-unavailable
+PUT /api/auxiliary-supplies/{supplyId}/mark-available
+```
+
+In MySQL au fost introduse date demo pentru produse auxiliare:
+
+- Pahare carton;
+- Capace pahare;
+- Suport pahare;
+- Cutii cartofi;
+- Cutii sosuri;
+- Servetele;
+- Pungi livrare;
+- Paie.
+
+#### Pagina manager pentru stoc auxiliar
+
+A fost creata pagina:
+
+- `ManagerSuppliesPage.jsx`
+
+Ruta folosita este:
+
+```text
+http://localhost:5173/manager-supplies
+```
+
+Aceasta pagina este separata de panoul principal al managerului, deoarece nu este folosita permanent in activitatea operationala.
+
+Managerul poate vedea lista produselor auxiliare si poate semnala daca un produs nu mai este disponibil in depozit.
+
+Pentru fiecare produs auxiliar sunt afisate:
+
+- numele produsului;
+- categoria;
+- statusul disponibilitatii;
+- buton pentru semnalarea lipsei;
+- buton pentru marcarea produsului ca disponibil.
+
+Fluxul verificat este:
+
+1. Managerul intra in pagina de stoc auxiliar.
+2. Managerul apasa `Semnaleaza lipsa`.
+3. Backend-ul schimba `available_in_warehouse` din `1` in `0`.
+4. Backend-ul completeaza automat campul `reported_at`.
+5. Adminul vede produsul in lista de produse auxiliare lipsa.
+6. Managerul poate apasa `Marcheaza disponibil`.
+7. Backend-ul schimba `available_in_warehouse` din `0` in `1`.
+8. Campul `reported_at` este sters.
+9. Produsul nu mai apare in pagina adminului la produse lipsa.
+
+#### Integrare in pagina admin
+
+In `AdminPage.jsx` a fost adaugata o sectiune noua:
+
+- `Produse auxiliare lipsa in depozit`
+
+Aceasta sectiune afiseaza doar produsele semnalate lipsa de manager.
+
+Daca nu exista produse auxiliare lipsa, pagina afiseaza mesajul:
+
+```text
+Nu exista produse auxiliare semnalate ca lipsa.
+```
+
+Daca exista produse lipsa, adminul vede:
+
+- numele produsului;
+- categoria;
+- statusul;
+- data si ora semnalarii.
+
+Astfel, adminul poate vedea rapid ce produse auxiliare trebuie cumparate separat.
+
+#### Verificari manuale efectuate
+
+Au fost verificate manual urmatoarele fluxuri:
+
+- login pentru ospatar;
+- login pentru bucatarie;
+- login pentru bar;
+- login pentru manager;
+- login pentru admin;
+- redirect corect dupa rol;
+- blocarea accesului la pagini pentru roluri nepotrivite;
+- logout;
+- simularea unei intrari;
+- simularea unei iesiri;
+- actualizarea ocuparii estimate in pagina managerului;
+- semnalarea unui produs auxiliar ca lipsa de catre manager;
+- afisarea produsului lipsa in pagina adminului;
+- marcarea produsului auxiliar ca disponibil;
+- disparitia produsului din lista de lipsuri a adminului.
+
+#### Teste automate adaugate
+
+Pentru functionalitatile implementate in ziua 8 au fost adaugate 12 teste automate noi.
+
+A fost creat testul:
+
+- `AuthServiceTest.java`
+
+Acesta contine 4 teste:
+
+- login valid returneaza datele utilizatorului si rolul corect;
+- login cu email gresit arunca eroare;
+- login cu parola gresita arunca eroare;
+- login cu utilizator inactiv arunca eroare.
+
+Rezultat:
+
+- `AuthServiceTest` -> 4/4 teste trecute.
+
+A fost creat testul:
+
+- `TrafficEventServiceTest.java`
+
+Acesta contine 4 teste:
+
+- salvarea unui eveniment de tip `ENTRY`;
+- salvarea unui eveniment de tip `EXIT`;
+- calcularea ocuparii estimate ca intrari minus iesiri;
+- limitarea ocuparii estimate la `0` daca iesirile sunt mai multe decat intrarile.
+
+Rezultat:
+
+- `TrafficEventServiceTest` -> 4/4 teste trecute.
+
+A fost creat testul:
+
+- `AuxiliarySupplyServiceTest.java`
+
+Acesta contine 4 teste:
+
+- citirea tuturor produselor auxiliare;
+- citirea produselor auxiliare lipsa;
+- marcarea unui produs ca lipsa si completarea campului `reportedAt`;
+- marcarea unui produs ca disponibil si stergerea campului `reportedAt`.
+
+Rezultat:
+
+- `AuxiliarySupplyServiceTest` -> 4/4 teste trecute.
+
+Dupa rularea tuturor testelor proiectului, rezultatul final a fost:
+
+- `38/38` teste trecute.
+
+#### Concluzie ziua 8
+
+In ziua 8 au fost finalizate functionalitati importante pentru separarea rolurilor si pentru monitorizarea aplicatiei.
+
+Au fost realizate:
+
+- autentificare pe roluri;
+- redirect automat dupa rol;
+- protectie pentru paginile interne;
+- logout;
+- pagina pentru manager;
+- pagina pentru admin;
+- simulator pentru senzori;
+- backend pentru senzori intrare-iesire;
+- calcularea ocuparii estimate;
+- pagina pentru manager dedicata stocului auxiliar;
+- backend pentru produse auxiliare;
+- semnalarea produselor auxiliare lipsa de catre manager;
+- afisarea produselor auxiliare lipsa in pagina adminului;
+- verificari manuale pe fluxurile principale;
+- 12 teste automate noi;
+- rularea tuturor testelor proiectului cu rezultatul `38/38` teste trecute.
+
+Dupa aceasta etapa, aplicatia are separare functionala pe roluri si include fluxuri operationale pentru ospatar, bucatarie, bar, manager si admin. Managerul poate monitoriza activitatea curenta si ocuparea restaurantului, iar adminul poate vedea informatii de conducere si produsele auxiliare semnalate lipsa.
+
+Status: finalizat.
+

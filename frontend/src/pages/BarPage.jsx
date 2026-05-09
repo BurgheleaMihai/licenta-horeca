@@ -9,6 +9,11 @@ function BarPage() {
     loadBarOrders();
   }, []);
 
+  const handleLogout = () => {
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+  };
+
   const loadBarOrders = () => {
     getBarOrders()
       .then((response) => {
@@ -54,6 +59,10 @@ function BarPage() {
         <p>
           Aceasta pagina este folosita pentru vizualizarea bauturilor care trebuie pregatite.
         </p>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
 
       {errorMessage && (

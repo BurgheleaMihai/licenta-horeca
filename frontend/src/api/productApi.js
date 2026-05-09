@@ -20,6 +20,10 @@ export const saveFeedback = (feedback) => {
   return axios.post(FEEDBACK_URL, feedback);
 };
 
+export const getAllFeedback = () => {
+  return axios.get(FEEDBACK_URL);
+};
+
 export const createOrder = (order) => {
   return axios.post(ORDERS_URL, order);
 };

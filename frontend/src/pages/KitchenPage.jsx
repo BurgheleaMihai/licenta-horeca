@@ -9,6 +9,11 @@ function KitchenPage() {
     loadKitchenOrders();
   }, []);
 
+  const handleLogout = () => {
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+  };
+
   const loadKitchenOrders = () => {
     getKitchenOrders()
       .then((response) => {
@@ -54,6 +59,10 @@ function KitchenPage() {
         <p>
           Aceasta pagina este folosita pentru vizualizarea preparatelor aflate in lucru.
         </p>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
 
       {errorMessage && (
