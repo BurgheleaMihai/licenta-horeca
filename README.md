@@ -1627,3 +1627,217 @@ Dupa aceasta etapa, aplicatia are separare functionala pe roluri si include flux
 
 Status: finalizat.
 
+### Ziua 9 - Sesiuni active pentru mese si creare comanda din panoul ospatarului
+
+Dupa implementarea autentificarii, a panourilor interne si a fluxurilor pentru manager/admin, a fost actualizata pagina ospatarului pentru a trata mai corect legatura dintre mesele restaurantului, sesiunile active si crearea comenzilor.
+
+Pana in acest punct, comenzile puteau fi asociate cu o sesiune de masa, iar clientul putea accesa meniul printr-un link/cod QR care continea un cod de sesiune. Totusi, in panoul ospatarului era nevoie de o regula mai clara pentru situatiile reale din restaurant:
+
+- clientul scaneaza codul QR si are deja o sesiune activa;
+- clientul nu are telefon;
+- clientul prefera meniul fizic;
+- codul QR nu functioneaza sau nu poate fi scanat;
+- ospatarul trebuie sa poata crea manual o comanda pentru o masa.
+
+Din acest motiv, pagina `WaiterPage.jsx` a fost modificata astfel incat butonul `Creeaza comanda` sa fie disponibil pentru toate mesele, dar comportamentul sau sa depinda de existenta unei sesiuni active.
+
+#### Backend pentru sesiuni active
+
+A fost extinsa functionalitatea pentru `TableSession`.
+
+In `TableSessionRepository.java` a fost adaugata metoda:
+
+```java
+List<TableSession> findByActiveTrue();
+```
+
+Aceasta permite citirea sesiunilor active din tabela `table_sessions`.
+
+A fost creat service-ul:
+
+- `TableSessionService.java`
+
+Acesta contine logica pentru:
+
+- citirea tuturor sesiunilor active;
+- crearea unei sesiuni noi pentru o masa existenta;
+- generarea unui cod de sesiune de forma `MASA-{numarMasa}-{timestamp}`;
+- asocierea sesiunii create cu masa selectata;
+- setarea sesiunii ca activa;
+- completarea datei de inceput a sesiunii.
+
+A fost creat controller-ul:
+
+- `TableSessionController.java`
+
+Endpoint-uri adaugate:
+
+```http
+GET /api/table-sessions/active
+POST /api/table-sessions/table/{tableId}
+```
+
+Endpoint-ul `GET /api/table-sessions/active` returneaza doar sesiunile active. Endpoint-ul `POST /api/table-sessions/table/{tableId}` creeaza o sesiune noua pentru masa primita ca parametru.
+
+#### Actualizare frontend pentru ospatar
+
+In frontend a fost creat fisierul API:
+
+- `tableSessionApi.js`
+
+Acesta contine functiile:
+
+```javascript
+export const getActiveTableSessions = () => {
+  return axios.get(`${API_URL}/active`);
+};
+
+export const createTableSessionForTable = (tableId) => {
+  return axios.post(`${API_URL}/table/${tableId}`);
+};
+```
+
+In `WaiterPage.jsx` au fost adaugate:
+
+- state pentru sesiunile active: `activeSessions`;
+- functia `loadActiveSessions()`;
+- functia `getActiveSessionForTable(tableId)`;
+- functia `handleCreateOrderClick(table)`.
+
+Pagina ospatarului afiseaza acum pentru fiecare masa:
+
+- numarul mesei;
+- capacitatea;
+- starea sesiunii: `Sesiune activa` sau `Fara sesiune activa`;
+- butonul `Creeaza comanda`.
+
+Butonul `Creeaza comanda` este afisat pentru toate mesele. Diferenta apare la apasarea lui:
+
+- daca masa are deja sesiune activa, ospatarul poate continua direct fluxul de creare a comenzii;
+- daca masa nu are sesiune activa, aplicatia afiseaza un mesaj de confirmare;
+- daca ospatarul confirma, frontend-ul trimite o cerere catre backend pentru crearea unei sesiuni noi pentru masa respectiva.
+
+Mesajul de confirmare folosit in frontend este:
+
+```text
+Masa X nu are sesiune activa. Doresti sa creezi o sesiune noua pentru aceasta masa?
+```
+
+Aceasta modificare face fluxul mai realist, deoarece aplicatia nu depinde exclusiv de scanarea codului QR de catre client. Ospatarul poate crea o sesiune si o comanda si in cazurile in care clientul foloseste meniul fizic sau nu poate folosi telefonul.
+
+#### Verificari manuale efectuate
+
+Functionalitatea a fost verificata in trei moduri: PowerShell, MySQL Workbench si interfata frontend.
+
+##### 1. Verificarea sesiunilor active
+
+A fost testat endpoint-ul pentru citirea sesiunilor active:
+
+```powershell
+Invoke-RestMethod http://localhost:8080/api/table-sessions/active
+```
+
+Rezultatul a confirmat ca backend-ul returneaza doar sesiunile cu `active = true`.
+
+##### 2. Crearea unei sesiuni noi pentru o masa
+
+A fost testat endpoint-ul pentru crearea unei sesiuni noi pentru o masa fara sesiune activa:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8080/api/table-sessions/table/3
+```
+
+Rezultatul a confirmat crearea unei sesiuni noi pentru masa 3, cu un cod generat automat de forma:
+
+```text
+MASA-3-...
+```
+
+##### 3. Verificarea salvarii in baza de date
+
+Dupa apelarea endpoint-ului, tabela `table_sessions` a fost verificata in MySQL Workbench:
+
+```sql
+SELECT * FROM table_sessions;
+```
+
+Verificarea a confirmat ca noua sesiune a fost salvata cu:
+
+- `active = 1`;
+- `ended_at = NULL`;
+- `table_id` corespunzator mesei selectate;
+- `session_code` generat automat.
+
+#### Teste automate adaugate
+
+Pentru aceasta functionalitate a fost adaugat testul:
+
+- `TableSessionServiceTest.java`
+
+Acesta contine 3 teste:
+
+1. `getActiveSessionsShouldReturnActiveSessions()`
+2. `createSessionForTableShouldCreateActiveSession()`
+3. `createSessionForTableShouldThrowExceptionWhenTableDoesNotExist()`
+
+Testele verifica urmatoarele cazuri:
+
+- service-ul returneaza sesiunile active primite din repository;
+- se poate crea o sesiune activa pentru o masa existenta;
+- sesiunea creata primeste cod generat automat;
+- sesiunea creata este asociata cu masa corecta;
+- campul `startedAt` este completat;
+- daca masa nu exista, se arunca exceptie;
+- daca masa nu exista, repository-ul nu salveaza nicio sesiune.
+
+Testele au fost rulate separat cu Maven Wrapper, deoarece `mvn` nu era instalat global in Windows PATH. In terminal a fost setat temporar `JAVA_HOME`:
+
+```powershell
+$env:JAVA_HOME="C:\Users\burgh\.jdks\ms-17.0.19"
+```
+
+Apoi a fost rulata comanda:
+
+```powershell
+.\mvnw.cmd -Dtest=TableSessionServiceTest test
+```
+
+Rezultatul testelor:
+
+```text
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+#### De ce aceste teste sunt mai speciale decat celelalte
+
+Testele pentru `TableSessionService` sunt mai importante decat multe teste simple din proiect deoarece verifica o zona de legatura intre mai multe parti ale aplicatiei. Ele nu testeaza doar citirea unei liste sau salvarea simpla a unui obiect, ci verifica o regula de business folosita direct in fluxul operational al restaurantului.
+
+Functionalitatea testata leaga trei concepte importante:
+
+- masa fizica din restaurant;
+- sesiunea activa asociata mesei;
+- posibilitatea de creare a unei comenzi de catre ospatar.
+
+Daca aceasta logica nu functioneaza corect, pot aparea probleme mai mari in aplicatie. De exemplu, o comanda ar putea fi creata pentru o masa inexistenta, o sesiune ar putea ramane neasociata cu masa corecta sau ospatarul ar putea lucra cu date gresite in panoul sau.
+
+Primul test verifica obtinerea sesiunilor active. Acest lucru este important deoarece frontend-ul foloseste exact aceasta informatie pentru a afisa in pagina ospatarului daca o masa are sau nu sesiune activa. Daca metoda ar returna si sesiuni inchise, ospatarul ar putea vedea gresit o masa ca fiind disponibila pentru comanda.
+
+Al doilea test este important deoarece verifica procesul complet de creare a unei sesiuni pentru o masa existenta. Testul confirma ca sesiunea este activa, are cod generat, este legata de masa corecta si are data de inceput completata. Acest test este mai special pentru ca verifica efectele interne ale metodei, nu doar faptul ca metoda returneaza ceva.
+
+Al treilea test verifica un caz negativ: ce se intampla daca se incearca crearea unei sesiuni pentru o masa care nu exista. Acest test este important deoarece previne salvarea unor date invalide in baza de date. In plus, testul verifica si faptul ca metoda `save()` nu este apelata deloc in acest caz. Astfel, testul confirma ca aplicatia nu creeaza sesiuni fara masa reala.
+
+Aceste teste sunt mai apropiate de regulile reale ale aplicatiei decat testele simple de tip citire lista. Ele verifica o functionalitate folosita direct de ospatar si influenteaza modul in care comenzile vor fi create mai departe.
+
+#### Concluzie actualizare
+
+Prin aceasta actualizare, pagina ospatarului a devenit mai flexibila si mai apropiata de modul real de lucru dintr-un restaurant. Aplicatia permite folosirea codului QR si a sesiunilor active, dar permite si crearea unei sesiuni noi de catre ospatar atunci cand clientul nu foloseste telefonul sau meniul digital.
+
+Au fost adaugate endpoint-uri dedicate pentru sesiunile meselor, frontend-ul a fost actualizat pentru afisarea starii sesiunii si au fost adaugate 3 teste automate pentru logica noua.
+
+Rezultatul final al testelor automate utile ale proiectului devine:
+
+- `41/41` teste trecute.
+
+Status: finalizat.
+

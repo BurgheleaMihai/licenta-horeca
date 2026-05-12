@@ -114,21 +114,7 @@ function ClientMenuPage() {
     <div className="client-menu-page">
       <header className="menu-header">
         <h1>Meniu restaurant</h1>
-        <p>
-          Alege produsele dorite din meniul digital. Produsele sunt incarcate
-          din baza de date prin backend-ul Spring Boot.
-        </p>
       </header>
-
-      {sessionCode ? (
-        <div className="session-info">
-          Sesiune masă: {sessionCode}
-        </div>
-      ) : (
-        <div className="session-warning">
-          Nu există cod de sesiune în link.
-        </div>
-      )}
 
       <section className="filters-section">
         <div className="filter-group">

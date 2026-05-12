@@ -31,8 +31,6 @@ function ManagerSuppliesPage() {
     <div className="manager-page">
       <header className="manager-header">
         <h1>Stoc auxiliar</h1>
-        <p>Managerul semnaleaza produsele auxiliare lipsa in depozit.</p>
-
         <button onClick={() => window.location.href = "/manager"}>
           Inapoi la panou manager
         </button>

@@ -56,10 +56,6 @@ function BarPage() {
     <div className="bar-page">
       <header className="bar-header">
         <h1>Panou bar</h1>
-        <p>
-          Aceasta pagina este folosita pentru vizualizarea bauturilor care trebuie pregatite.
-        </p>
-
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>

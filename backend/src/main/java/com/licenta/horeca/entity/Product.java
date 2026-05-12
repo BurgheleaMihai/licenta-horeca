@@ -27,9 +27,6 @@ public class Product {
     @Column(nullable = false)
     private boolean available = true;
 
-    // Alergenii produsului: gluten, lactoza, oua etc.
-    private String allergens;
-
     // Daca produsul este vegetarian
     private Boolean vegetarian;
 
@@ -89,14 +86,6 @@ public class Product {
 
     public void setAvailable(boolean available) {
         this.available = available;
-    }
-
-    public String getAllergens() {
-        return allergens;
-    }
-
-    public void setAllergens(String allergens) {
-        this.allergens = allergens;
     }
 
     public Boolean getVegetarian() {

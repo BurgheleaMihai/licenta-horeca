@@ -97,11 +97,6 @@ function AdminPage() {
     <div className="admin-page">
       <header className="admin-header">
         <h1>Panou administrare</h1>
-        <p>
-          Analiza vanzarilor, produse vandute, feedback clienti si produse
-          auxiliare semnalate lipsa.
-        </p>
-
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>

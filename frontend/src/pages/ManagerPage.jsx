@@ -69,8 +69,6 @@ function ManagerPage() {
     <div className="manager-page">
       <header className="manager-header">
         <h1>Panou manager</h1>
-        <p>Monitorizare comenzi si ocupare restaurant.</p>
-
         <div className="manager-header-actions">
           <button className="logout-button" onClick={handleLogout}>
             Logout
