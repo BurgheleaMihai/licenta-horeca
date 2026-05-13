@@ -1,7 +1,8 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca;
 
 import com.licenta.horeca.entity.AuxiliarySupply;
 import com.licenta.horeca.repository.AuxiliarySupplyRepository;
+import com.licenta.horeca.service.AuxiliarySupplyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,12 +12,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuxiliarySupplyServiceTest {
+
+    private static final String CONSUMABLE_CATEGORY = "Consumabile";
+    private static final String CUP_HOLDER_NAME = "Suport pahare";
 
     @Mock
     private AuxiliarySupplyRepository auxiliarySupplyRepository;
@@ -25,8 +33,8 @@ class AuxiliarySupplyServiceTest {
     private AuxiliarySupplyService auxiliarySupplyService;
 
     @Test
-    void getAllSupplies_returnsAllSupplies() {
-        AuxiliarySupply cups = new AuxiliarySupply("Pahare carton", "Consumabile");
+    void getAllSuppliesReturnsAllSupplies() {
+        AuxiliarySupply cups = new AuxiliarySupply("Pahare carton", CONSUMABLE_CATEGORY);
         AuxiliarySupply boxes = new AuxiliarySupply("Cutii cartofi", "Ambalaje");
 
         when(auxiliarySupplyRepository.findAll())
@@ -40,8 +48,8 @@ class AuxiliarySupplyServiceTest {
     }
 
     @Test
-    void getUnavailableSupplies_returnsOnlyUnavailableSupplies() {
-        AuxiliarySupply cupHolder = new AuxiliarySupply("Suport pahare", "Consumabile");
+    void getUnavailableSuppliesReturnsOnlyUnavailableSupplies() {
+        AuxiliarySupply cupHolder = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
         cupHolder.setAvailableInWarehouse(false);
 
         when(auxiliarySupplyRepository.findByAvailableInWarehouseFalse())
@@ -50,13 +58,13 @@ class AuxiliarySupplyServiceTest {
         List<AuxiliarySupply> result = auxiliarySupplyService.getUnavailableSupplies();
 
         assertEquals(1, result.size());
-        assertEquals("Suport pahare", result.get(0).getName());
+        assertEquals(CUP_HOLDER_NAME, result.get(0).getName());
         assertFalse(result.get(0).isAvailableInWarehouse());
     }
 
     @Test
-    void markUnavailable_setsSupplyAsUnavailableAndReportedAt() {
-        AuxiliarySupply supply = new AuxiliarySupply("Suport pahare", "Consumabile");
+    void markUnavailableSetsSupplyAsUnavailableAndReportedAt() {
+        AuxiliarySupply supply = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
 
         when(auxiliarySupplyRepository.findById(1L))
                 .thenReturn(Optional.of(supply));
@@ -73,8 +81,8 @@ class AuxiliarySupplyServiceTest {
     }
 
     @Test
-    void markAvailable_setsSupplyAsAvailableAndClearsReportedAt() {
-        AuxiliarySupply supply = new AuxiliarySupply("Suport pahare", "Consumabile");
+    void markAvailableSetsSupplyAsAvailableAndClearsReportedAt() {
+        AuxiliarySupply supply = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
         supply.setAvailableInWarehouse(false);
         supply.setReportedAt(java.time.LocalDateTime.now());
 

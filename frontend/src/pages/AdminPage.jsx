@@ -16,7 +16,7 @@ function AdminPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
   };
 
   const loadAdminData = () => {

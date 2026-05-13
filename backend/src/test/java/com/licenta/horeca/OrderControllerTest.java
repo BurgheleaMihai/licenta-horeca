@@ -1,34 +1,42 @@
 package com.licenta.horeca;
 
-import com.licenta.horeca.entity.OrderItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.licenta.horeca.controller.OrderController;
 import com.licenta.horeca.entity.Order;
+import com.licenta.horeca.entity.OrderItem;
 import com.licenta.horeca.enums.OrderStatus;
 import com.licenta.horeca.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(OrderController.class)
 class OrderControllerTest {
+
+    private static final String STATUS_JSON_PATH = "$.status";
+    private static final String TOTAL_PRICE_JSON_PATH = "$.totalPrice";
+    private static final String FIRST_STATUS_JSON_PATH = "$[0].status";
+    private static final String FIRST_TOTAL_PRICE_JSON_PATH = "$[0].totalPrice";
+
+    private static final String NOUA_STATUS = "NOUA";
+    private static final String GATA_STATUS = "GATA";
+    private static final String IN_PREPARARE_STATUS = "IN_PREPARARE";
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +48,7 @@ class OrderControllerTest {
     private OrderService orderService;
 
     @Test
-    void createOrder_shouldReturnCreatedOrder() throws Exception {
+    void createOrderShouldReturnCreatedOrder() throws Exception {
         Order order = new Order();
         order.setStatus(OrderStatus.NOUA);
         order.setTotalPrice(BigDecimal.valueOf(64));
@@ -59,15 +67,15 @@ class OrderControllerTest {
         );
 
         mockMvc.perform(post("/api/orders")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("NOUA"))
-                .andExpect(jsonPath("$.totalPrice").value(64));
+                .andExpect(jsonPath(STATUS_JSON_PATH).value(NOUA_STATUS))
+                .andExpect(jsonPath(TOTAL_PRICE_JSON_PATH).value(64));
     }
 
     @Test
-    void updateOrderStatus_shouldReturnUpdatedOrder() throws Exception {
+    void updateOrderStatusShouldReturnUpdatedOrder() throws Exception {
         Order order = new Order();
         order.setStatus(OrderStatus.GATA);
         order.setTotalPrice(BigDecimal.valueOf(64));
@@ -76,19 +84,19 @@ class OrderControllerTest {
                 .thenReturn(order);
 
         Map<String, Object> request = Map.of(
-                "status", "GATA"
+                "status", GATA_STATUS
         );
 
         mockMvc.perform(put("/api/orders/1/status")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("GATA"))
-                .andExpect(jsonPath("$.totalPrice").value(64));
+                .andExpect(jsonPath(STATUS_JSON_PATH).value(GATA_STATUS))
+                .andExpect(jsonPath(TOTAL_PRICE_JSON_PATH).value(64));
     }
 
     @Test
-    void getActiveOrders_shouldReturnActiveOrders() throws Exception {
+    void getActiveOrdersShouldReturnActiveOrders() throws Exception {
         Order order = new Order();
         order.setStatus(OrderStatus.NOUA);
         order.setTotalPrice(BigDecimal.valueOf(40));
@@ -98,12 +106,12 @@ class OrderControllerTest {
 
         mockMvc.perform(get("/api/orders/active"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("NOUA"))
-                .andExpect(jsonPath("$[0].totalPrice").value(40));
+                .andExpect(jsonPath(FIRST_STATUS_JSON_PATH).value(NOUA_STATUS))
+                .andExpect(jsonPath(FIRST_TOTAL_PRICE_JSON_PATH).value(40));
     }
 
     @Test
-    void updateOrderItemStatus_shouldReturnUpdatedOrderItem() throws Exception {
+    void updateOrderItemStatusShouldReturnUpdatedOrderItem() throws Exception {
         OrderItem item = new OrderItem();
         item.setStatus(OrderStatus.GATA);
 
@@ -111,18 +119,18 @@ class OrderControllerTest {
                 .thenReturn(item);
 
         Map<String, Object> request = Map.of(
-                "status", "GATA"
+                "status", GATA_STATUS
         );
 
         mockMvc.perform(put("/api/orders/items/7/status")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("GATA"));
+                .andExpect(jsonPath(STATUS_JSON_PATH).value(GATA_STATUS));
     }
 
     @Test
-    void getKitchenOrders_shouldReturnOrdersInPreparation() throws Exception {
+    void getKitchenOrdersShouldReturnOrdersInPreparation() throws Exception {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
         order.setTotalPrice(BigDecimal.valueOf(40));
@@ -132,12 +140,12 @@ class OrderControllerTest {
 
         mockMvc.perform(get("/api/orders/kitchen"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("IN_PREPARARE"))
-                .andExpect(jsonPath("$[0].totalPrice").value(40));
+                .andExpect(jsonPath(FIRST_STATUS_JSON_PATH).value(IN_PREPARARE_STATUS))
+                .andExpect(jsonPath(FIRST_TOTAL_PRICE_JSON_PATH).value(40));
     }
 
     @Test
-    void getBarOrders_shouldReturnOrdersInPreparation() throws Exception {
+    void getBarOrdersShouldReturnOrdersInPreparation() throws Exception {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
         order.setTotalPrice(BigDecimal.valueOf(40));
@@ -147,7 +155,7 @@ class OrderControllerTest {
 
         mockMvc.perform(get("/api/orders/bar"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("IN_PREPARARE"))
-                .andExpect(jsonPath("$[0].totalPrice").value(40));
+                .andExpect(jsonPath(FIRST_STATUS_JSON_PATH).value(IN_PREPARARE_STATUS))
+                .andExpect(jsonPath(FIRST_TOTAL_PRICE_JSON_PATH).value(40));
     }
 }

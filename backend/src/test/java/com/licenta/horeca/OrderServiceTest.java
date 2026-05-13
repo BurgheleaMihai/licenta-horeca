@@ -6,6 +6,7 @@ import com.licenta.horeca.entity.Product;
 import com.licenta.horeca.entity.RestaurantTable;
 import com.licenta.horeca.entity.TableSession;
 import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.repository.OrderItemRepository;
 import com.licenta.horeca.repository.OrderRepository;
 import com.licenta.horeca.repository.ProductRepository;
@@ -28,6 +29,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
+    private static final String SESSION_CODE = "TEST123";
+    private static final String INVALID_SESSION_CODE = "INVALID";
+    private static final String PIZZA_MARGHERITA = "Pizza Margherita";
+    private static final String STILL_WATER = "Apa plata";
+
     @Mock
     private OrderRepository orderRepository;
 
@@ -44,12 +50,12 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Test
-    void createOrder_shouldCreateOrderWithCorrectTotal() {
+    void createOrderShouldCreateOrderWithCorrectTotal() {
         RestaurantTable table = new RestaurantTable(1, 4);
-        TableSession tableSession = new TableSession(table, "TEST123");
+        TableSession tableSession = new TableSession(table, SESSION_CODE);
 
         Product product1 = new Product();
-        product1.setName("Pizza Margherita");
+        product1.setName(PIZZA_MARGHERITA);
         product1.setPrice(BigDecimal.valueOf(32));
         product1.setAvailable(true);
 
@@ -66,7 +72,7 @@ class OrderServiceTest {
         item2.setProductId(2L);
         item2.setQuantity(1);
 
-        when(tableSessionRepository.findBySessionCodeAndActiveTrue("TEST123"))
+        when(tableSessionRepository.findBySessionCodeAndActiveTrue(SESSION_CODE))
                 .thenReturn(Optional.of(tableSession));
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product1));
@@ -75,14 +81,14 @@ class OrderServiceTest {
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Order order = orderService.createOrder("TEST123", List.of(item1, item2));
+        Order order = orderService.createOrder(SESSION_CODE, List.of(item1, item2));
 
         assertEquals(OrderStatus.NOUA, order.getStatus());
         assertEquals(BigDecimal.valueOf(72), order.getTotalPrice());
         assertEquals(2, order.getItems().size());
 
         assertNotNull(order.getTableSession());
-        assertEquals("TEST123", order.getTableSession().getSessionCode());
+        assertEquals(SESSION_CODE, order.getTableSession().getSessionCode());
         assertEquals(1, order.getTableSession().getRestaurantTable().getTableNumber());
 
         assertTrue(
@@ -94,9 +100,9 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_shouldRejectUnavailableProduct() {
+    void createOrderShouldRejectUnavailableProduct() {
         RestaurantTable table = new RestaurantTable(1, 4);
-        TableSession tableSession = new TableSession(table, "TEST123");
+        TableSession tableSession = new TableSession(table, SESSION_CODE);
 
         Product product = new Product();
         product.setName("Papanasi");
@@ -107,14 +113,14 @@ class OrderServiceTest {
         item.setProductId(1L);
         item.setQuantity(1);
 
-        when(tableSessionRepository.findBySessionCodeAndActiveTrue("TEST123"))
+        when(tableSessionRepository.findBySessionCodeAndActiveTrue(SESSION_CODE))
                 .thenReturn(Optional.of(tableSession));
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> orderService.createOrder("TEST123", List.of(item))
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> orderService.createOrder(SESSION_CODE, List.of(item))
         );
 
         assertTrue(exception.getMessage().contains("Produsul nu este disponibil"));
@@ -122,17 +128,17 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_shouldRejectInvalidSessionCode() {
+    void createOrderShouldRejectInvalidSessionCode() {
         OrderService.OrderItemRequest item = new OrderService.OrderItemRequest();
         item.setProductId(1L);
         item.setQuantity(1);
 
-        when(tableSessionRepository.findBySessionCodeAndActiveTrue("INVALID"))
+        when(tableSessionRepository.findBySessionCodeAndActiveTrue(INVALID_SESSION_CODE))
                 .thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> orderService.createOrder("INVALID", List.of(item))
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> orderService.createOrder(INVALID_SESSION_CODE, List.of(item))
         );
 
         assertTrue(exception.getMessage().contains("Sesiunea mesei nu exista"));
@@ -140,7 +146,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderStatus_shouldChangeStatus() {
+    void updateOrderStatusShouldChangeStatus() {
         Order order = new Order();
         order.setStatus(OrderStatus.NOUA);
 
@@ -155,17 +161,17 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderStatus_shouldSetItemsToInPreparationWhenOrderIsSentToPreparation() {
+    void updateOrderStatusShouldSetItemsToInPreparationWhenOrderIsSentToPreparation() {
         Order order = new Order();
         order.setStatus(OrderStatus.NOUA);
 
         Product product1 = new Product();
-        product1.setName("Pizza Margherita");
+        product1.setName(PIZZA_MARGHERITA);
         product1.setPrice(BigDecimal.valueOf(32));
         product1.setAvailable(true);
 
         Product product2 = new Product();
-        product2.setName("Apa plata");
+        product2.setName(STILL_WATER);
         product2.setPrice(BigDecimal.valueOf(8));
         product2.setAvailable(true);
 
@@ -195,17 +201,17 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderItemStatus_shouldKeepOrderInPreparationWhenNotAllItemsAreReady() {
+    void updateOrderItemStatusShouldKeepOrderInPreparationWhenNotAllItemsAreReady() {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
         Product product1 = new Product();
-        product1.setName("Pizza Margherita");
+        product1.setName(PIZZA_MARGHERITA);
         product1.setPrice(BigDecimal.valueOf(32));
         product1.setAvailable(true);
 
         Product product2 = new Product();
-        product2.setName("Apa plata");
+        product2.setName(STILL_WATER);
         product2.setPrice(BigDecimal.valueOf(8));
         product2.setAvailable(true);
 
@@ -232,17 +238,17 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderItemStatus_shouldSetOrderReadyWhenAllItemsAreReady() {
+    void updateOrderItemStatusShouldSetOrderReadyWhenAllItemsAreReady() {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
         Product product1 = new Product();
-        product1.setName("Pizza Margherita");
+        product1.setName(PIZZA_MARGHERITA);
         product1.setPrice(BigDecimal.valueOf(32));
         product1.setAvailable(true);
 
         Product product2 = new Product();
-        product2.setName("Apa plata");
+        product2.setName(STILL_WATER);
         product2.setPrice(BigDecimal.valueOf(8));
         product2.setAvailable(true);
 
@@ -271,7 +277,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void getActiveOrders_shouldReturnOnlyOrdersWithActiveStatusesInFcfsOrder() {
+    void getActiveOrdersShouldReturnOnlyOrdersWithActiveStatusesInFcfsOrder() {
         Order order1 = new Order();
         order1.setStatus(OrderStatus.NOUA);
 
@@ -314,7 +320,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void getKitchenOrders_shouldReturnOrdersInPreparationInFcfsOrder() {
+    void getKitchenOrdersShouldReturnOrdersInPreparationInFcfsOrder() {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
@@ -331,7 +337,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void getBarOrders_shouldReturnOrdersInPreparationInFcfsOrder() {
+    void getBarOrdersShouldReturnOrdersInPreparationInFcfsOrder() {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 

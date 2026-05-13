@@ -11,12 +11,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
+
+    private static final String EASY_MENU_COMMENT = "Meniul este usor de folosit.";
+    private static final String VERY_GOOD_COMMENT = "Foarte bine.";
+    private static final String GOOD_SERVICE_COMMENT = "Servire buna.";
 
     @Mock
     private FeedbackRepository feedbackRepository;
@@ -25,10 +31,10 @@ class FeedbackServiceTest {
     private FeedbackService feedbackService;
 
     @Test
-    void saveFeedback_shouldSaveFeedback() {
+    void saveFeedbackShouldSaveFeedback() {
         Feedback feedback = new Feedback();
         feedback.setRating(5);
-        feedback.setComment("Meniul este usor de folosit.");
+        feedback.setComment(EASY_MENU_COMMENT);
 
         when(feedbackRepository.save(any(Feedback.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -36,20 +42,20 @@ class FeedbackServiceTest {
         Feedback savedFeedback = feedbackService.saveFeedback(feedback);
 
         assertEquals(5, savedFeedback.getRating());
-        assertEquals("Meniul este usor de folosit.", savedFeedback.getComment());
+        assertEquals(EASY_MENU_COMMENT, savedFeedback.getComment());
 
         verify(feedbackRepository, times(1)).save(feedback);
     }
 
     @Test
-    void getAllFeedback_shouldReturnFeedbackList() {
+    void getAllFeedbackShouldReturnFeedbackList() {
         Feedback feedback1 = new Feedback();
         feedback1.setRating(5);
-        feedback1.setComment("Foarte bine.");
+        feedback1.setComment(VERY_GOOD_COMMENT);
 
         Feedback feedback2 = new Feedback();
         feedback2.setRating(4);
-        feedback2.setComment("Servire buna.");
+        feedback2.setComment(GOOD_SERVICE_COMMENT);
 
         when(feedbackRepository.findAll())
                 .thenReturn(List.of(feedback1, feedback2));
@@ -57,7 +63,7 @@ class FeedbackServiceTest {
         List<Feedback> feedbackList = feedbackService.getAllFeedback();
 
         assertEquals(2, feedbackList.size());
-        assertEquals("Foarte bine.", feedbackList.get(0).getComment());
+        assertEquals(VERY_GOOD_COMMENT, feedbackList.get(0).getComment());
         assertEquals(4, feedbackList.get(1).getRating());
 
         verify(feedbackRepository, times(1)).findAll();

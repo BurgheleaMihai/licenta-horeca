@@ -16,13 +16,16 @@ import static org.mockito.Mockito.*;
 
 class TableSessionServiceTest {
 
+    private static final String SESSION_CODE = "TEST123";
+    private static final String TABLE_THREE_SESSION_PREFIX = "MASA-3-";
+
     @Test
     void getActiveSessionsShouldReturnActiveSessions() {
         TableSessionRepository tableSessionRepository = mock(TableSessionRepository.class);
         RestaurantTableRepository restaurantTableRepository = mock(RestaurantTableRepository.class);
 
         TableSession session = new TableSession();
-        session.setSessionCode("TEST123");
+        session.setSessionCode(SESSION_CODE);
         session.setActive(true);
 
         when(tableSessionRepository.findByActiveTrue())
@@ -36,7 +39,7 @@ class TableSessionServiceTest {
         List<TableSession> result = tableSessionService.getActiveSessions();
 
         assertEquals(1, result.size());
-        assertEquals("TEST123", result.get(0).getSessionCode());
+        assertEquals(SESSION_CODE, result.get(0).getSessionCode());
         assertTrue(result.get(0).isActive());
 
         verify(tableSessionRepository).findByActiveTrue();
@@ -68,7 +71,7 @@ class TableSessionServiceTest {
         assertNotNull(result);
         assertTrue(result.isActive());
         assertNotNull(result.getSessionCode());
-        assertTrue(result.getSessionCode().startsWith("MASA-3-"));
+        assertTrue(result.getSessionCode().startsWith(TABLE_THREE_SESSION_PREFIX));
         assertEquals(table, result.getRestaurantTable());
         assertNotNull(result.getStartedAt());
 
@@ -79,7 +82,7 @@ class TableSessionServiceTest {
 
         assertTrue(savedSession.isActive());
         assertEquals(table, savedSession.getRestaurantTable());
-        assertTrue(savedSession.getSessionCode().startsWith("MASA-3-"));
+        assertTrue(savedSession.getSessionCode().startsWith(TABLE_THREE_SESSION_PREFIX));
         assertNotNull(savedSession.getStartedAt());
     }
 

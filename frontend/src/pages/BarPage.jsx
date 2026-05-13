@@ -11,7 +11,7 @@ function BarPage() {
 
   const handleLogout = () => {
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      globalThis.location.href = "/login";
   };
 
   const loadBarOrders = () => {

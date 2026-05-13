@@ -25,7 +25,7 @@ class RestaurantTableServiceTest {
     private RestaurantTableService restaurantTableService;
 
     @Test
-    void getAllTables_shouldReturnAllTables() {
+    void getAllTablesShouldReturnAllTables() {
         RestaurantTable table1 = new RestaurantTable(1, 4);
         RestaurantTable table2 = new RestaurantTable(2, 2);
 
@@ -42,7 +42,7 @@ class RestaurantTableServiceTest {
     }
 
     @Test
-    void getActiveTables_shouldReturnOnlyActiveTables() {
+    void getActiveTablesShouldReturnOnlyActiveTables() {
         RestaurantTable table1 = new RestaurantTable(1, 4);
         RestaurantTable table2 = new RestaurantTable(2, 2);
 
@@ -58,7 +58,7 @@ class RestaurantTableServiceTest {
     }
 
     @Test
-    void getTableById_shouldReturnTableWhenExists() {
+    void getTableByIdShouldReturnTableWhenExists() {
         RestaurantTable table = new RestaurantTable(1, 4);
 
         when(restaurantTableRepository.findById(1L))
@@ -73,7 +73,7 @@ class RestaurantTableServiceTest {
     }
 
     @Test
-    void getTableById_shouldThrowExceptionWhenTableDoesNotExist() {
+    void getTableByIdShouldThrowExceptionWhenTableDoesNotExist() {
         when(restaurantTableRepository.findById(99L))
                 .thenReturn(Optional.empty());
 

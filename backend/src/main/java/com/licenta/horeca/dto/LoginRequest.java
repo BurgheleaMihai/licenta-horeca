@@ -6,6 +6,7 @@ public class LoginRequest {
     private String password;
 
     public LoginRequest() {
+        // Constructor gol pentru ca Spring sa transforme JSON in obiect Java
     }
 
     public String getEmail() {

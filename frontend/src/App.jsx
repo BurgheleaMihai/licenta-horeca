@@ -9,62 +9,30 @@ import AdminPage from "./pages/AdminPage";
 import SensorSimulatorPage from "./pages/SensorSimulatorPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
 
-function App() {
-  const path = window.location.pathname;
-
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (path === "/login") {
+function renderProtectedPage(user, requiredRole, PageComponent) {
+  if (!user || user.role !== requiredRole) {
     return <LoginPage />;
   }
 
-  if (path === "/waiter") {
-    if (!user || user.role !== "WAITER") {
-      return <LoginPage />;
-    }
-    return <WaiterPage />;
-  }
+  return <PageComponent />;
+}
 
-  if (path === "/kitchen") {
-    if (!user || user.role !== "KITCHEN") {
-      return <LoginPage />;
-    }
-    return <KitchenPage />;
-  }
+function App() {
+  const path = globalThis.location.pathname;
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  if (path === "/bar") {
-    if (!user || user.role !== "BAR") {
-      return <LoginPage />;
-    }
-    return <BarPage />;
-  }
+  const routes = {
+    "/login": <LoginPage />,
+    "/waiter": renderProtectedPage(user, "WAITER", WaiterPage),
+    "/kitchen": renderProtectedPage(user, "KITCHEN", KitchenPage),
+    "/bar": renderProtectedPage(user, "BAR", BarPage),
+    "/manager": renderProtectedPage(user, "MANAGER", ManagerPage),
+    "/admin": renderProtectedPage(user, "ADMIN", AdminPage),
+    "/sensor-simulator": <SensorSimulatorPage />,
+    "/manager-supplies": renderProtectedPage(user, "MANAGER", ManagerSuppliesPage)
+  };
 
-  if (path === "/manager") {
-    if (!user || user.role !== "MANAGER") {
-      return <LoginPage />;
-    }
-    return <ManagerPage />;
-  }
-
-  if (path === "/admin") {
-    if (!user || user.role !== "ADMIN") {
-      return <LoginPage />;
-    }
-    return <AdminPage />;
-  }
-
-  if (path === "/sensor-simulator") {
-    return <SensorSimulatorPage />;
-  }
-
-  if (path === "/manager-supplies") {
-    if (!user || user.role !== "MANAGER") {
-      return <LoginPage />;
-    }
-    return <ManagerSuppliesPage />;
-  }
-
-  return <ClientMenuPage />;
+  return routes[path] || <ClientMenuPage />;
 }
 
 export default App;

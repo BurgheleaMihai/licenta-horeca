@@ -5,6 +5,7 @@ import com.licenta.horeca.entity.OrderItem;
 import com.licenta.horeca.entity.Product;
 import com.licenta.horeca.entity.TableSession;
 import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.repository.OrderItemRepository;
 import com.licenta.horeca.repository.OrderRepository;
 import com.licenta.horeca.repository.ProductRepository;
@@ -35,7 +36,7 @@ public class OrderService {
     public Order createOrder(String sessionCode, List<OrderItemRequest> itemRequests) {
         TableSession tableSession = tableSessionRepository
                 .findBySessionCodeAndActiveTrue(sessionCode)
-                .orElseThrow(() -> new RuntimeException("Sesiunea mesei nu exista sau nu este activa."));
+                .orElseThrow(() -> new BusinessException("Sesiunea mesei nu exista sau nu este activa."));
 
         Order order = new Order();
         order.setTableSession(tableSession);
@@ -44,10 +45,10 @@ public class OrderService {
 
         for (OrderItemRequest itemRequest : itemRequests) {
             Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Produsul nu exista."));
+                    .orElseThrow(() -> new BusinessException("Produsul nu exista."));
 
             if (!product.isAvailable()) {
-                throw new RuntimeException("Produsul nu este disponibil: " + product.getName());
+                throw new BusinessException("Produsul nu este disponibil: " + product.getName());
             }
 
             BigDecimal unitPrice = product.getPrice();
@@ -88,7 +89,7 @@ public class OrderService {
 
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Comanda nu exista."));
+                .orElseThrow(() -> new BusinessException("Comanda nu exista."));
 
         order.setStatus(status);
 
@@ -105,7 +106,7 @@ public class OrderService {
 
     public OrderItem updateOrderItemStatus(Long orderItemId, OrderStatus status) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new RuntimeException("Produsul din comanda nu exista."));
+                .orElseThrow(() -> new BusinessException("Produsul din comanda nu exista."));
 
         orderItem.setStatus(status);
         OrderItem savedItem = orderItemRepository.save(orderItem);

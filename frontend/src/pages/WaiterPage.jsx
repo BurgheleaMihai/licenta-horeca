@@ -20,7 +20,7 @@ function WaiterPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
   };
 
   const loadTables = () => {
@@ -70,7 +70,7 @@ function WaiterPage() {
       return;
     }
 
-    const confirmCreateSession = window.confirm(
+    const confirmCreateSession = globalThis.confirm(
       `Masa ${table.tableNumber} nu are sesiune activă. Dorești să creezi o sesiune nouă pentru această masă?`
     );
 

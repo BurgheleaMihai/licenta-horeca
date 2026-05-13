@@ -31,7 +31,7 @@ function ManagerSuppliesPage() {
     <div className="manager-page">
       <header className="manager-header">
         <h1>Stoc auxiliar</h1>
-        <button onClick={() => window.location.href = "/manager"}>
+        <button onClick={() => globalThis.location.href = "/manager"}>
           Inapoi la panou manager
         </button>
       </header>

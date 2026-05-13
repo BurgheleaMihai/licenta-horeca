@@ -26,7 +26,7 @@ class ProductServiceTest {
     private ProductService productService;
 
     @Test
-    void getAvailableProducts_shouldReturnOnlyAvailableProducts() {
+    void getAvailableProductsShouldReturnOnlyAvailableProducts() {
         Product pizza = new Product();
         pizza.setName("Pizza Margherita");
         pizza.setDescription("Pizza cu sos de rosii, mozzarella si busuioc");

@@ -15,9 +15,6 @@ function ClientMenuPage() {
   const [feedbackComment, setFeedbackComment] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
-  const params = new URLSearchParams(window.location.search);
-  const sessionCode = params.get("session");
-
   useEffect(() => {
     getAllProducts()
       .then((response) => {
@@ -56,7 +53,7 @@ function ClientMenuPage() {
     ...new Set(
       products
         .map((product) => product.category?.name)
-        .filter((categoryName) => categoryName)
+        .filter(Boolean)
     )
   ];
 
@@ -118,8 +115,9 @@ function ClientMenuPage() {
 
       <section className="filters-section">
         <div className="filter-group">
-          <label>Categorie</label>
+          <label htmlFor="category-filter">Categorie</label>
           <select
+            id="category-filter"
             value={selectedCategory}
             onChange={(event) => setSelectedCategory(event.target.value)}
           >
@@ -132,8 +130,9 @@ function ClientMenuPage() {
         </div>
 
         <div className="filter-group">
-          <label>Pret maxim</label>
+          <label htmlFor="max-price-filter">Pret maxim</label>
           <input
+            id="max-price-filter"
             type="number"
             placeholder="Ex: 35"
             value={maxPrice}
@@ -147,7 +146,7 @@ function ClientMenuPage() {
             checked={onlyAvailable}
             onChange={(event) => setOnlyAvailable(event.target.checked)}
           />
-          Afiseaza doar produse disponibile
+          <span>Afiseaza doar produse disponibile</span>
         </label>
 
         <label className="checkbox-filter">
@@ -156,7 +155,7 @@ function ClientMenuPage() {
             checked={onlyVegetarian}
             onChange={(event) => setOnlyVegetarian(event.target.checked)}
           />
-          Vegetarian
+          <span>Vegetarian</span>
         </label>
 
         <label className="checkbox-filter">
@@ -165,12 +164,13 @@ function ClientMenuPage() {
             checked={onlyVegan}
             onChange={(event) => setOnlyVegan(event.target.checked)}
           />
-          Vegan
+          <span>Vegan</span>
         </label>
 
         <div className="filter-group">
-          <label>Tip carne</label>
+          <label htmlFor="meat-type-filter">Tip carne</label>
           <select
+            id="meat-type-filter"
             value={selectedMeatType}
             onChange={(event) => setSelectedMeatType(event.target.value)}
           >
@@ -190,7 +190,7 @@ function ClientMenuPage() {
         {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className={`product-card ${!product.available ? "unavailable" : ""}`}
+            className={`product-card ${product.available ? "" : "unavailable"}`}
           >
             <div className="product-card-header">
               <span className="product-category">
@@ -220,8 +220,9 @@ function ClientMenuPage() {
 
         <form onSubmit={handleFeedbackSubmit} className="feedback-form">
           <div className="filter-group">
-            <label>Rating</label>
+            <label htmlFor="feedback-rating">Rating</label>
             <select
+              id="feedback-rating"
               value={feedbackRating}
               onChange={(event) => setFeedbackRating(event.target.value)}
             >
@@ -234,8 +235,9 @@ function ClientMenuPage() {
           </div>
 
           <div className="feedback-comment-group">
-            <label>Comentariu</label>
+            <label htmlFor="feedback-comment">Comentariu</label>
             <textarea
+              id="feedback-comment"
               value={feedbackComment}
               onChange={(event) => setFeedbackComment(event.target.value)}
               placeholder="Scrie un comentariu optional..."

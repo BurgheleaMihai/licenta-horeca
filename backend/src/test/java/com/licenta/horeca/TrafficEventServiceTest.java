@@ -1,18 +1,19 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca;
 
 import com.licenta.horeca.entity.TrafficEvent;
 import com.licenta.horeca.enums.TrafficEventType;
 import com.licenta.horeca.repository.TrafficEventRepository;
+import com.licenta.horeca.service.TrafficEventService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TrafficEventServiceTest {
@@ -24,7 +25,7 @@ class TrafficEventServiceTest {
     private TrafficEventService trafficEventService;
 
     @Test
-    void saveEvent_withEntryType_savesEntryEvent() {
+    void saveEventWithEntryTypeSavesEntryEvent() {
         TrafficEvent savedEvent = new TrafficEvent(TrafficEventType.ENTRY);
 
         when(trafficEventRepository.save(any(TrafficEvent.class)))
@@ -37,7 +38,7 @@ class TrafficEventServiceTest {
     }
 
     @Test
-    void saveEvent_withExitType_savesExitEvent() {
+    void saveEventWithExitTypeSavesExitEvent() {
         TrafficEvent savedEvent = new TrafficEvent(TrafficEventType.EXIT);
 
         when(trafficEventRepository.save(any(TrafficEvent.class)))
@@ -50,7 +51,7 @@ class TrafficEventServiceTest {
     }
 
     @Test
-    void getEstimatedOccupancy_returnsEntriesMinusExits() {
+    void getEstimatedOccupancyReturnsEntriesMinusExits() {
         when(trafficEventRepository.countByType(TrafficEventType.ENTRY))
                 .thenReturn(10L);
 
@@ -63,7 +64,7 @@ class TrafficEventServiceTest {
     }
 
     @Test
-    void getEstimatedOccupancy_whenExitsAreGreaterThanEntries_returnsZero() {
+    void getEstimatedOccupancyWhenExitsAreGreaterThanEntriesReturnsZero() {
         when(trafficEventRepository.countByType(TrafficEventType.ENTRY))
                 .thenReturn(3L);
 

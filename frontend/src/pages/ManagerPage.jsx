@@ -20,7 +20,7 @@ function ManagerPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
   };
 
   const loadManagerData = () => {
@@ -76,7 +76,7 @@ function ManagerPage() {
 
           <button
             className="manager-nav-button"
-            onClick={() => window.location.href = "/manager-supplies"}
+            onClick={() => globalThis.location.href = "/manager-supplies"}
           >
             Stoc auxiliar
           </button>

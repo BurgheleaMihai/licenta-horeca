@@ -1627,6 +1627,8 @@ Dupa aceasta etapa, aplicatia are separare functionala pe roluri si include flux
 
 Status: finalizat.
 
+---
+
 ### Ziua 9 - Sesiuni active pentru mese si creare comanda din panoul ospatarului
 
 Dupa implementarea autentificarii, a panourilor interne si a fluxurilor pentru manager/admin, a fost actualizata pagina ospatarului pentru a trata mai corect legatura dintre mesele restaurantului, sesiunile active si crearea comenzilor.
@@ -1837,7 +1839,36 @@ Au fost adaugate endpoint-uri dedicate pentru sesiunile meselor, frontend-ul a f
 
 Rezultatul final al testelor automate utile ale proiectului devine:
 
-- `41/41` teste trecute.
+- `40/40` teste trecute.
+
+Status: finalizat.
+
+---
+
+### Ziua 10 - Curatare cod, SonarQube, JaCoCo si extindere teste automate
+
+- Au fost rezolvate problemele raportate de SonarQube pentru backend si frontend.
+- Au fost eliminate code smells-urile ramase din fisierele Java si JSX.
+- Au fost inlocuite utilizarile de `window` cu `globalThis` in frontend.
+- Au fost corectate problemele simple din `ClientMenuPage.jsx` si `LoginPage.jsx`.
+- A fost introdusa exceptia custom `BusinessException` pentru erorile de business.
+- Parola bazei de date a fost scoasa din `application.properties` si mutata in variabile de mediu.
+- Token-ul SonarQube a fost scos din `sonar-project.properties`.
+- A fost configurat JaCoCo in `pom.xml`.
+- A fost configurat raportul JaCoCo pentru SonarQube prin `sonar.coverage.jacoco.xmlReportPaths`.
+- Frontend-ul si folderul `database` au fost excluse din calculul coverage-ului, dar raman incluse in analiza statica.
+- Au fost adaugate teste noi pentru controllere:
+  - `TableSessionControllerTest`
+  - `AuthControllerTest`
+  - `AuxiliarySupplyControllerTest`
+  - `ProductControllerTest`
+  - `RestaurantTableControllerTest`
+  - `TrafficEventControllerTest`
+- Testele automate au fost extinse pana la 57/57 teste trecute.
+- Coverage-ul pe New Code a ajuns la 100%.
+- Coverage-ul general a ajuns la 83.5%.
+- Quality Gate-ul SonarQube este `Passed`.
+- Proiectul are 0 issue-uri deschise pe Security, Reliability si Maintainability.
 
 Status: finalizat.
 
