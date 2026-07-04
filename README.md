@@ -1872,3 +1872,237 @@ Status: finalizat.
 
 Status: finalizat.
 
+---
+
+### Ziua 11 - Sistem de decizie si AI Service
+A fost inceputa implementarea sistemului de decizie.
+A fost lucrat in folderul separat ai-service.
+A fost generat un dataset sintetic pentru o singura locatie din complex studentesc.
+Regulile pentru dataset au fost adaptate astfel:
+weekendul are trafic mai scazut;
+miercuri si joi sunt zile mai aglomerate;
+pranzul si seara pot avea trafic mai mare;
+comenzile active, mesele ocupate si incarcarea bucatariei/barului influenteaza predictiile.
+Structura ai-service
+
+Au fost create folderele:
+
+data
+models
+reports
+
+Au fost create fisierele:
+
+requirements.txt
+generate_dataset.py
+train_traffic_model.py
+train_staff_model.py
+train_delay_model.py
+train_all_models.py
+app.py
+
+In requirements.txt au fost adaugate bibliotecile:
+
+pandas
+numpy
+scikit-learn
+joblib
+flask
+flask-cors
+Dataset sintetic
+
+A fost creat scriptul:
+
+generate_dataset.py
+
+Acesta genereaza fisierul:
+
+data/synthetic_horeca_dataset.csv
+
+Dataset-ul contine 3000 de randuri.
+
+Datele generate contin informatii despre:
+
+ziua saptamanii;
+ora;
+comenzi active;
+mese ocupate;
+ocupare estimata;
+incarcare bucatarie;
+incarcare bar;
+timp mediu de pregatire;
+comenzi in ultimele 30 de minute;
+varsta comenzii;
+numar produse;
+nivel trafic;
+personal recomandat;
+risc de intarziere.
+
+Distributie trafic:
+
+SCAZUT -> 1660 randuri;
+MEDIU -> 1175 randuri;
+RIDICAT -> 165 randuri.
+
+Distributie risc intarziere:
+
+SCAZUT -> 1575 randuri;
+MEDIU -> 1203 randuri;
+RIDICAT -> 222 randuri.
+Modele ML
+
+Au fost antrenate trei modele separate:
+
+traffic_model.pkl
+staff_model.pkl
+delay_model.pkl
+
+Fisierele de antrenare sunt:
+
+train_traffic_model.py
+train_staff_model.py
+train_delay_model.py
+
+Fisierul:
+
+train_all_models.py
+
+ruleaza antrenarea tuturor modelelor.
+
+Modelele folosesc:
+
+RandomForestClassifier pentru nivelul de trafic;
+RandomForestRegressor pentru recomandarea personalului;
+RandomForestClassifier pentru riscul de intarziere.
+
+Rezultate obtinute:
+
+acuratete trafic: 1.0000;
+eroare medie personal: 0.0046;
+acuratete risc intarziere: 0.9683.
+
+Modelele au fost salvate in:
+
+models
+
+Rapoartele au fost salvate in:
+
+reports
+Flask AI Service
+
+A fost creat fisierul:
+
+app.py
+
+Acesta porneste AI Service-ul pe portul:
+
+5000
+
+Endpoint-uri implementate:
+
+GET /health
+POST /predict/all
+
+Endpoint-ul /health verifica daca serviciul AI este pornit.
+
+Endpoint-ul /predict/all returneaza predictiile sistemului de decizie.
+
+Exemplu de raspuns:
+
+{
+  "trafficLevel": "RIDICAT",
+  "recommendedWaiters": 4,
+  "recommendedKitchenStaff": 4,
+  "recommendedBarStaff": 2,
+  "delayRisk": "MEDIU"
+}
+
+Endpoint-ul a fost testat manual din PowerShell cu Invoke-RestMethod.
+
+Integrare cu Spring Boot
+
+In backend au fost create clasele:
+
+DecisionRequest.java
+DecisionResponse.java
+DecisionService.java
+DecisionController.java
+
+A fost implementat endpoint-ul:
+
+GET /api/decision/summary
+
+Acest endpoint construieste datele curente ale restaurantului si apeleaza AI Service-ul Flask.
+
+Date folosite din baza de date
+
+Sistemul de decizie citeste date din:
+
+orders
+order_items
+table_sessions
+restaurant_tables
+products
+categories
+
+Sunt calculate urmatoarele valori:
+
+activeOrders
+occupiedTables
+estimatedOccupancy
+kitchenLoad
+barLoad
+ordersLast30Min
+orderAgeMinutes
+itemCount
+
+A fost verificat manual ca valorile se schimba in functie de starea curenta a bazei de date.
+
+Exemplu dupa curatarea comenzilor si sesiunilor vechi:
+
+activeOrders = 0
+occupiedTables = 0
+estimatedOccupancy = 0
+kitchenLoad = 0
+barLoad = 0
+ordersLast30Min = 0
+orderAgeMinutes = 0
+itemCount = 0
+
+A fost adaugat timeout pentru apelul catre AI Service, ca backend-ul sa nu ramana blocat daca Flask nu raspunde.
+
+A fost adaugat si raspuns fallback daca AI Service-ul nu este disponibil.
+
+Verificari manuale efectuate
+
+Au fost verificate manual:
+
+generarea dataset-ului sintetic;
+antrenarea celor trei modele;
+salvarea modelelor in folderul models;
+pornirea AI Service-ului Flask;
+endpoint-ul GET /health;
+endpoint-ul POST /predict/all;
+endpoint-ul Spring Boot GET /api/decision/summary;
+faptul ca backend-ul citeste date reale din baza de date;
+curatarea comenzilor si sesiunilor vechi din MySQL;
+raspunsul primit de la AI Service prin backend.
+Concluzie ziua 11
+
+In ziua 11 a fost adaugata prima versiune a sistemului de decizie.
+
+Au fost realizate:
+
+modulul separat ai-service;
+dataset-ul sintetic;
+trei modele ML separate;
+API-ul Flask pentru predictii;
+integrarea Spring Boot cu AI Service;
+endpoint-ul GET /api/decision/summary;
+citirea starii curente din baza de date;
+verificari manuale pentru fluxul backend-AI.
+
+Dupa aceasta etapa, sistemul de decizie functioneaza la nivel de backend si AI Service. Urmatorul pas este afisarea rezultatelor in pagina administratorului.
+
+Status: finalizat
+

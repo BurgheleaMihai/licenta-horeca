@@ -1,6 +1,0 @@
-projectKey=licenta-horeca
-serverUrl=http://localhost:9000
-serverVersion=26.4.0.121862
-dashboardUrl=http://localhost:9000/dashboard?id=licenta-horeca
-ceTaskId=393c1d80-7887-45c8-b4b8-f8a2d7cd222a
-ceTaskUrl=http://localhost:9000/api/ce/task?id=393c1d80-7887-45c8-b4b8-f8a2d7cd222a

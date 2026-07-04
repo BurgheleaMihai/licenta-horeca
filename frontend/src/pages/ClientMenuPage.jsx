@@ -213,10 +213,7 @@ function ClientMenuPage() {
       </section>
 
       <section className="feedback-section">
-        <h2>Feedback anonim</h2>
-        <p>
-          După servire, clientul poate lăsa o opinie anonimă despre experiența avută.
-        </p>
+        <h2>Spuneți-ne cum a fost experiența</h2>
 
         <form onSubmit={handleFeedbackSubmit} className="feedback-form">
           <div className="filter-group">

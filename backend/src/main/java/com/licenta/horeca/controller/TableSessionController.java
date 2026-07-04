@@ -4,10 +4,11 @@ import com.licenta.horeca.entity.TableSession;
 import com.licenta.horeca.service.TableSessionService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -31,4 +32,10 @@ public class TableSessionController {
     public TableSession createSessionForTable(@PathVariable Long tableId) {
         return tableSessionService.createSessionForTable(tableId);
     }
+
+    @PutMapping("/{sessionId}/close")
+    public TableSession closeSession(@PathVariable Long sessionId) {
+        return tableSessionService.closeSession(sessionId);
+    }
+
 }

@@ -5,6 +5,8 @@ import com.licenta.horeca.enums.TrafficEventType;
 import com.licenta.horeca.repository.TrafficEventRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -12,7 +14,9 @@ public class TrafficEventService {
 
     private final TrafficEventRepository trafficEventRepository;
 
-    public TrafficEventService(TrafficEventRepository trafficEventRepository) {
+    public TrafficEventService(
+            TrafficEventRepository trafficEventRepository
+    ) {
         this.trafficEventRepository = trafficEventRepository;
     }
 
@@ -26,11 +30,31 @@ public class TrafficEventService {
     }
 
     public long getEntryCount() {
-        return trafficEventRepository.countByType(TrafficEventType.ENTRY);
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime startOfNextDay = LocalDate.now()
+                .plusDays(1)
+                .atStartOfDay();
+
+        return trafficEventRepository
+                .countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                        TrafficEventType.ENTRY,
+                        startOfDay,
+                        startOfNextDay
+                );
     }
 
     public long getExitCount() {
-        return trafficEventRepository.countByType(TrafficEventType.EXIT);
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime startOfNextDay = LocalDate.now()
+                .plusDays(1)
+                .atStartOfDay();
+
+        return trafficEventRepository
+                .countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                        TrafficEventType.EXIT,
+                        startOfDay,
+                        startOfNextDay
+                );
     }
 
     public long getEstimatedOccupancy() {

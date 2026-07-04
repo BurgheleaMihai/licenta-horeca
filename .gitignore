@@ -62,3 +62,19 @@ replay_pid*.log
 # OS
 .DS_Store
 Thumbs.db
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.venv/
+**/.venv/
+venv/
+**/venv/
+
+# SonarQube / SonarScanner
+.scannerwork/
+**/.scannerwork/
+
+# Modele AI binare generate prin antrenare
+ai-service/models/*.pkl
