@@ -56,9 +56,6 @@ function KitchenPage() {
     <div className="kitchen-page">
       <header className="kitchen-header">
         <h1>Panou bucatarie</h1>
-        <p>
-          Aceasta pagina este folosita pentru vizualizarea preparatelor aflate in lucru.
-        </p>
 
         <button className="logout-button" onClick={handleLogout}>
           Logout

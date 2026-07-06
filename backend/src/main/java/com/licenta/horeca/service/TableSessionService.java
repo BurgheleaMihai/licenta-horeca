@@ -7,6 +7,8 @@ import com.licenta.horeca.repository.RestaurantTableRepository;
 import com.licenta.horeca.repository.TableSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +32,33 @@ public class TableSessionService {
 
     public List<TableSession> getActiveSessions() {
         return tableSessionRepository.findByActiveTrue();
+    }
+
+    @Transactional(readOnly = true)
+    public TableSession validateSessionCode(String sessionCode) {
+
+        if (sessionCode == null || sessionCode.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Codul sesiunii este obligatoriu."
+            );
+        }
+
+        TableSession tableSession = tableSessionRepository
+                .findBySessionCode(sessionCode.trim())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Codul sesiunii nu exista."
+                ));
+
+        if (!tableSession.isActive()) {
+            throw new ResponseStatusException(
+                    HttpStatus.GONE,
+                    "Sesiunea nu mai este activa."
+            );
+        }
+
+        return tableSession;
     }
 
     @Transactional

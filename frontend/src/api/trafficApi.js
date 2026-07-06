@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const TRAFFIC_URL = "http://localhost:8080/api/traffic";
+const TRAFFIC_URL = "/api/traffic";
 
 export const getTrafficSummary = () => {
   return axios.get(`${TRAFFIC_URL}/summary`);

@@ -13,6 +13,7 @@ import com.licenta.horeca.repository.TableSessionRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,20 +24,27 @@ public class OrderService {
     private final TableSessionRepository tableSessionRepository;
     private final OrderItemRepository orderItemRepository;
 
-    public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository,
-                        TableSessionRepository tableSessionRepository,
-                        OrderItemRepository orderItemRepository) {
+    public OrderService(
+            OrderRepository orderRepository,
+            ProductRepository productRepository,
+            TableSessionRepository tableSessionRepository,
+            OrderItemRepository orderItemRepository
+    ) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.tableSessionRepository = tableSessionRepository;
         this.orderItemRepository = orderItemRepository;
     }
 
-    public Order createOrder(String sessionCode, List<OrderItemRequest> itemRequests) {
+    public Order createOrder(
+            String sessionCode,
+            List<OrderItemRequest> itemRequests
+    ) {
         TableSession tableSession = tableSessionRepository
                 .findBySessionCodeAndActiveTrue(sessionCode)
-                .orElseThrow(() -> new BusinessException("Sesiunea mesei nu exista sau nu este activa."));
+                .orElseThrow(() -> new BusinessException(
+                        "Sesiunea mesei nu exista sau nu este activa."
+                ));
 
         Order order = new Order();
         order.setTableSession(tableSession);
@@ -44,19 +52,34 @@ public class OrderService {
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         for (OrderItemRequest itemRequest : itemRequests) {
-            Product product = productRepository.findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new BusinessException("Produsul nu exista."));
+            Product product = productRepository
+                    .findById(itemRequest.getProductId())
+                    .orElseThrow(() -> new BusinessException(
+                            "Produsul nu exista."
+                    ));
 
             if (!product.isAvailable()) {
-                throw new BusinessException("Produsul nu este disponibil: " + product.getName());
+                throw new BusinessException(
+                        "Produsul nu este disponibil: "
+                                + product.getName()
+                );
             }
 
             BigDecimal unitPrice = product.getPrice();
-            OrderItem orderItem = new OrderItem(product, itemRequest.getQuantity(), unitPrice);
+
+            OrderItem orderItem = new OrderItem(
+                    product,
+                    itemRequest.getQuantity(),
+                    unitPrice
+            );
+
             orderItem.setStatus(OrderStatus.NOUA);
 
             order.addItem(orderItem);
-            totalPrice = totalPrice.add(orderItem.getSubtotal());
+
+            totalPrice = totalPrice.add(
+                    orderItem.getSubtotal()
+            );
         }
 
         order.setTotalPrice(totalPrice);
@@ -79,17 +102,33 @@ public class OrderService {
         );
     }
 
+    public int countOrdersCreatedAfter(LocalDateTime limit) {
+        long count = orderRepository.countByCreatedAtAfter(limit);
+
+        return Math.toIntExact(count);
+    }
+
     public List<Order> getKitchenOrders() {
-        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE);
+        return orderRepository.findByStatusOrderByCreatedAtAsc(
+                OrderStatus.IN_PREPARARE
+        );
     }
 
     public List<Order> getBarOrders() {
-        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE);
+        return orderRepository.findByStatusOrderByCreatedAtAsc(
+                OrderStatus.IN_PREPARARE
+        );
     }
 
-    public Order updateOrderStatus(Long orderId, OrderStatus status) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException("Comanda nu exista."));
+    public Order updateOrderStatus(
+            Long orderId,
+            OrderStatus status
+    ) {
+        Order order = orderRepository
+                .findById(orderId)
+                .orElseThrow(() -> new BusinessException(
+                        "Comanda nu exista."
+                ));
 
         order.setStatus(status);
 
@@ -104,17 +143,28 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public OrderItem updateOrderItemStatus(Long orderItemId, OrderStatus status) {
-        OrderItem orderItem = orderItemRepository.findById(orderItemId)
-                .orElseThrow(() -> new BusinessException("Produsul din comanda nu exista."));
+    public OrderItem updateOrderItemStatus(
+            Long orderItemId,
+            OrderStatus status
+    ) {
+        OrderItem orderItem = orderItemRepository
+                .findById(orderItemId)
+                .orElseThrow(() -> new BusinessException(
+                        "Produsul din comanda nu exista."
+                ));
 
         orderItem.setStatus(status);
-        OrderItem savedItem = orderItemRepository.save(orderItem);
+
+        OrderItem savedItem =
+                orderItemRepository.save(orderItem);
 
         Order order = savedItem.getOrder();
 
-        boolean allItemsReady = order.getItems().stream()
-                .allMatch(item -> item.getStatus() == OrderStatus.GATA);
+        boolean allItemsReady = order.getItems()
+                .stream()
+                .allMatch(
+                        item -> item.getStatus() == OrderStatus.GATA
+                );
 
         if (allItemsReady) {
             order.setStatus(OrderStatus.GATA);
@@ -125,6 +175,7 @@ public class OrderService {
     }
 
     public static class OrderItemRequest {
+
         private Long productId;
         private Integer quantity;
 

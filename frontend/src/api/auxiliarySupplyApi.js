@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auxiliary-supplies";
+const API_URL = "/api/auxiliary-supplies";
 
 export const getAllAuxiliarySupplies = () => {
   return axios.get(API_URL);

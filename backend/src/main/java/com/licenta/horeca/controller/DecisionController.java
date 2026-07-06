@@ -1,8 +1,18 @@
 package com.licenta.horeca.controller;
+
+import com.licenta.horeca.dto.DecisionLabelRequest;
 import com.licenta.horeca.dto.DecisionResponse;
+import com.licenta.horeca.entity.DecisionTrainingRecord;
 import com.licenta.horeca.service.DecisionService;
+import com.licenta.horeca.service.DecisionTrainingRecordService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,12 +23,56 @@ public class DecisionController {
 
     private final DecisionService decisionService;
 
-    public DecisionController(DecisionService decisionService) {
-        this.decisionService = decisionService;
+    private final DecisionTrainingRecordService
+            decisionTrainingRecordService;
+
+    public DecisionController(
+            DecisionService decisionService,
+            DecisionTrainingRecordService
+                    decisionTrainingRecordService
+    ) {
+        this.decisionService =
+                decisionService;
+
+        this.decisionTrainingRecordService =
+                decisionTrainingRecordService;
     }
 
     @GetMapping("/summary")
     public DecisionResponse getDecisionSummary() {
-        return decisionService.getDecisionSummary();
+        return decisionService
+                .getDecisionSummary();
+    }
+
+    @GetMapping(
+            "/training-records/latest-unlabeled"
+    )
+    public DecisionTrainingRecord
+    getLatestUnlabeledRecord() {
+        return decisionTrainingRecordService
+                .getLatestUnlabeledRecord();
+    }
+
+    @PutMapping(
+            "/training-records/{recordId}/label"
+    )
+    public DecisionTrainingRecord labelRecord(
+            @PathVariable Long recordId,
+            @Valid
+            @RequestBody
+            DecisionLabelRequest request
+    ) {
+        return decisionTrainingRecordService
+                .labelRecord(
+                        recordId,
+                        request
+                );
+    }
+
+    @PostMapping("/retrain")
+    public ResponseEntity<String>
+    retrainModels() {
+        return decisionService
+                .retrainModels();
     }
 }

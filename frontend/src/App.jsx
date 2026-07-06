@@ -3,11 +3,11 @@ import WaiterPage from "./pages/WaiterPage";
 import KitchenPage from "./pages/KitchenPage";
 import BarPage from "./pages/BarPage";
 import LoginPage from "./pages/LoginPage";
-import "./App.css";
 import ManagerPage from "./pages/ManagerPage";
 import AdminPage from "./pages/AdminPage";
 import SensorSimulatorPage from "./pages/SensorSimulatorPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
+import "./App.css";
 
 function renderProtectedPage(user, requiredRole, PageComponent) {
   if (!user || user.role !== requiredRole) {
@@ -17,22 +17,73 @@ function renderProtectedPage(user, requiredRole, PageComponent) {
   return <PageComponent />;
 }
 
+function getStoredUser() {
+  try {
+    const storedUser = localStorage.getItem("user");
+
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.error("Utilizatorul salvat nu a putut fi citit:", error);
+    localStorage.removeItem("user");
+
+    return null;
+  }
+}
+
 function App() {
-  const path = globalThis.location.pathname;
-  const user = JSON.parse(localStorage.getItem("user"));
+  const originalPath = globalThis.location.pathname;
+
+  const path =
+    originalPath.length > 1
+      ? originalPath.replace(/\/+$/, "").toLowerCase()
+      : "/";
+
+  const user = getStoredUser();
 
   const routes = {
+    "/": <ClientMenuPage />,
     "/login": <LoginPage />,
-    "/waiter": renderProtectedPage(user, "WAITER", WaiterPage),
-    "/kitchen": renderProtectedPage(user, "KITCHEN", KitchenPage),
-    "/bar": renderProtectedPage(user, "BAR", BarPage),
-    "/manager": renderProtectedPage(user, "MANAGER", ManagerPage),
-    "/admin": renderProtectedPage(user, "ADMIN", AdminPage),
+
+    "/waiter": renderProtectedPage(
+      user,
+      "WAITER",
+      WaiterPage
+    ),
+
+    "/kitchen": renderProtectedPage(
+      user,
+      "KITCHEN",
+      KitchenPage
+    ),
+
+    "/bar": renderProtectedPage(
+      user,
+      "BAR",
+      BarPage
+    ),
+
+    "/manager": renderProtectedPage(
+      user,
+      "MANAGER",
+      ManagerPage
+    ),
+
+    "/admin": renderProtectedPage(
+      user,
+      "ADMIN",
+      AdminPage
+    ),
+
     "/sensor-simulator": <SensorSimulatorPage />,
-    "/manager-supplies": renderProtectedPage(user, "MANAGER", ManagerSuppliesPage)
+
+    "/manager-supplies": renderProtectedPage(
+      user,
+      "MANAGER",
+      ManagerSuppliesPage
+    ),
   };
 
-  return routes[path] || <ClientMenuPage />;
+  return routes[path] || <LoginPage />;
 }
 
 export default App;

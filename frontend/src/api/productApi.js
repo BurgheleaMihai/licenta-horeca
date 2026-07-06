@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/products";
-const FEEDBACK_URL = "http://localhost:8080/api/feedback";
-const ORDERS_URL = "http://localhost:8080/api/orders";
+const API_URL = "/api/products";
+const FEEDBACK_URL = "/api/feedback";
+const ORDERS_URL = "/api/orders";
 
 export const getAllProducts = () => {
   return axios.get(API_URL);
@@ -33,5 +33,7 @@ export const getAllOrders = () => {
 };
 
 export const updateOrderStatus = (orderId, status) => {
-  return axios.patch(`${ORDERS_URL}/${orderId}/status?status=${status}`);
+  return axios.patch(
+    `${ORDERS_URL}/${orderId}/status?status=${encodeURIComponent(status)}`
+  );
 };

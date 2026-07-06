@@ -28,6 +28,11 @@ public class TableSessionController {
         return tableSessionService.getActiveSessions();
     }
 
+    @GetMapping("/code/{sessionCode}")
+    public TableSession validateSessionCode(@PathVariable String sessionCode) {
+        return tableSessionService.validateSessionCode(sessionCode);
+    }
+
     @PostMapping("/table/{tableId}")
     public TableSession createSessionForTable(@PathVariable Long tableId) {
         return tableSessionService.createSessionForTable(tableId);
@@ -37,5 +42,4 @@ public class TableSessionController {
     public TableSession closeSession(@PathVariable Long sessionId) {
         return tableSessionService.closeSession(sessionId);
     }
-
 }

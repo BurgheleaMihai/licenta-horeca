@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/tables";
+const API_URL = "/api/tables";
 
 export const getAllTables = () => {
   return axios.get(API_URL);

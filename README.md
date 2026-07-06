@@ -2106,3 +2106,401 @@ Dupa aceasta etapa, sistemul de decizie functioneaza la nivel de backend si AI S
 
 Status: finalizat
 
+---
+
+### Ziua 12 - Cod QR, colectarea datelor reale si reantrenarea modelelor
+
+In aceasta etapa au fost finalizate fluxul bazat pe cod QR si mecanismul de colectare a datelor reale pentru reantrenarea controlata a modelelor sistemului de decizie.
+
+#### Generarea codului QR pentru fiecare sesiune
+
+In frontend a fost instalata biblioteca:
+
+- `qrcode.react`
+
+Pagina ospatarului a fost modificata astfel incat operatiile asupra unei mese sa fie separate clar:
+
+- deschiderea sesiunii;
+- afisarea codului QR;
+- crearea comenzii;
+- inchiderea sesiunii.
+
+Dupa deschiderea unei sesiuni, aplicatia genereaza un cod QR care contine adresa meniului si codul unic al sesiunii.
+
+Exemplu de adresa generata:
+
+```text
+http://ADRESA_FRONTEND:5173/?session=COD_SESIUNE
+```
+
+Pentru configurarea adresei folosite in codul QR este utilizata variabila:
+
+```env
+VITE_CLIENT_BASE_URL=http://localhost:5173
+```
+
+Pentru testarea de pe telefon se poate folosi adresa IP a laptopului din reteaua locala sau din hotspotul mobil creat de laptop.
+
+Serverul Vite a fost configurat pentru acces din retea si pentru redirectionarea cererilor API catre backend:
+
+```javascript
+server: {
+  host: "0.0.0.0",
+  proxy: {
+    "/api": {
+      target: "http://localhost:8080",
+      changeOrigin: true,
+      secure: false,
+    },
+  },
+}
+```
+
+Apelurile frontend catre backend folosesc adrese relative de forma:
+
+```text
+/api/...
+```
+
+Aceasta modificare permite accesarea aplicatiei de pe telefon fara ca browserul telefonului sa incerce sa acceseze propriul `localhost`.
+
+#### Validarea sesiunii din codul QR
+
+In backend a fost implementat endpoint-ul:
+
+```http
+GET /api/table-sessions/code/{sessionCode}
+```
+
+Acesta verifica:
+
+- daca a fost transmis un cod;
+- daca sesiunea exista;
+- daca sesiunea este activa.
+
+Daca sesiunea este activa, pagina clientului incarca meniul.
+
+Daca sesiunea a fost inchisa sau codul nu exista, pagina afiseaza mesajul:
+
+```text
+Acest link nu mai este valabil.
+```
+
+Codul sesiunii si numarul mesei nu sunt afisate clientului in pagina de meniu.
+
+Fluxul a fost verificat de pe telefon:
+
+1. ospatarul deschide sesiunea;
+2. aplicatia genereaza codul QR;
+3. clientul scaneaza codul;
+4. meniul este incarcat pe telefon;
+5. ospatarul inchide sesiunea;
+6. acelasi link nu mai permite accesarea sesiunii.
+
+#### Corectarea rutelor frontend
+
+Rutarea din `App.jsx` a fost actualizata astfel incat fiecare cale sa incarce pagina corecta:
+
+```text
+/                   -> pagina clientului
+/login              -> pagina de autentificare
+/waiter             -> pagina ospatarului
+/kitchen            -> pagina bucatariei
+/bar                -> pagina barului
+/manager            -> pagina managerului
+/admin              -> pagina administratorului
+/sensor-simulator   -> simulator senzori
+/manager-supplies   -> administrare stoc auxiliar
+```
+
+Au fost normalizate adresele care contin litere mari sau caracterul `/` la final.
+
+Rutele necunoscute nu mai afiseaza automat meniul clientului.
+
+#### Salvarea datelor pentru reantrenare
+
+In backend a fost creata entitatea:
+
+```text
+DecisionTrainingRecord
+```
+
+Hibernate a creat tabela:
+
+```text
+decision_training_records
+```
+
+Pentru fiecare solicitare de predictie sunt salvate intrarile sistemului:
+
+- ziua saptamanii;
+- ora;
+- numarul comenzilor active;
+- numarul meselor ocupate;
+- ocuparea estimata;
+- incarcarea bucatariei;
+- incarcarea barului;
+- timpul mediu de pregatire;
+- comenzile create in ultimele 30 de minute;
+- vechimea celei mai vechi comenzi active;
+- numarul produselor nefinalizate.
+
+Sunt salvate si rezultatele generate de modele:
+
+- nivelul de trafic estimat;
+- numarul recomandat de ospatari;
+- numarul recomandat pentru bucatarie;
+- numarul recomandat pentru bar;
+- riscul estimat de intarziere.
+
+Campurile pentru rezultatele reale sunt initial `NULL`:
+
+- `observed_traffic_level`;
+- `observed_delay_risk`;
+- `actual_waiters`;
+- `actual_kitchen_staff`;
+- `actual_bar_staff`;
+- `labeled_at`.
+
+Daca AI Service nu este disponibil, sunt salvate doar datele de intrare, fara ca raspunsul fallback sa fie considerat o predictie reala.
+
+#### Corectarea comenzilor din ultimele 30 de minute
+
+Calculul pentru `ordersLast30Min` a fost modificat.
+
+Initial erau luate in calcul doar comenzile active. Acum sunt numarate toate comenzile create in ultimele 30 de minute, indiferent de status.
+
+In `OrderRepository` a fost adaugata metoda:
+
+```java
+long countByCreatedAtAfter(LocalDateTime limit);
+```
+
+Astfel, o comanda servita recent este inclusa in activitatea recenta, chiar daca nu mai este activa.
+
+A fost verificat scenariul:
+
+```text
+activeOrders = 0
+ordersLast30Min = 1
+```
+
+Acest rezultat este corect atunci cand comanda a fost finalizata, dar a fost creata in ultimele 30 de minute.
+
+#### Ora locala pentru datele colectate
+
+Conexiunea MySQL a fost configurata cu:
+
+```properties
+connectionTimeZone=LOCAL
+```
+
+Astfel, campul `created_at` si caracteristica `hour` folosesc ora locala a sistemului.
+
+#### Formular pentru introducerea rezultatelor reale
+
+In pagina administratorului a fost adaugata sectiunea:
+
+```text
+Rezultate reale pentru reantrenare
+```
+
+Administratorul poate vedea ultima predictie neetichetata si poate introduce:
+
+- traficul observat;
+- riscul real de intarziere;
+- numarul real de ospatari prezenti;
+- numarul real de angajati din bucatarie;
+- numarul real de angajati de la bar.
+
+Au fost implementate endpoint-urile:
+
+```http
+GET /api/decision/training-records/latest-unlabeled
+PUT /api/decision/training-records/{recordId}/label
+```
+
+Valorile permise pentru trafic si risc sunt:
+
+```text
+SCAZUT
+MEDIU
+RIDICAT
+```
+
+Dupa salvare, campul `labeled_at` este completat automat.
+
+A fost verificata salvarea unei inregistrari etichetate in MySQL.
+
+#### Scriptul de reantrenare
+
+In AI Service a fost creat fisierul:
+
+```text
+retrain_models.py
+```
+
+In `requirements.txt` au fost adaugate bibliotecile:
+
+```text
+mysql-connector-python
+python-dotenv
+```
+
+Scriptul citeste din MySQL numai inregistrarile complet etichetate.
+
+Pentru reantrenare sunt folosite aceleasi caracteristici ca la antrenarea initiala.
+
+Tintele reale sunt:
+
+```text
+observed_traffic_level
+actual_waiters
+actual_kitchen_staff
+actual_bar_staff
+observed_delay_risk
+```
+
+Reantrenarea este permisa numai dupa colectarea unui numar minim de inregistrari.
+
+Pragul configurat este:
+
+```env
+MIN_LABELED_RECORDS=30
+```
+
+Pentru modelele de clasificare este verificata si existenta a cel putin doua clase diferite.
+
+Modelele candidate sunt evaluate astfel:
+
+- acuratete pentru modelul de trafic;
+- Mean Absolute Error pentru modelul de personal;
+- acuratete pentru modelul de risc de intarziere.
+
+Inainte de inlocuirea modelelor active este creat un backup in:
+
+```text
+ai-service/models/backups
+```
+
+Daca modelele noi nu indeplinesc conditiile stabilite sau apare o eroare, modelele anterioare raman active.
+
+Rapoartele procesului sunt salvate in format JSON in:
+
+```text
+ai-service/reports
+```
+
+#### Endpoint Flask pentru reantrenare
+
+In AI Service a fost implementat endpoint-ul:
+
+```http
+POST /retrain
+```
+
+Endpoint-ul este protejat prin antetul:
+
+```text
+X-Retrain-Token
+```
+
+Token-ul este citit din variabila:
+
+```env
+RETRAIN_TOKEN
+```
+
+Dupa reantrenarea reusita, Flask reincarca automat modelele noi, fara repornirea manuala a serviciului.
+
+Au fost pastrate si endpoint-urile:
+
+```http
+GET /health
+POST /predict/all
+```
+
+#### Integrarea reantrenarii in Spring Boot
+
+In backend a fost implementat endpoint-ul:
+
+```http
+POST /api/decision/retrain
+```
+
+Spring Boot trimite solicitarea catre:
+
+```text
+http://127.0.0.1:5000/retrain
+```
+
+Token-ul este citit din variabila de mediu:
+
+```text
+RETRAIN_TOKEN
+```
+
+Pentru apelul de reantrenare a fost configurat un timeout mai mare decat pentru predictiile obisnuite, deoarece antrenarea modelelor poate dura mai mult.
+
+#### Integrarea in pagina administratorului
+
+In `decisionApi.js` a fost adaugata functia:
+
+```javascript
+retrainDecisionModels()
+```
+
+In pagina administratorului a fost adaugat butonul:
+
+```text
+Reantreneaza modelele
+```
+
+Dupa apasare, administratorul vede rezultatul returnat de AI Service.
+
+Cu o singura inregistrare etichetata, raspunsul verificat a fost:
+
+```json
+{
+  "message": "Sunt necesare cel putin 30 inregistrari etichetate. Momentan exista 1.",
+  "modelsReplaced": false,
+  "status": "blocked"
+}
+```
+
+Acest raspuns confirma functionarea fluxului complet:
+
+```text
+React
+-> Spring Boot
+-> Flask AI Service
+-> MySQL
+```
+#### Verificari finale efectuate
+
+Au fost verificate manual:
+
+- generarea codului QR;
+- deschiderea meniului de pe telefon;
+- validarea unei sesiuni active;
+- respingerea linkului dupa inchiderea sesiunii;
+- salvarea predictiilor in MySQL;
+- salvarea rezultatelor reale introduse de administrator;
+- conectarea scriptului Python la MySQL;
+- blocarea reantrenarii cand exista prea putine date;
+- endpoint-ul Flask `POST /retrain`;
+- endpoint-ul Spring Boot `POST /api/decision/retrain`;
+- butonul de reantrenare din pagina administratorului.
+
+Nu a fost executata inlocuirea efectiva a modelelor cu 30 de inregistrari reale, deoarece momentan exista o singura inregistrare etichetata. Mecanismul de verificare, backup, evaluare si inlocuire controlata este implementat.
+
+#### Concluzie ziua 12
+
+In aceasta etapa au fost finalizate cele doua functionalitati ramase:
+
+- accesarea meniului prin cod QR asociat unei sesiuni valide;
+- colectarea datelor reale si reantrenarea controlata a modelelor.
+
+Sistemul de decizie porneste initial de la date sintetice adaptate unei singure locatii din complexul studentesc. Dupa utilizarea aplicatiei, administratorul poate completa rezultatele reale si poate porni reantrenarea modelelor dupa colectarea unui numar suficient de exemple.
+
+Status: finalizat.

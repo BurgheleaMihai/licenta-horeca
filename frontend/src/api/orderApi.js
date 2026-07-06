@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/orders";
+const API_URL = "/api/orders";
 
 export const getAllOrders = () => {
   return axios.get(API_URL);
@@ -12,7 +12,7 @@ export const getActiveOrders = () => {
 
 export const updateOrderStatus = (orderId, status) => {
   return axios.put(`${API_URL}/${orderId}/status`, {
-    status: status
+    status,
   });
 };
 
@@ -30,6 +30,6 @@ export const getBarOrders = () => {
 
 export const updateOrderItemStatus = (itemId, status) => {
   return axios.put(`${API_URL}/items/${itemId}/status`, {
-    status: status
+    status,
   });
 };

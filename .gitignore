@@ -1,37 +1,30 @@
-# IntelliJ
+# IntelliJ IDEA
 .idea/
+**/.idea/
 *.iws
 *.iml
 *.ipr
 out/
+**/out/
 
-# Java / Maven
+# Java / Maven - rezultate compilare
 target/
 **/target/
 *.class
 HELP.md
-.mvn/wrapper/maven-wrapper.jar
 
-# STS
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-**/build/
+# Teste si analiza
+*.exec
+jacoco.exec
+**/site/jacoco/
+.scannerwork/
+**/.scannerwork/
+.sonar/
+**/.sonar/
 
 # VS Code
 .vscode/
+**/.vscode/
 
 # React / Vite / Node
 node_modules/
@@ -40,41 +33,52 @@ dist/
 **/dist/
 .vite/
 **/.vite/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-**/.env
-
-# Java crash logs
-hs_err_pid*.log
-replay_pid*.log
-**/hs_err_pid*.log
-**/replay_pid*.log
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Python
+# Python cache
 __pycache__/
 **/__pycache__/
 *.py[cod]
-.venv/
-**/.venv/
+*.pyo
+*.pyd
+.pytest_cache/
+**/.pytest_cache/
+
+# Medii virtuale Python
 venv/
 **/venv/
+.venv/
+**/.venv/
 
-# SonarQube / SonarScanner
-.scannerwork/
-**/.scannerwork/
+# Variabile de mediu si date sensibile
+.env
+**/.env
+.env.*
+**/.env.*
 
-# Modele AI binare generate prin antrenare
+# Permite fisiere exemplu fara parole
+!.env.example
+!**/.env.example
+
+# Modele AI generate local
 ai-service/models/*.pkl
+ai-service/models/backups/
+ai-service/models/.retrain_*/
+
+# Dataset si rapoarte generate local
+ai-service/data/*.csv
+ai-service/reports/*.txt
+ai-service/reports/*.json
+
+# Loguri si fisiere temporare
+*.log
+logs/
+**/logs/
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Sistem de operare
+.DS_Store
+Thumbs.db
+desktop.ini
