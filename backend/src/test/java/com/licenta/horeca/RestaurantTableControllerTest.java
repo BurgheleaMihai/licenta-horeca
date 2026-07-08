@@ -1,33 +1,29 @@
 package com.licenta.horeca;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.licenta.horeca.controller.RestaurantTableController;
 import com.licenta.horeca.entity.RestaurantTable;
 import com.licenta.horeca.service.RestaurantTableService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(RestaurantTableController.class)
 class RestaurantTableControllerTest {
-
     private static final String TABLES_ENDPOINT = "/api/tables";
     private static final String ACTIVE_TABLES_ENDPOINT = "/api/tables/active";
     private static final String TABLE_BY_ID_ENDPOINT = "/api/tables/1";
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @MockitoBean
-    private RestaurantTableService restaurantTableService;
+    @MockitoBean private RestaurantTableService restaurantTableService;
 
     @Test
     void getAllTablesShouldReturnAllTables() throws Exception {
@@ -51,8 +47,7 @@ class RestaurantTableControllerTest {
         RestaurantTable table = new RestaurantTable(1, 4);
         table.setActive(true);
 
-        when(restaurantTableService.getActiveTables())
-                .thenReturn(List.of(table));
+        when(restaurantTableService.getActiveTables()).thenReturn(List.of(table));
 
         mockMvc.perform(get(ACTIVE_TABLES_ENDPOINT))
                 .andExpect(status().isOk())
@@ -66,8 +61,7 @@ class RestaurantTableControllerTest {
         RestaurantTable table = new RestaurantTable(1, 4);
         table.setActive(true);
 
-        when(restaurantTableService.getTableById(1L))
-                .thenReturn(table);
+        when(restaurantTableService.getTableById(1L)).thenReturn(table);
 
         mockMvc.perform(get(TABLE_BY_ID_ENDPOINT))
                 .andExpect(status().isOk())

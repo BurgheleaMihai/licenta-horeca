@@ -10,8 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,8 +31,7 @@ class TrafficEventServiceTest {
     void saveEventWithEntryTypeSavesEntryEvent() {
         TrafficEvent savedEvent = new TrafficEvent(TrafficEventType.ENTRY);
 
-        when(trafficEventRepository.save(any(TrafficEvent.class)))
-                .thenReturn(savedEvent);
+        when(trafficEventRepository.save(any(TrafficEvent.class))).thenReturn(savedEvent);
 
         TrafficEvent result = trafficEventService.saveEvent(TrafficEventType.ENTRY);
 
@@ -41,8 +43,7 @@ class TrafficEventServiceTest {
     void saveEventWithExitTypeSavesExitEvent() {
         TrafficEvent savedEvent = new TrafficEvent(TrafficEventType.EXIT);
 
-        when(trafficEventRepository.save(any(TrafficEvent.class)))
-                .thenReturn(savedEvent);
+        when(trafficEventRepository.save(any(TrafficEvent.class))).thenReturn(savedEvent);
 
         TrafficEvent result = trafficEventService.saveEvent(TrafficEventType.EXIT);
 
@@ -52,11 +53,17 @@ class TrafficEventServiceTest {
 
     @Test
     void getEstimatedOccupancyReturnsEntriesMinusExits() {
-        when(trafficEventRepository.countByType(TrafficEventType.ENTRY))
-                .thenReturn(10L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                eq(TrafficEventType.ENTRY),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(10L);
 
-        when(trafficEventRepository.countByType(TrafficEventType.EXIT))
-                .thenReturn(4L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                eq(TrafficEventType.EXIT),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(4L);
 
         long result = trafficEventService.getEstimatedOccupancy();
 
@@ -65,11 +72,17 @@ class TrafficEventServiceTest {
 
     @Test
     void getEstimatedOccupancyWhenExitsAreGreaterThanEntriesReturnsZero() {
-        when(trafficEventRepository.countByType(TrafficEventType.ENTRY))
-                .thenReturn(3L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                eq(TrafficEventType.ENTRY),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(3L);
 
-        when(trafficEventRepository.countByType(TrafficEventType.EXIT))
-                .thenReturn(8L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                eq(TrafficEventType.EXIT),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).thenReturn(8L);
 
         long result = trafficEventService.getEstimatedOccupancy();
 

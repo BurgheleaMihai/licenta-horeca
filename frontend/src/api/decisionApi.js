@@ -7,19 +7,11 @@ export const getDecisionSummary = () => {
 };
 
 export const getLatestUnlabeledDecisionRecord = () => {
-  return axios.get(
-    `${API_URL}/training-records/latest-unlabeled`
-  );
+  return axios.get(`${API_URL}/training-records/latest-unlabeled`);
 };
 
-export const labelDecisionRecord = (
-  recordId,
-  labelData
-) => {
-  return axios.put(
-    `${API_URL}/training-records/${recordId}/label`,
-    labelData
-  );
+export const labelDecisionRecord = (recordId, labelData) => {
+  return axios.put(`${API_URL}/training-records/${recordId}/label`,labelData);
 };
 
 export const retrainDecisionModels = () => {

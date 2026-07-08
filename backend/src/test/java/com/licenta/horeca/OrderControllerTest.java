@@ -1,22 +1,5 @@
 package com.licenta.horeca;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.controller.OrderController;
-import com.licenta.horeca.entity.Order;
-import com.licenta.horeca.entity.OrderItem;
-import com.licenta.horeca.enums.OrderStatus;
-import com.licenta.horeca.service.OrderService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,9 +9,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.licenta.horeca.controller.OrderController;
+import com.licenta.horeca.entity.Order;
+import com.licenta.horeca.entity.OrderItem;
+import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.service.OrderService;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
 @WebMvcTest(OrderController.class)
 class OrderControllerTest {
-
     private static final String STATUS_JSON_PATH = "$.status";
     private static final String TOTAL_PRICE_JSON_PATH = "$.totalPrice";
     private static final String FIRST_STATUS_JSON_PATH = "$[0].status";
@@ -38,14 +36,11 @@ class OrderControllerTest {
     private static final String GATA_STATUS = "GATA";
     private static final String IN_PREPARARE_STATUS = "IN_PREPARARE";
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private OrderService orderService;
+    @MockitoBean private OrderService orderService;
 
     @Test
     void createOrderShouldReturnCreatedOrder() throws Exception {
@@ -53,20 +48,13 @@ class OrderControllerTest {
         order.setStatus(OrderStatus.NOUA);
         order.setTotalPrice(BigDecimal.valueOf(64));
 
-        when(orderService.createOrder(anyString(), anyList()))
-                .thenReturn(order);
+        when(orderService.createOrder(anyString(), anyList())).thenReturn(order);
 
-        Map<String, Object> request = Map.of(
-                "sessionCode", "TEST123",
-                "items", List.of(
-                        Map.of(
-                                "productId", 1,
-                                "quantity", 2
-                        )
-                )
-        );
+        Map<String, Object> request = Map.of("sessionCode", "TEST123", "items",
+                List.of(Map.of("productId", 1, "quantity", 2)));
 
-        mockMvc.perform(post("/api/orders")
+        mockMvc
+                .perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -83,11 +71,10 @@ class OrderControllerTest {
         when(orderService.updateOrderStatus(eq(1L), eq(OrderStatus.GATA)))
                 .thenReturn(order);
 
-        Map<String, Object> request = Map.of(
-                "status", GATA_STATUS
-        );
+        Map<String, Object> request = Map.of("status", GATA_STATUS);
 
-        mockMvc.perform(put("/api/orders/1/status")
+        mockMvc
+                .perform(put("/api/orders/1/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -101,8 +88,7 @@ class OrderControllerTest {
         order.setStatus(OrderStatus.NOUA);
         order.setTotalPrice(BigDecimal.valueOf(40));
 
-        when(orderService.getActiveOrders())
-                .thenReturn(List.of(order));
+        when(orderService.getActiveOrders()).thenReturn(List.of(order));
 
         mockMvc.perform(get("/api/orders/active"))
                 .andExpect(status().isOk())
@@ -118,11 +104,10 @@ class OrderControllerTest {
         when(orderService.updateOrderItemStatus(eq(7L), eq(OrderStatus.GATA)))
                 .thenReturn(item);
 
-        Map<String, Object> request = Map.of(
-                "status", GATA_STATUS
-        );
+        Map<String, Object> request = Map.of("status", GATA_STATUS);
 
-        mockMvc.perform(put("/api/orders/items/7/status")
+        mockMvc
+                .perform(put("/api/orders/items/7/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -135,8 +120,7 @@ class OrderControllerTest {
         order.setStatus(OrderStatus.IN_PREPARARE);
         order.setTotalPrice(BigDecimal.valueOf(40));
 
-        when(orderService.getKitchenOrders())
-                .thenReturn(List.of(order));
+        when(orderService.getKitchenOrders()).thenReturn(List.of(order));
 
         mockMvc.perform(get("/api/orders/kitchen"))
                 .andExpect(status().isOk())
@@ -150,8 +134,7 @@ class OrderControllerTest {
         order.setStatus(OrderStatus.IN_PREPARARE);
         order.setTotalPrice(BigDecimal.valueOf(40));
 
-        when(orderService.getBarOrders())
-                .thenReturn(List.of(order));
+        when(orderService.getBarOrders()).thenReturn(List.of(order));
 
         mockMvc.perform(get("/api/orders/bar"))
                 .andExpect(status().isOk())

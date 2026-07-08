@@ -3,47 +3,34 @@ package com.licenta.horeca.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DecisionRequest {
+    @JsonProperty("day_of_week") private int dayOfWeek;
 
-    @JsonProperty("day_of_week")
-    private int dayOfWeek;
+    @JsonProperty("hour") private int hour;
 
-    @JsonProperty("hour")
-    private int hour;
+    @JsonProperty("active_orders") private int activeOrders;
 
-    @JsonProperty("active_orders")
-    private int activeOrders;
+    @JsonProperty("occupied_tables") private int occupiedTables;
 
-    @JsonProperty("occupied_tables")
-    private int occupiedTables;
+    @JsonProperty("estimated_occupancy") private int estimatedOccupancy;
 
-    @JsonProperty("estimated_occupancy")
-    private int estimatedOccupancy;
+    @JsonProperty("kitchen_load") private int kitchenLoad;
 
-    @JsonProperty("kitchen_load")
-    private int kitchenLoad;
+    @JsonProperty("bar_load") private int barLoad;
 
-    @JsonProperty("bar_load")
-    private int barLoad;
+    @JsonProperty("avg_preparation_time") private int avgPreparationTime;
 
-    @JsonProperty("avg_preparation_time")
-    private int avgPreparationTime;
+    @JsonProperty("orders_last_30_min") private int ordersLast30Min;
 
-    @JsonProperty("orders_last_30_min")
-    private int ordersLast30Min;
+    @JsonProperty("order_age_minutes") private int orderAgeMinutes;
 
-    @JsonProperty("order_age_minutes")
-    private int orderAgeMinutes;
+    @JsonProperty("item_count") private int itemCount;
 
-    @JsonProperty("item_count")
-    private int itemCount;
+    public DecisionRequest() {}
 
-    public DecisionRequest() {
-    }
-
-    public DecisionRequest(int dayOfWeek, int hour, int activeOrders, int occupiedTables,
-                           int estimatedOccupancy, int kitchenLoad, int barLoad,
-                           int avgPreparationTime, int ordersLast30Min,
-                           int orderAgeMinutes, int itemCount) {
+    public DecisionRequest(int dayOfWeek, int hour, int activeOrders,
+                           int occupiedTables, int estimatedOccupancy, int kitchenLoad, int barLoad,
+                           int avgPreparationTime, int ordersLast30Min, int orderAgeMinutes,
+                           int itemCount) {
         this.dayOfWeek = dayOfWeek;
         this.hour = hour;
         this.activeOrders = activeOrders;

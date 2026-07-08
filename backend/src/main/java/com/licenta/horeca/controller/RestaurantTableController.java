@@ -2,18 +2,17 @@ package com.licenta.horeca.controller;
 
 import com.licenta.horeca.entity.RestaurantTable;
 import com.licenta.horeca.service.RestaurantTableService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tables")
 @CrossOrigin(origins = "http://localhost:5173")
 public class RestaurantTableController {
-
     private final RestaurantTableService restaurantTableService;
 
-    public RestaurantTableController(RestaurantTableService restaurantTableService) {
+    public RestaurantTableController(
+            RestaurantTableService restaurantTableService) {
         this.restaurantTableService = restaurantTableService;
     }
 

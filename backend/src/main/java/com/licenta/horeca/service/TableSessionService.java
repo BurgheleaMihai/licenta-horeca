@@ -36,28 +36,17 @@ public class TableSessionService {
 
     @Transactional(readOnly = true)
     public TableSession validateSessionCode(String sessionCode) {
-
-        if (sessionCode == null || sessionCode.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Codul sesiunii este obligatoriu."
-            );
+        if (sessionCode == null || sessionCode.isBlank()) {throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Codul sesiunii este obligatoriu.");
         }
 
         TableSession tableSession = tableSessionRepository
                 .findBySessionCode(sessionCode.trim())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Codul sesiunii nu exista."
-                ));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Codul sesiunii nu exista."));
 
         if (!tableSession.isActive()) {
-            throw new ResponseStatusException(
-                    HttpStatus.GONE,
-                    "Sesiunea nu mai este activa."
-            );
+            throw new ResponseStatusException(HttpStatus.GONE, "Sesiunea nu mai este activa.");
         }
-
         return tableSession;
     }
 
@@ -101,9 +90,6 @@ public class TableSessionService {
     }
 
     private String generateSessionCode(RestaurantTable restaurantTable) {
-        return "MASA-"
-                + restaurantTable.getTableNumber()
-                + "-"
-                + System.currentTimeMillis();
+        return "MASA-" + restaurantTable.getTableNumber() + "-" + System.currentTimeMillis();
     }
 }

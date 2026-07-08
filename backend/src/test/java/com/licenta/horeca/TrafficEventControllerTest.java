@@ -1,36 +1,32 @@
 package com.licenta.horeca;
 
-import com.licenta.horeca.controller.TrafficEventController;
-import com.licenta.horeca.entity.TrafficEvent;
-import com.licenta.horeca.enums.TrafficEventType;
-import com.licenta.horeca.service.TrafficEventService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.licenta.horeca.controller.TrafficEventController;
+import com.licenta.horeca.entity.TrafficEvent;
+import com.licenta.horeca.enums.TrafficEventType;
+import com.licenta.horeca.service.TrafficEventService;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
 @WebMvcTest(TrafficEventController.class)
 class TrafficEventControllerTest {
-
     private static final String ENTRY_ENDPOINT = "/api/traffic/entry";
     private static final String EXIT_ENDPOINT = "/api/traffic/exit";
     private static final String TRAFFIC_ENDPOINT = "/api/traffic";
     private static final String SUMMARY_ENDPOINT = "/api/traffic/summary";
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
-    @MockitoBean
-    private TrafficEventService trafficEventService;
+    @MockitoBean private TrafficEventService trafficEventService;
 
     @Test
     void registerEntryShouldReturnEntryEvent() throws Exception {

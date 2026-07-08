@@ -20,59 +20,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/decision")
 public class DecisionController {
-
     private final DecisionService decisionService;
 
-    private final DecisionTrainingRecordService
-            decisionTrainingRecordService;
+    private final DecisionTrainingRecordService decisionTrainingRecordService;
 
-    public DecisionController(
-            DecisionService decisionService,
-            DecisionTrainingRecordService
-                    decisionTrainingRecordService
-    ) {
-        this.decisionService =
-                decisionService;
+    public DecisionController(DecisionService decisionService,
+                              DecisionTrainingRecordService decisionTrainingRecordService) {
+        this.decisionService = decisionService;
 
-        this.decisionTrainingRecordService =
-                decisionTrainingRecordService;
+        this.decisionTrainingRecordService = decisionTrainingRecordService;
     }
 
     @GetMapping("/summary")
     public DecisionResponse getDecisionSummary() {
-        return decisionService
-                .getDecisionSummary();
+        return decisionService.getDecisionSummary();
     }
 
-    @GetMapping(
-            "/training-records/latest-unlabeled"
-    )
-    public DecisionTrainingRecord
-    getLatestUnlabeledRecord() {
-        return decisionTrainingRecordService
-                .getLatestUnlabeledRecord();
+    @GetMapping("/training-records/latest-unlabeled")
+    public DecisionTrainingRecord getLatestUnlabeledRecord() {
+        return decisionTrainingRecordService.getLatestUnlabeledRecord();
     }
 
-    @PutMapping(
-            "/training-records/{recordId}/label"
-    )
-    public DecisionTrainingRecord labelRecord(
-            @PathVariable Long recordId,
-            @Valid
-            @RequestBody
-            DecisionLabelRequest request
-    ) {
-        return decisionTrainingRecordService
-                .labelRecord(
-                        recordId,
-                        request
-                );
+    @PutMapping("/training-records/{recordId}/label")
+    public DecisionTrainingRecord labelRecord(@PathVariable Long recordId,
+                                              @Valid @RequestBody DecisionLabelRequest request) {
+        return decisionTrainingRecordService.labelRecord(recordId, request);
     }
 
     @PostMapping("/retrain")
-    public ResponseEntity<String>
-    retrainModels() {
-        return decisionService
-                .retrainModels();
+    public ResponseEntity<String> retrainModels() {
+        return decisionService.retrainModels();
     }
 }

@@ -1,17 +1,5 @@
 package com.licenta.horeca;
 
-import com.licenta.horeca.entity.AuxiliarySupply;
-import com.licenta.horeca.repository.AuxiliarySupplyRepository;
-import com.licenta.horeca.service.AuxiliarySupplyService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,25 +8,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.licenta.horeca.entity.AuxiliarySupply;
+import com.licenta.horeca.repository.AuxiliarySupplyRepository;
+import com.licenta.horeca.service.AuxiliarySupplyService;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 @ExtendWith(MockitoExtension.class)
 class AuxiliarySupplyServiceTest {
-
     private static final String CONSUMABLE_CATEGORY = "Consumabile";
     private static final String CUP_HOLDER_NAME = "Suport pahare";
 
-    @Mock
-    private AuxiliarySupplyRepository auxiliarySupplyRepository;
+    @Mock private AuxiliarySupplyRepository auxiliarySupplyRepository;
 
-    @InjectMocks
-    private AuxiliarySupplyService auxiliarySupplyService;
+    @InjectMocks private AuxiliarySupplyService auxiliarySupplyService;
 
     @Test
     void getAllSuppliesReturnsAllSupplies() {
-        AuxiliarySupply cups = new AuxiliarySupply("Pahare carton", CONSUMABLE_CATEGORY);
+        AuxiliarySupply cups =
+                new AuxiliarySupply("Pahare carton", CONSUMABLE_CATEGORY);
         AuxiliarySupply boxes = new AuxiliarySupply("Cutii cartofi", "Ambalaje");
 
-        when(auxiliarySupplyRepository.findAll())
-                .thenReturn(List.of(cups, boxes));
+        when(auxiliarySupplyRepository.findAll()).thenReturn(List.of(cups, boxes));
 
         List<AuxiliarySupply> result = auxiliarySupplyService.getAllSupplies();
 
@@ -49,13 +45,15 @@ class AuxiliarySupplyServiceTest {
 
     @Test
     void getUnavailableSuppliesReturnsOnlyUnavailableSupplies() {
-        AuxiliarySupply cupHolder = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
+        AuxiliarySupply cupHolder =
+                new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
         cupHolder.setAvailableInWarehouse(false);
 
         when(auxiliarySupplyRepository.findByAvailableInWarehouseFalse())
                 .thenReturn(List.of(cupHolder));
 
-        List<AuxiliarySupply> result = auxiliarySupplyService.getUnavailableSupplies();
+        List<AuxiliarySupply> result =
+                auxiliarySupplyService.getUnavailableSupplies();
 
         assertEquals(1, result.size());
         assertEquals(CUP_HOLDER_NAME, result.get(0).getName());
@@ -64,13 +62,13 @@ class AuxiliarySupplyServiceTest {
 
     @Test
     void markUnavailableSetsSupplyAsUnavailableAndReportedAt() {
-        AuxiliarySupply supply = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
+        AuxiliarySupply supply =
+                new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
 
         when(auxiliarySupplyRepository.findById(1L))
                 .thenReturn(Optional.of(supply));
 
-        when(auxiliarySupplyRepository.save(supply))
-                .thenReturn(supply);
+        when(auxiliarySupplyRepository.save(supply)).thenReturn(supply);
 
         AuxiliarySupply result = auxiliarySupplyService.markUnavailable(1L);
 
@@ -82,15 +80,15 @@ class AuxiliarySupplyServiceTest {
 
     @Test
     void markAvailableSetsSupplyAsAvailableAndClearsReportedAt() {
-        AuxiliarySupply supply = new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
+        AuxiliarySupply supply =
+                new AuxiliarySupply(CUP_HOLDER_NAME, CONSUMABLE_CATEGORY);
         supply.setAvailableInWarehouse(false);
         supply.setReportedAt(java.time.LocalDateTime.now());
 
         when(auxiliarySupplyRepository.findById(1L))
                 .thenReturn(Optional.of(supply));
 
-        when(auxiliarySupplyRepository.save(supply))
-                .thenReturn(supply);
+        when(auxiliarySupplyRepository.save(supply)).thenReturn(supply);
 
         AuxiliarySupply result = auxiliarySupplyService.markAvailable(1L);
 

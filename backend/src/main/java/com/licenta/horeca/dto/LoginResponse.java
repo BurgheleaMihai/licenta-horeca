@@ -1,13 +1,13 @@
 package com.licenta.horeca.dto;
 
 public class LoginResponse {
-
     private Long userId;
     private String fullName;
     private String email;
     private String role;
 
-    public LoginResponse(Long userId, String fullName, String email, String role) {
+    public LoginResponse(
+            Long userId, String fullName, String email, String role) {
         this.userId = userId;
         this.fullName = fullName;
         this.email = email;

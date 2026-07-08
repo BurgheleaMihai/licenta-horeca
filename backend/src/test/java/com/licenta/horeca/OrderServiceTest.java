@@ -1,5 +1,9 @@
 package com.licenta.horeca;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.licenta.horeca.entity.Order;
 import com.licenta.horeca.entity.OrderItem;
 import com.licenta.horeca.entity.Product;
@@ -12,42 +16,31 @@ import com.licenta.horeca.repository.OrderRepository;
 import com.licenta.horeca.repository.ProductRepository;
 import com.licenta.horeca.repository.TableSessionRepository;
 import com.licenta.horeca.service.OrderService;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-
     private static final String SESSION_CODE = "TEST123";
     private static final String INVALID_SESSION_CODE = "INVALID";
     private static final String PIZZA_MARGHERITA = "Pizza Margherita";
     private static final String STILL_WATER = "Apa plata";
 
-    @Mock
-    private OrderRepository orderRepository;
+    @Mock private OrderRepository orderRepository;
 
-    @Mock
-    private ProductRepository productRepository;
+    @Mock private ProductRepository productRepository;
 
-    @Mock
-    private TableSessionRepository tableSessionRepository;
+    @Mock private TableSessionRepository tableSessionRepository;
 
-    @Mock
-    private OrderItemRepository orderItemRepository;
+    @Mock private OrderItemRepository orderItemRepository;
 
-    @InjectMocks
-    private OrderService orderService;
+    @InjectMocks private OrderService orderService;
 
     @Test
     void createOrderShouldCreateOrderWithCorrectTotal() {
@@ -89,12 +82,11 @@ class OrderServiceTest {
 
         assertNotNull(order.getTableSession());
         assertEquals(SESSION_CODE, order.getTableSession().getSessionCode());
-        assertEquals(1, order.getTableSession().getRestaurantTable().getTableNumber());
+        assertEquals(
+                1, order.getTableSession().getRestaurantTable().getTableNumber());
 
-        assertTrue(
-                order.getItems().stream()
-                        .allMatch(item -> item.getStatus() == OrderStatus.NOUA)
-        );
+        assertTrue(order.getItems().stream().allMatch(
+                item -> item.getStatus() == OrderStatus.NOUA));
 
         verify(orderRepository, times(1)).save(any(Order.class));
     }
@@ -118,10 +110,8 @@ class OrderServiceTest {
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                () -> orderService.createOrder(SESSION_CODE, List.of(item))
-        );
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> orderService.createOrder(SESSION_CODE, List.of(item)));
 
         assertTrue(exception.getMessage().contains("Produsul nu este disponibil"));
         verify(orderRepository, never()).save(any(Order.class));
@@ -133,13 +123,12 @@ class OrderServiceTest {
         item.setProductId(1L);
         item.setQuantity(1);
 
-        when(tableSessionRepository.findBySessionCodeAndActiveTrue(INVALID_SESSION_CODE))
+        when(tableSessionRepository.findBySessionCodeAndActiveTrue(
+                INVALID_SESSION_CODE))
                 .thenReturn(Optional.empty());
 
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                () -> orderService.createOrder(INVALID_SESSION_CODE, List.of(item))
-        );
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> orderService.createOrder(INVALID_SESSION_CODE, List.of(item)));
 
         assertTrue(exception.getMessage().contains("Sesiunea mesei nu exista"));
         verify(orderRepository, never()).save(any(Order.class));
@@ -161,7 +150,8 @@ class OrderServiceTest {
     }
 
     @Test
-    void updateOrderStatusShouldSetItemsToInPreparationWhenOrderIsSentToPreparation() {
+    void
+    updateOrderStatusShouldSetItemsToInPreparationWhenOrderIsSentToPreparation() {
         Order order = new Order();
         order.setStatus(OrderStatus.NOUA);
 
@@ -188,20 +178,20 @@ class OrderServiceTest {
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Order updatedOrder = orderService.updateOrderStatus(1L, OrderStatus.IN_PREPARARE);
+        Order updatedOrder =
+                orderService.updateOrderStatus(1L, OrderStatus.IN_PREPARARE);
 
         assertEquals(OrderStatus.IN_PREPARARE, updatedOrder.getStatus());
 
-        assertTrue(
-                updatedOrder.getItems().stream()
-                        .allMatch(item -> item.getStatus() == OrderStatus.IN_PREPARARE)
-        );
+        assertTrue(updatedOrder.getItems().stream().allMatch(
+                item -> item.getStatus() == OrderStatus.IN_PREPARARE));
 
         verify(orderRepository, times(1)).save(order);
     }
 
     @Test
-    void updateOrderItemStatusShouldKeepOrderInPreparationWhenNotAllItemsAreReady() {
+    void
+    updateOrderItemStatusShouldKeepOrderInPreparationWhenNotAllItemsAreReady() {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
@@ -228,7 +218,8 @@ class OrderServiceTest {
         when(orderItemRepository.save(any(OrderItem.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        OrderItem updatedItem = orderService.updateOrderItemStatus(1L, OrderStatus.GATA);
+        OrderItem updatedItem =
+                orderService.updateOrderItemStatus(1L, OrderStatus.GATA);
 
         assertEquals(OrderStatus.GATA, updatedItem.getStatus());
         assertEquals(OrderStatus.IN_PREPARARE, order.getStatus());
@@ -267,7 +258,8 @@ class OrderServiceTest {
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        OrderItem updatedItem = orderService.updateOrderItemStatus(2L, OrderStatus.GATA);
+        OrderItem updatedItem =
+                orderService.updateOrderItemStatus(2L, OrderStatus.GATA);
 
         assertEquals(OrderStatus.GATA, updatedItem.getStatus());
         assertEquals(OrderStatus.GATA, order.getStatus());
@@ -287,11 +279,8 @@ class OrderServiceTest {
         Order order3 = new Order();
         order3.setStatus(OrderStatus.GATA);
 
-        List<OrderStatus> activeStatuses = List.of(
-                OrderStatus.NOUA,
-                OrderStatus.IN_PREPARARE,
-                OrderStatus.GATA
-        );
+        List<OrderStatus> activeStatuses =
+                List.of(OrderStatus.NOUA, OrderStatus.IN_PREPARARE, OrderStatus.GATA);
 
         when(orderRepository.findByStatusInOrderByCreatedAtAsc(activeStatuses))
                 .thenReturn(List.of(order1, order2, order3));
@@ -300,20 +289,20 @@ class OrderServiceTest {
 
         assertEquals(3, activeOrders.size());
 
-        assertTrue(activeOrders.stream()
-                .anyMatch(order -> order.getStatus() == OrderStatus.NOUA));
+        assertTrue(activeOrders.stream().anyMatch(
+                order -> order.getStatus() == OrderStatus.NOUA));
 
-        assertTrue(activeOrders.stream()
-                .anyMatch(order -> order.getStatus() == OrderStatus.IN_PREPARARE));
+        assertTrue(activeOrders.stream().anyMatch(
+                order -> order.getStatus() == OrderStatus.IN_PREPARARE));
 
-        assertTrue(activeOrders.stream()
-                .anyMatch(order -> order.getStatus() == OrderStatus.GATA));
+        assertTrue(activeOrders.stream().anyMatch(
+                order -> order.getStatus() == OrderStatus.GATA));
 
-        assertFalse(activeOrders.stream()
-                .anyMatch(order -> order.getStatus() == OrderStatus.SERVITA));
+        assertFalse(activeOrders.stream().anyMatch(
+                order -> order.getStatus() == OrderStatus.SERVITA));
 
-        assertFalse(activeOrders.stream()
-                .anyMatch(order -> order.getStatus() == OrderStatus.ANULATA));
+        assertFalse(activeOrders.stream().anyMatch(
+                order -> order.getStatus() == OrderStatus.ANULATA));
 
         verify(orderRepository, times(1))
                 .findByStatusInOrderByCreatedAtAsc(activeStatuses);
@@ -324,7 +313,8 @@ class OrderServiceTest {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
-        when(orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE))
+        when(orderRepository.findByStatusOrderByCreatedAtAsc(
+                OrderStatus.IN_PREPARARE))
                 .thenReturn(List.of(order));
 
         List<Order> result = orderService.getKitchenOrders();
@@ -341,7 +331,8 @@ class OrderServiceTest {
         Order order = new Order();
         order.setStatus(OrderStatus.IN_PREPARARE);
 
-        when(orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE))
+        when(orderRepository.findByStatusOrderByCreatedAtAsc(
+                OrderStatus.IN_PREPARARE))
                 .thenReturn(List.of(order));
 
         List<Order> result = orderService.getBarOrders();

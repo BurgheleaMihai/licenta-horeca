@@ -5,7 +5,7 @@ function SensorSimulatorPage() {
   const [trafficSummary, setTrafficSummary] = useState({
     entries: 0,
     exits: 0,
-    estimatedOccupancy: 0
+    estimatedOccupancy: 0,
   });
 
   useEffect(() => {
@@ -14,16 +14,24 @@ function SensorSimulatorPage() {
 
   const loadTrafficSummary = () => {
     getTrafficSummary()
-      .then((response) => setTrafficSummary(response.data))
-      .catch((error) => console.error("Eroare senzori:", error));
+      .then((response) => {
+        setTrafficSummary(response.data);
+      })
+      .catch((error) => {
+        console.error("Eroare senzori:", error);
+      });
   };
 
   const simulateEntry = () => {
-    registerEntry().then(() => loadTrafficSummary());
+    registerEntry().then(() => {
+      loadTrafficSummary();
+    });
   };
 
   const simulateExit = () => {
-    registerExit().then(() => loadTrafficSummary());
+    registerExit().then(() => {
+      loadTrafficSummary();
+    });
   };
 
   return (

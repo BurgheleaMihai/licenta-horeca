@@ -10,8 +10,8 @@ function KitchenPage() {
   }, []);
 
   const handleLogout = () => {
-      localStorage.removeItem("user");
-      globalThis.location.href = "/login";
+    localStorage.removeItem("user");
+    globalThis.location.href = "/login";
   };
 
   const loadKitchenOrders = () => {
@@ -26,21 +26,14 @@ function KitchenPage() {
   };
 
   const getKitchenItems = (order) => {
-    return order.items?.filter(
-      (item) =>
-        item.product?.category?.name !== "Bauturi" &&
-        item.status !== "GATA"
-    ) || [];
+    return order.items?.filter((item) => item.product?.category?.name !== "Bauturi" && item.status !== "GATA") || [];
   };
 
   const visibleOrders = orders.filter((order) => getKitchenItems(order).length > 0);
 
   const markKitchenItemsAsReady = (order) => {
     const kitchenItems = getKitchenItems(order);
-
-    const updateRequests = kitchenItems.map((item) =>
-      updateOrderItemStatus(item.id, "GATA")
-    );
+    const updateRequests = kitchenItems.map((item) => updateOrderItemStatus(item.id, "GATA"));
 
     Promise.all(updateRequests)
       .then(() => {
@@ -62,9 +55,7 @@ function KitchenPage() {
         </button>
       </header>
 
-      {errorMessage && (
-        <p className="error-message">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       <section className="kitchen-section">
         <h2>Preparate in lucru</h2>
@@ -89,10 +80,7 @@ function KitchenPage() {
                   ))}
                 </div>
 
-                <button
-                  className="kitchen-button"
-                  onClick={() => markKitchenItemsAsReady(order)}
-                >
+                <button className="kitchen-button" onClick={() => markKitchenItemsAsReady(order)}>
                   Marcheaza preparatele ca gata
                 </button>
               </div>

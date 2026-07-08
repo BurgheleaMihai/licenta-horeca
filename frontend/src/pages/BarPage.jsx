@@ -10,8 +10,8 @@ function BarPage() {
   }, []);
 
   const handleLogout = () => {
-      localStorage.removeItem("user");
-      globalThis.location.href = "/login";
+    localStorage.removeItem("user");
+    globalThis.location.href = "/login";
   };
 
   const loadBarOrders = () => {
@@ -26,21 +26,14 @@ function BarPage() {
   };
 
   const getBarItems = (order) => {
-    return order.items?.filter(
-      (item) =>
-        item.product?.category?.name === "Bauturi" &&
-        item.status !== "GATA"
-    ) || [];
+    return order.items?.filter((item) => item.product?.category?.name === "Bauturi" && item.status !== "GATA") || [];
   };
 
   const visibleOrders = orders.filter((order) => getBarItems(order).length > 0);
 
   const markBarItemsAsReady = (order) => {
     const barItems = getBarItems(order);
-
-    const updateRequests = barItems.map((item) =>
-      updateOrderItemStatus(item.id, "GATA")
-    );
+    const updateRequests = barItems.map((item) => updateOrderItemStatus(item.id, "GATA"));
 
     Promise.all(updateRequests)
       .then(() => {
@@ -56,14 +49,13 @@ function BarPage() {
     <div className="bar-page">
       <header className="bar-header">
         <h1>Panou bar</h1>
+
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </header>
 
-      {errorMessage && (
-        <p className="error-message">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       <section className="bar-section">
         <h2>Bauturi de pregatit</h2>
@@ -88,10 +80,7 @@ function BarPage() {
                   ))}
                 </div>
 
-                <button
-                  className="bar-button"
-                  onClick={() => markBarItemsAsReady(order)}
-                >
+                <button className="bar-button" onClick={() => markBarItemsAsReady(order)}>
                   Marcheaza bauturile ca gata
                 </button>
               </div>

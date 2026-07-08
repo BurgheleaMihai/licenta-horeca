@@ -1,30 +1,23 @@
 package com.licenta.horeca.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "feedback")
 public class Feedback {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     // Nota oferita de client, de exemplu intre 1 si 5
-    @Column(nullable = false)
-    private Integer rating;
+    @Column(nullable = false) private Integer rating;
 
     // Comentariu optional
     private String comment;
 
     // Momentul in care feedback-ul a fost trimis
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    @Column(nullable = false) private LocalDateTime createdAt;
 
-    public Feedback() {
-    }
+    public Feedback() {}
 
     public Feedback(Integer rating, String comment) {
         this.rating = rating;

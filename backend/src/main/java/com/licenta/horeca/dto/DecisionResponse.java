@@ -1,15 +1,13 @@
 package com.licenta.horeca.dto;
 
 public class DecisionResponse {
-
     private String trafficLevel;
     private int recommendedWaiters;
     private int recommendedKitchenStaff;
     private int recommendedBarStaff;
     private String delayRisk;
 
-    public DecisionResponse() {
-    }
+    public DecisionResponse() {}
 
     public String getTrafficLevel() {
         return trafficLevel;

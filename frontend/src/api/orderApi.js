@@ -11,9 +11,7 @@ export const getActiveOrders = () => {
 };
 
 export const updateOrderStatus = (orderId, status) => {
-  return axios.put(`${API_URL}/${orderId}/status`, {
-    status,
-  });
+  return axios.put(`${API_URL}/${orderId}/status`, { status, });
 };
 
 export const createOrder = (order) => {
@@ -29,7 +27,5 @@ export const getBarOrders = () => {
 };
 
 export const updateOrderItemStatus = (itemId, status) => {
-  return axios.put(`${API_URL}/items/${itemId}/status`, {
-    status,
-  });
+  return axios.put(`${API_URL}/items/${itemId}/status`, { status, });
 };

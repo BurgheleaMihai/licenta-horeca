@@ -1,28 +1,24 @@
 package com.licenta.horeca;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.licenta.horeca.entity.RestaurantTable;
 import com.licenta.horeca.repository.RestaurantTableRepository;
 import com.licenta.horeca.service.RestaurantTableService;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class RestaurantTableServiceTest {
+    @Mock private RestaurantTableRepository restaurantTableRepository;
 
-    @Mock
-    private RestaurantTableRepository restaurantTableRepository;
-
-    @InjectMocks
-    private RestaurantTableService restaurantTableService;
+    @InjectMocks private RestaurantTableService restaurantTableService;
 
     @Test
     void getAllTablesShouldReturnAllTables() {
@@ -61,8 +57,7 @@ class RestaurantTableServiceTest {
     void getTableByIdShouldReturnTableWhenExists() {
         RestaurantTable table = new RestaurantTable(1, 4);
 
-        when(restaurantTableRepository.findById(1L))
-                .thenReturn(Optional.of(table));
+        when(restaurantTableRepository.findById(1L)).thenReturn(Optional.of(table));
 
         RestaurantTable result = restaurantTableService.getTableById(1L);
 
@@ -74,13 +69,10 @@ class RestaurantTableServiceTest {
 
     @Test
     void getTableByIdShouldThrowExceptionWhenTableDoesNotExist() {
-        when(restaurantTableRepository.findById(99L))
-                .thenReturn(Optional.empty());
+        when(restaurantTableRepository.findById(99L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> restaurantTableService.getTableById(99L)
-        );
+                RuntimeException.class, () -> restaurantTableService.getTableById(99L));
 
         assertTrue(exception.getMessage().contains("Masa nu exista"));
 

@@ -61,8 +61,10 @@ def get_base_traffic_score(day_of_week, hour):
 def label_traffic(score):
     if score <= 2:
         return "SCAZUT"
+
     if score <= 6:
         return "MEDIU"
+
     return "RIDICAT"
 
 
@@ -95,8 +97,10 @@ def label_delay_risk(active_orders, kitchen_load, bar_load, order_age_minutes, i
 
     if risk_score <= 2:
         return "SCAZUT"
+
     if risk_score <= 5:
         return "MEDIU"
+
     return "RIDICAT"
 
 
@@ -140,7 +144,6 @@ def generate_row():
     # Variatie mica, ca datele sa nu fie perfect mecanice
     noise = random.randint(-1, 2)
     traffic_score = base_score + noise
-
     traffic_level = label_traffic(traffic_score)
 
     if traffic_level == "SCAZUT":
@@ -168,21 +171,14 @@ def generate_row():
     order_age_minutes = random.randint(0, 40)
     item_count = random.randint(1, 8)
 
-    delay_risk = label_delay_risk(
-        active_orders,
-        kitchen_load,
-        bar_load,
-        order_age_minutes,
-        item_count,
-        avg_preparation_time
-    )
+    delay_risk = label_delay_risk(active_orders, kitchen_load, bar_load, order_age_minutes, item_count, avg_preparation_time)
 
     recommended_waiters, recommended_kitchen_staff, recommended_bar_staff = recommend_staff(
         traffic_level,
         active_orders,
         kitchen_load,
         bar_load,
-        occupied_tables
+        occupied_tables,
     )
 
     return {
@@ -201,7 +197,7 @@ def generate_row():
         "recommended_waiters": recommended_waiters,
         "recommended_kitchen_staff": recommended_kitchen_staff,
         "recommended_bar_staff": recommended_bar_staff,
-        "delay_risk": delay_risk
+        "delay_risk": delay_risk,
     }
 
 

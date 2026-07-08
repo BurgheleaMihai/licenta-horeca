@@ -1,28 +1,25 @@
 package com.licenta.horeca.entity;
 
+import com.licenta.horeca.enums.OrderStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import com.licenta.horeca.enums.OrderStatus;
 
 @Entity
 @Table(name = "orders")
 public class Order {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     private LocalDateTime createdAt;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    @Enumerated(EnumType.STRING) private OrderStatus status;
 
     private BigDecimal totalPrice;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
     @ManyToOne

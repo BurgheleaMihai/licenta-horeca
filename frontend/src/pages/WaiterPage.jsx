@@ -1,27 +1,14 @@
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-
-import {
-  createOrder,
-  getActiveOrders,
-  updateOrderStatus,
-} from "../api/orderApi";
-
+import { createOrder, getActiveOrders, updateOrderStatus } from "../api/orderApi";
 import { getAvailableProducts } from "../api/productApi";
 import { getAllTables } from "../api/tableApi";
+import { closeTableSession, createTableSessionForTable, getActiveTableSessions } from "../api/tableSessionApi";
 
-import {
-  closeTableSession,
-  createTableSessionForTable,
-  getActiveTableSessions,
-} from "../api/tableSessionApi";
-
-const CLIENT_MENU_BASE_URL =
-  import.meta.env.VITE_CLIENT_BASE_URL || globalThis.location.origin;
+const CLIENT_MENU_BASE_URL = import.meta.env.VITE_CLIENT_BASE_URL || globalThis.location.origin;
 
 const buildClientMenuUrl = (sessionCode) => {
   const clientUrl = new URL("/", CLIENT_MENU_BASE_URL);
-
   clientUrl.searchParams.set("session", sessionCode);
 
   return clientUrl.toString();
@@ -98,9 +85,7 @@ function WaiterPage() {
   };
 
   const getActiveSessionForTable = (tableId) => {
-    return activeSessions.find(
-      (session) => session.restaurantTable?.id === tableId
-    );
+    return activeSessions.find((session) => session.restaurantTable?.id === tableId);
   };
 
   const openOrderForm = (table, session) => {
@@ -120,15 +105,11 @@ function WaiterPage() {
         const newSession = response.data;
 
         setActiveSessions((currentSessions) => [
-          ...currentSessions.filter(
-            (session) => session.restaurantTable?.id !== table.id
-          ),
+          ...currentSessions.filter((session) => session.restaurantTable?.id !== table.id),
           newSession,
         ]);
 
-        setOrderMessage(
-          `Sesiunea pentru Masa ${table.tableNumber} a fost deschisa.`
-        );
+        setOrderMessage(`Sesiunea pentru Masa ${table.tableNumber} a fost deschisa.`);
       })
       .catch((error) => {
         console.error("Eroare la crearea sesiunii:", error);
@@ -142,9 +123,7 @@ function WaiterPage() {
 
     if (!activeSession) {
       setOrderMessage("");
-      setErrorMessage(
-        `Deschide mai intai sesiunea pentru Masa ${table.tableNumber}.`
-      );
+      setErrorMessage(`Deschide mai intai sesiunea pentru Masa ${table.tableNumber}.`);
       return;
     }
 
@@ -152,21 +131,15 @@ function WaiterPage() {
   };
 
   const handleCloseSession = (table, activeSession) => {
-    const hasActiveOrder = orders.some(
-      (order) => order.tableSession?.id === activeSession.id
-    );
+    const hasActiveOrder = orders.some((order) => order.tableSession?.id === activeSession.id);
 
     if (hasActiveOrder) {
       setOrderMessage("");
-      setErrorMessage(
-        "Sesiunea nu poate fi inchisa cat timp masa are o comanda activa."
-      );
+      setErrorMessage("Sesiunea nu poate fi inchisa cat timp masa are o comanda activa.");
       return;
     }
 
-    const confirmClose = globalThis.confirm(
-      `Doresti sa inchizi sesiunea pentru Masa ${table.tableNumber}?`
-    );
+    const confirmClose = globalThis.confirm(`Doresti sa inchizi sesiunea pentru Masa ${table.tableNumber}?`);
 
     if (!confirmClose) {
       return;
@@ -174,11 +147,7 @@ function WaiterPage() {
 
     closeTableSession(activeSession.id)
       .then(() => {
-        setActiveSessions((currentSessions) =>
-          currentSessions.filter(
-            (session) => session.id !== activeSession.id
-          )
-        );
+        setActiveSessions((currentSessions) => currentSessions.filter((session) => session.id !== activeSession.id));
 
         if (selectedSession?.id === activeSession.id) {
           setSelectedTable(null);
@@ -187,9 +156,7 @@ function WaiterPage() {
         }
 
         setErrorMessage("");
-        setOrderMessage(
-          `Sesiunea pentru Masa ${table.tableNumber} a fost inchisa.`
-        );
+        setOrderMessage(`Sesiunea pentru Masa ${table.tableNumber} a fost inchisa.`);
       })
       .catch((error) => {
         console.error("Eroare la inchiderea sesiunii:", error);
@@ -222,10 +189,7 @@ function WaiterPage() {
     }
 
     const selectedItems = products
-      .filter(
-        (product) =>
-          Number(productQuantities[product.id] || 0) > 0
-      )
+      .filter((product) => Number(productQuantities[product.id] || 0) > 0)
       .map((product) => ({
         productId: product.id,
         quantity: Number(productQuantities[product.id]),
@@ -247,14 +211,10 @@ function WaiterPage() {
 
     createOrder(orderRequest)
       .then(() => {
-        setOrderMessage(
-          `Comanda pentru Masa ${selectedTable.tableNumber} a fost creata.`
-        );
-
+        setOrderMessage(`Comanda pentru Masa ${selectedTable.tableNumber} a fost creata.`);
         setSelectedTable(null);
         setSelectedSession(null);
         setProductQuantities({});
-
         loadOrders();
       })
       .catch((error) => {
@@ -273,9 +233,7 @@ function WaiterPage() {
       })
       .catch((error) => {
         console.error("Eroare la actualizarea statusului:", error);
-        setErrorMessage(
-          "Statusul comenzii nu a putut fi actualizat."
-        );
+        setErrorMessage("Statusul comenzii nu a putut fi actualizat.");
       });
   };
 
@@ -285,31 +243,17 @@ function WaiterPage() {
         loadOrders();
       })
       .catch((error) => {
-        console.error(
-          "Eroare la trimiterea comenzii la preparare:",
-          error
-        );
-
-        setErrorMessage(
-          "Comanda nu a putut fi trimisa la preparare."
-        );
+        console.error("Eroare la trimiterea comenzii la preparare:", error);
+        setErrorMessage("Comanda nu a putut fi trimisa la preparare.");
       });
   };
 
   const getFoodItems = (order) => {
-    return (
-      order.items?.filter(
-        (item) => item.product?.category?.name !== "Bauturi"
-      ) || []
-    );
+    return order.items?.filter((item) => item.product?.category?.name !== "Bauturi") || [];
   };
 
   const getDrinkItems = (order) => {
-    return (
-      order.items?.filter(
-        (item) => item.product?.category?.name === "Bauturi"
-      ) || []
-    );
+    return order.items?.filter((item) => item.product?.category?.name === "Bauturi") || [];
   };
 
   return (
@@ -322,48 +266,30 @@ function WaiterPage() {
         </button>
       </header>
 
-      {errorMessage && (
-        <p className="error-message">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      {orderMessage && (
-        <p className="success-message">{orderMessage}</p>
-      )}
+      {orderMessage && <p className="success-message">{orderMessage}</p>}
 
       <section className="waiter-section">
         <h2>Mese restaurant</h2>
 
         <div className="waiter-grid">
           {tables.map((table) => {
-            const activeSession =
-              getActiveSessionForTable(table.id);
-
-            const clientMenuUrl = activeSession
-              ? buildClientMenuUrl(activeSession.sessionCode)
-              : "";
+            const activeSession = getActiveSessionForTable(table.id);
+            const clientMenuUrl = activeSession ? buildClientMenuUrl(activeSession.sessionCode) : "";
 
             return (
               <div key={table.id} className="waiter-card">
                 <h3>Masa {table.tableNumber}</h3>
 
-                <p>
-                  Capacitate: {table.capacity} persoane
-                </p>
+                <p>Capacitate: {table.capacity} persoane</p>
 
                 <p>
-                  Stare masa:{" "}
-                  <strong>
-                    {activeSession
-                      ? "Sesiune activa"
-                      : "Fara sesiune activa"}
-                  </strong>
+                  Stare masa: <strong>{activeSession ? "Sesiune activa" : "Fara sesiune activa"}</strong>
                 </p>
 
                 {!activeSession && (
-                  <button
-                    className="waiter-button"
-                    onClick={() => handleOpenSession(table)}
-                  >
+                  <button className="waiter-button" onClick={() => handleOpenSession(table)}>
                     Deschide sesiunea
                   </button>
                 )}
@@ -386,39 +312,19 @@ function WaiterPage() {
                       <p className="session-code">
                         Cod sesiune:
                         <br />
-                        <strong>
-                          {activeSession.sessionCode}
-                        </strong>
+                        <strong>{activeSession.sessionCode}</strong>
                       </p>
 
-                      <a
-                        className="session-link"
-                        href={clientMenuUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a className="session-link" href={clientMenuUrl} target="_blank" rel="noreferrer">
                         Deschide meniul clientului
                       </a>
                     </div>
 
-                    <button
-                      className="waiter-button"
-                      onClick={() =>
-                        handleCreateOrderClick(table)
-                      }
-                    >
+                    <button className="waiter-button" onClick={() => handleCreateOrderClick(table)}>
                       Creeaza comanda
                     </button>
 
-                    <button
-                      className="waiter-button"
-                      onClick={() =>
-                        handleCloseSession(
-                          table,
-                          activeSession
-                        )
-                      }
-                    >
+                    <button className="waiter-button" onClick={() => handleCloseSession(table, activeSession)}>
                       Inchide sesiunea
                     </button>
                   </>
@@ -431,63 +337,35 @@ function WaiterPage() {
 
       {selectedTable && selectedSession && (
         <section className="waiter-section">
-          <h2>
-            Comanda noua pentru Masa{" "}
-            {selectedTable.tableNumber}
-          </h2>
+          <h2>Comanda noua pentru Masa {selectedTable.tableNumber}</h2>
 
           <div className="waiter-grid">
             {products.map((product) => (
               <div key={product.id} className="waiter-card">
                 <h3>{product.name}</h3>
 
-                <p>
-                  Categorie:{" "}
-                  {product.category?.name ||
-                    "Categorie necunoscuta"}
-                </p>
+                <p>Categorie: {product.category?.name || "Categorie necunoscuta"}</p>
 
-                <p>
-                  Pret: {Number(product.price).toFixed(2)} lei
-                </p>
+                <p>Pret: {Number(product.price).toFixed(2)} lei</p>
 
-                <label htmlFor={`quantity-${product.id}`}>
-                  Cantitate:
-                </label>
+                <label htmlFor={`quantity-${product.id}`}>Cantitate:</label>
 
                 <input
                   id={`quantity-${product.id}`}
                   type="number"
                   min="0"
-                  value={
-                    productQuantities[product.id] || 0
-                  }
-                  onChange={(event) =>
-                    handleQuantityChange(
-                      product.id,
-                      event.target.value
-                    )
-                  }
+                  value={productQuantities[product.id] || 0}
+                  onChange={(event) => handleQuantityChange(product.id, event.target.value)}
                 />
               </div>
             ))}
           </div>
 
-          <button
-            className="waiter-button"
-            onClick={handleSubmitOrder}
-            disabled={savingOrder}
-          >
-            {savingOrder
-              ? "Se salveaza..."
-              : "Salveaza comanda"}
+          <button className="waiter-button" onClick={handleSubmitOrder} disabled={savingOrder}>
+            {savingOrder ? "Se salveaza..." : "Salveaza comanda"}
           </button>
 
-          <button
-            className="waiter-button"
-            onClick={handleCancelOrder}
-            disabled={savingOrder}
-          >
+          <button className="waiter-button" onClick={handleCancelOrder} disabled={savingOrder}>
             Anuleaza
           </button>
         </section>
@@ -501,18 +379,11 @@ function WaiterPage() {
             <div key={order.id} className="waiter-card">
               <h3>Comanda #{order.id}</h3>
 
-              <p>
-                Masa:{" "}
-                {order.tableSession?.restaurantTable
-                  ?.tableNumber || "necunoscuta"}
-              </p>
+              <p>Masa: {order.tableSession?.restaurantTable?.tableNumber || "necunoscuta"}</p>
 
               <p>Status comanda: {order.status}</p>
 
-              <p>
-                Total:{" "}
-                {Number(order.totalPrice).toFixed(2)} lei
-              </p>
+              <p>Total: {Number(order.totalPrice).toFixed(2)} lei</p>
 
               <div className="order-items-list">
                 <strong>Preparate:</strong>
@@ -520,25 +391,19 @@ function WaiterPage() {
                 {getFoodItems(order).length > 0 ? (
                   getFoodItems(order).map((item) => (
                     <p key={item.id}>
-                      {item.quantity} x{" "}
-                      {item.product?.name} - {item.status} -{" "}
-                      {Number(item.subtotal).toFixed(2)} lei
+                      {item.quantity} x {item.product?.name} - {item.status} - {Number(item.subtotal).toFixed(2)} lei
                     </p>
                   ))
                 ) : (
                   <p>Nu exista preparate in comanda.</p>
                 )}
 
-                <strong className="order-items-subtitle">
-                  Bauturi:
-                </strong>
+                <strong className="order-items-subtitle">Bauturi:</strong>
 
                 {getDrinkItems(order).length > 0 ? (
                   getDrinkItems(order).map((item) => (
                     <p key={item.id}>
-                      {item.quantity} x{" "}
-                      {item.product?.name} - {item.status} -{" "}
-                      {Number(item.subtotal).toFixed(2)} lei
+                      {item.quantity} x {item.product?.name} - {item.status} - {Number(item.subtotal).toFixed(2)} lei
                     </p>
                   ))
                 ) : (
@@ -547,29 +412,15 @@ function WaiterPage() {
               </div>
 
               {order.status === "NOUA" && (
-                <button
-                  className="waiter-button"
-                  onClick={() =>
-                    sendOrderToPreparation(order.id)
-                  }
-                >
+                <button className="waiter-button" onClick={() => sendOrderToPreparation(order.id)}>
                   Trimite la preparare
                 </button>
               )}
 
-              {order.status === "IN_PREPARARE" && (
-                <p className="status-info">
-                  Comanda este in preparare.
-                </p>
-              )}
+              {order.status === "IN_PREPARARE" && <p className="status-info">Comanda este in preparare.</p>}
 
               {order.status === "GATA" && (
-                <button
-                  className="waiter-button"
-                  onClick={() =>
-                    markOrderAsServed(order.id)
-                  }
-                >
+                <button className="waiter-button" onClick={() => markOrderAsServed(order.id)}>
                   Marcheaza ca servita
                 </button>
               )}

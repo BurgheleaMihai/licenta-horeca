@@ -4,15 +4,13 @@ import com.licenta.horeca.entity.Order;
 import com.licenta.horeca.entity.OrderItem;
 import com.licenta.horeca.enums.OrderStatus;
 import com.licenta.horeca.service.OrderService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
-
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -21,7 +19,8 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody CreateOrderRequest request) {
-        return orderService.createOrder(request.getSessionCode(), request.getItems());
+        return orderService.createOrder(
+                request.getSessionCode(), request.getItems());
     }
 
     @GetMapping
@@ -45,18 +44,14 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/status")
-    public Order updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestBody UpdateOrderStatusRequest request
-    ) {
+    public Order updateOrderStatus(@PathVariable Long orderId,
+                                   @RequestBody UpdateOrderStatusRequest request) {
         return orderService.updateOrderStatus(orderId, request.getStatus());
     }
 
     @PutMapping("/items/{itemId}/status")
-    public OrderItem updateOrderItemStatus(
-            @PathVariable Long itemId,
-            @RequestBody UpdateOrderStatusRequest request
-    ) {
+    public OrderItem updateOrderItemStatus(@PathVariable Long itemId,
+                                           @RequestBody UpdateOrderStatusRequest request) {
         return orderService.updateOrderItemStatus(itemId, request.getStatus());
     }
 

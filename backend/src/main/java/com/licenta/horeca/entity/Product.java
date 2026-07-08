@@ -1,31 +1,24 @@
 package com.licenta.horeca.entity;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
 public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     // Numele produsului din meniu
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false) private String name;
 
     // Descriere/detalii
     private String description;
 
     // Prețul produsului
-    @Column(nullable = false)
-    private BigDecimal price;
+    @Column(nullable = false) private BigDecimal price;
 
     // Daca produsul este disponibil in meniu
-    @Column(nullable = false)
-    private boolean available = true;
+    @Column(nullable = false) private boolean available = true;
 
     // Daca produsul este vegetarian
     private Boolean vegetarian;
@@ -41,10 +34,10 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    public Product() {
-    }
+    public Product() {}
 
-    public Product(String name, String description, BigDecimal price, Category category) {
+    public Product(
+            String name, String description, BigDecimal price, Category category) {
         this.name = name;
         this.description = description;
         this.price = price;

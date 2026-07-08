@@ -9,27 +9,21 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from retrain_models import (
-    RetrainingValidationError,
-    retrain_all_models,
-)
+from retrain_models import RetrainingValidationError, retrain_all_models
 
 
 BASE_DIR = Path(__file__).resolve().parent
 
 load_dotenv(BASE_DIR / ".env")
 
-
 app = Flask(__name__)
 CORS(app)
-
 
 MODELS_DIR = BASE_DIR / "models"
 
 TRAFFIC_MODEL_FILE = MODELS_DIR / "traffic_model.pkl"
 STAFF_MODEL_FILE = MODELS_DIR / "staff_model.pkl"
 DELAY_MODEL_FILE = MODELS_DIR / "delay_model.pkl"
-
 
 FEATURE_COLUMNS = [
     "day_of_week",
@@ -45,7 +39,6 @@ FEATURE_COLUMNS = [
     "item_count",
 ]
 
-
 model_lock = RLock()
 retraining_lock = Lock()
 
@@ -55,21 +48,11 @@ delay_model = None
 
 
 def reload_models():
-    global traffic_model
-    global staff_model
-    global delay_model
+    global traffic_model, staff_model, delay_model
 
-    new_traffic_model = joblib.load(
-        TRAFFIC_MODEL_FILE
-    )
-
-    new_staff_model = joblib.load(
-        STAFF_MODEL_FILE
-    )
-
-    new_delay_model = joblib.load(
-        DELAY_MODEL_FILE
-    )
+    new_traffic_model = joblib.load(TRAFFIC_MODEL_FILE)
+    new_staff_model = joblib.load(STAFF_MODEL_FILE)
+    new_delay_model = joblib.load(DELAY_MODEL_FILE)
 
     with model_lock:
         traffic_model = new_traffic_model
@@ -82,14 +65,14 @@ reload_models()
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({
+    models_loaded = traffic_model is not None and staff_model is not None and delay_model is not None
+
+    response = {
         "status": "AI Service is running",
-        "modelsLoaded": (
-                traffic_model is not None
-                and staff_model is not None
-                and delay_model is not None
-        ),
-    })
+        "modelsLoaded": models_loaded,
+    }
+
+    return jsonify(response)
 
 
 @app.route("/predict/all", methods=["POST"])
@@ -97,121 +80,81 @@ def predict_all():
     data = request.get_json(silent=True)
 
     if data is None:
-        return jsonify({
-            "error": (
-                "Request body is missing or invalid"
-            )
-        }), 400
+        response = {
+            "error": "Request body is missing or invalid",
+        }
 
-    missing_fields = [
-        column
-        for column in FEATURE_COLUMNS
-        if column not in data
-    ]
+        return jsonify(response), 400
+
+    missing_fields = [column for column in FEATURE_COLUMNS if column not in data]
 
     if missing_fields:
-        return jsonify({
+        response = {
             "error": "Missing required fields",
             "missingFields": missing_fields,
-        }), 400
+        }
+
+        return jsonify(response), 400
 
     try:
-        input_data = pd.DataFrame(
-            [data],
-            columns=FEATURE_COLUMNS,
-        )
+        input_data = pd.DataFrame([data], columns=FEATURE_COLUMNS)
 
         with model_lock:
-            traffic_prediction = (
-                traffic_model.predict(input_data)[0]
-            )
+            traffic_prediction = traffic_model.predict(input_data)[0]
+            staff_prediction = staff_model.predict(input_data)[0]
+            delay_prediction = delay_model.predict(input_data)[0]
 
-            staff_prediction = (
-                staff_model.predict(input_data)[0]
-            )
-
-            delay_prediction = (
-                delay_model.predict(input_data)[0]
-            )
-
-        recommended_waiters = max(
-            0,
-            int(round(staff_prediction[0])),
-        )
-
-        recommended_kitchen_staff = max(
-            0,
-            int(round(staff_prediction[1])),
-        )
-
-        recommended_bar_staff = max(
-            0,
-            int(round(staff_prediction[2])),
-        )
+        recommended_waiters = max(0, int(round(staff_prediction[0])))
+        recommended_kitchen_staff = max(0, int(round(staff_prediction[1])))
+        recommended_bar_staff = max(0, int(round(staff_prediction[2])))
 
         response = {
-            "trafficLevel": str(
-                traffic_prediction
-            ),
-            "recommendedWaiters": (
-                recommended_waiters
-            ),
-            "recommendedKitchenStaff": (
-                recommended_kitchen_staff
-            ),
-            "recommendedBarStaff": (
-                recommended_bar_staff
-            ),
-            "delayRisk": str(
-                delay_prediction
-            ),
+            "trafficLevel": str(traffic_prediction),
+            "recommendedWaiters": recommended_waiters,
+            "recommendedKitchenStaff": recommended_kitchen_staff,
+            "recommendedBarStaff": recommended_bar_staff,
+            "delayRisk": str(delay_prediction),
         }
 
         return jsonify(response)
 
     except Exception as exception:
-        app.logger.exception(
-            "Eroare la realizarea predictiei."
-        )
+        app.logger.exception("Eroare la realizarea predictiei.")
 
-        return jsonify({
+        response = {
             "error": "Prediction failed",
             "message": str(exception),
-        }), 500
+        }
+
+        return jsonify(response), 500
 
 
 @app.route("/retrain", methods=["POST"])
 def retrain():
-    configured_token = os.getenv(
-        "RETRAIN_TOKEN"
-    )
+    configured_token = os.getenv("RETRAIN_TOKEN")
 
     if not configured_token:
-        return jsonify({
-            "error": (
-                "RETRAIN_TOKEN nu este configurat."
-            )
-        }), 503
+        response = {
+            "error": "RETRAIN_TOKEN nu este configurat.",
+        }
 
-    received_token = request.headers.get(
-        "X-Retrain-Token",
-        "",
-    )
+        return jsonify(response), 503
 
-    if not hmac.compare_digest(
-            received_token,
-            configured_token,
-    ):
-        return jsonify({
-            "error": "Acces neautorizat."
-        }), 401
+    received_token = request.headers.get("X-Retrain-Token", "")
+
+    if not hmac.compare_digest(received_token, configured_token):
+        response = {
+            "error": "Acces neautorizat.",
+        }
+
+        return jsonify(response), 401
 
     if not retraining_lock.acquire(blocking=False):
-        return jsonify({
-            "error": (
-                "O reantrenare este deja in curs."
-            )
-        }), 409
+        response = {
+            "error": "O reantrenare este deja in curs.",
+        }
+
+        return jsonify(response), 409
 
     try:
         result = retrain_all_models()
@@ -222,36 +165,28 @@ def retrain():
         return jsonify(result)
 
     except RetrainingValidationError as exception:
-        return jsonify({
+        response = {
             "status": "blocked",
             "modelsReplaced": False,
             "message": str(exception),
-        }), 400
+        }
+
+        return jsonify(response), 400
 
     except Exception as exception:
-        app.logger.exception(
-            "Eroare la reantrenarea modelelor."
-        )
+        app.logger.exception("Eroare la reantrenarea modelelor.")
 
-        return jsonify({
+        response = {
             "status": "error",
             "modelsReplaced": False,
             "message": str(exception),
-        }), 500
+        }
+
+        return jsonify(response), 500
 
     finally:
         retraining_lock.release()
 
 
 if __name__ == "__main__":
-    app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=(
-                os.getenv(
-                    "FLASK_DEBUG",
-                    "false",
-                ).lower()
-                == "true"
-        ),
-    )
+    app.run(host="127.0.0.1", port=5000, debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")

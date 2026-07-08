@@ -1,34 +1,31 @@
 package com.licenta.horeca;
 
-import com.licenta.horeca.entity.Feedback;
-import com.licenta.horeca.repository.FeedbackRepository;
-import com.licenta.horeca.service.FeedbackService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.licenta.horeca.entity.Feedback;
+import com.licenta.horeca.repository.FeedbackRepository;
+import com.licenta.horeca.service.FeedbackService;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
-
-    private static final String EASY_MENU_COMMENT = "Meniul este usor de folosit.";
+    private static final String EASY_MENU_COMMENT =
+            "Meniul este usor de folosit.";
     private static final String VERY_GOOD_COMMENT = "Foarte bine.";
     private static final String GOOD_SERVICE_COMMENT = "Servire buna.";
 
-    @Mock
-    private FeedbackRepository feedbackRepository;
+    @Mock private FeedbackRepository feedbackRepository;
 
-    @InjectMocks
-    private FeedbackService feedbackService;
+    @InjectMocks private FeedbackService feedbackService;
 
     @Test
     void saveFeedbackShouldSaveFeedback() {

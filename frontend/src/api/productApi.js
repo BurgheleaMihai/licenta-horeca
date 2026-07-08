@@ -33,7 +33,5 @@ export const getAllOrders = () => {
 };
 
 export const updateOrderStatus = (orderId, status) => {
-  return axios.patch(
-    `${ORDERS_URL}/${orderId}/status?status=${encodeURIComponent(status)}`
-  );
+  return axios.patch( `${ORDERS_URL}/${orderId}/status?status=${encodeURIComponent(status)}` );
 };

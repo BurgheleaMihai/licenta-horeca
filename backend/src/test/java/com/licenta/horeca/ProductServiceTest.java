@@ -1,29 +1,25 @@
 package com.licenta.horeca;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import com.licenta.horeca.entity.Product;
 import com.licenta.horeca.repository.ProductRepository;
 import com.licenta.horeca.service.ProductService;
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
+    @Mock private ProductRepository productRepository;
 
-    @Mock
-    private ProductRepository productRepository;
-
-    @InjectMocks
-    private ProductService productService;
+    @InjectMocks private ProductService productService;
 
     @Test
     void getAvailableProductsShouldReturnOnlyAvailableProducts() {

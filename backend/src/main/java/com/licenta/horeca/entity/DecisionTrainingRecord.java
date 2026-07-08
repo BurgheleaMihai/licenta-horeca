@@ -1,59 +1,42 @@
 package com.licenta.horeca.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "decision_training_records")
 public class DecisionTrainingRecord {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    @Column(nullable = false) private LocalDateTime createdAt;
 
     // Datele de intrare trimise catre serviciul AI
 
-    @Column(nullable = false)
-    private int dayOfWeek;
+    @Column(nullable = false) private int dayOfWeek;
 
-    @Column(nullable = false)
-    private int hour;
+    @Column(nullable = false) private int hour;
 
-    @Column(nullable = false)
-    private int activeOrders;
+    @Column(nullable = false) private int activeOrders;
 
-    @Column(nullable = false)
-    private int occupiedTables;
+    @Column(nullable = false) private int occupiedTables;
 
-    @Column(nullable = false)
-    private int estimatedOccupancy;
+    @Column(nullable = false) private int estimatedOccupancy;
 
-    @Column(nullable = false)
-    private int kitchenLoad;
+    @Column(nullable = false) private int kitchenLoad;
 
-    @Column(nullable = false)
-    private int barLoad;
+    @Column(nullable = false) private int barLoad;
 
-    @Column(nullable = false)
-    private int avgPreparationTime;
+    @Column(nullable = false) private int avgPreparationTime;
 
-    @Column(nullable = false)
-    private int ordersLast30Min;
+    @Column(nullable = false) private int ordersLast30Min;
 
-    @Column(nullable = false)
-    private int orderAgeMinutes;
+    @Column(nullable = false) private int orderAgeMinutes;
 
-    @Column(nullable = false)
-    private int itemCount;
+    @Column(nullable = false) private int itemCount;
 
     // Rezultatele prezise de modelele AI
 
-    @Column(length = 30)
-    private String predictedTrafficLevel;
+    @Column(length = 30) private String predictedTrafficLevel;
 
     private Integer recommendedWaiters;
 
@@ -61,8 +44,7 @@ public class DecisionTrainingRecord {
 
     private Integer recommendedBarStaff;
 
-    @Column(length = 30)
-    private String predictedDelayRisk;
+    @Column(length = 30) private String predictedDelayRisk;
 
     /*
      * Rezultatele reale observate ulterior.
@@ -70,8 +52,7 @@ public class DecisionTrainingRecord {
      * informatii reale pentru completarea lor.
      */
 
-    @Column(length = 30)
-    private String observedTrafficLevel;
+    @Column(length = 30) private String observedTrafficLevel;
 
     private Integer actualWaiters;
 
@@ -79,13 +60,11 @@ public class DecisionTrainingRecord {
 
     private Integer actualBarStaff;
 
-    @Column(length = 30)
-    private String observedDelayRisk;
+    @Column(length = 30) private String observedDelayRisk;
 
     private LocalDateTime labeledAt;
 
-    public DecisionTrainingRecord() {
-    }
+    public DecisionTrainingRecord() {}
 
     @PrePersist
     public void prePersist() {

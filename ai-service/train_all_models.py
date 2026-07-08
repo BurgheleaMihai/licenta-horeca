@@ -1,6 +1,6 @@
-from train_traffic_model import train_traffic_model
-from train_staff_model import train_staff_model
 from train_delay_model import train_delay_model
+from train_staff_model import train_staff_model
+from train_traffic_model import train_traffic_model
 
 
 def main():

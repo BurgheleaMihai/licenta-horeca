@@ -2,7 +2,6 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
@@ -11,7 +10,6 @@ from sklearn.model_selection import train_test_split
 DATA_FILE = Path("data") / "synthetic_horeca_dataset.csv"
 MODEL_FILE = Path("models") / "delay_model.pkl"
 REPORT_FILE = Path("reports") / "delay_metrics.txt"
-
 
 FEATURE_COLUMNS = [
     "day_of_week",
@@ -24,7 +22,7 @@ FEATURE_COLUMNS = [
     "avg_preparation_time",
     "orders_last_30_min",
     "order_age_minutes",
-    "item_count"
+    "item_count",
 ]
 
 
@@ -34,19 +32,9 @@ def train_delay_model():
     x = df[FEATURE_COLUMNS]
     y = df["delay_risk"]
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        x,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
-    )
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, stratify=y)
 
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42,
-        max_depth=10
-    )
+    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)
 
     model.fit(x_train, y_train)
 

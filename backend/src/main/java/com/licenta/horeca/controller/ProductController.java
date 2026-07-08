@@ -2,15 +2,13 @@ package com.licenta.horeca.controller;
 
 import com.licenta.horeca.entity.Product;
 import com.licenta.horeca.service.ProductService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "*")
 public class ProductController {
-
     private final ProductService productService;
 
     public ProductController(ProductService productService) {

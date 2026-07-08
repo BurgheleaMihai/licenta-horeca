@@ -5,24 +5,18 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "categories")
 public class Category {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     // Nume categorie
-    @Column(nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false, unique = true) private String name;
 
     // Descriere categorie(optional)
     private String description;
 
     // Daca categoria e activa in meniu
-    @Column(nullable = false)
-    private boolean active = true;
+    @Column(nullable = false) private boolean active = true;
 
-    public Category() {
-    }
+    public Category() {}
 
     public Category(String name, String description) {
         this.name = name;

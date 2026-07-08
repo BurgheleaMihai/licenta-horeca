@@ -120,16 +120,12 @@ public class OrderService {
         );
     }
 
-    public Order updateOrderStatus(
-            Long orderId,
-            OrderStatus status
-    ) {
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository
                 .findById(orderId)
                 .orElseThrow(() -> new BusinessException(
                         "Comanda nu exista."
                 ));
-
         order.setStatus(status);
 
         if (status == OrderStatus.IN_PREPARARE) {

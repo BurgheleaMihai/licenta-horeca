@@ -5,25 +5,18 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "restaurant_tables")
 public class RestaurantTable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     // Numarul mesei din restaurant
-    @Column(nullable = false, unique = true)
-    private Integer tableNumber;
+    @Column(nullable = false, unique = true) private Integer tableNumber;
 
     // Numarul maxim de persoane la masă
-    @Column(nullable = false)
-    private Integer capacity;
+    @Column(nullable = false) private Integer capacity;
 
     // Dacă masa este activa/disponibila in sistem
-    @Column(nullable = false)
-    private boolean active = true;
+    @Column(nullable = false) private boolean active = true;
 
-    public RestaurantTable() {
-    }
+    public RestaurantTable() {}
 
     public RestaurantTable(Integer tableNumber, Integer capacity) {
         this.tableNumber = tableNumber;

@@ -15,7 +15,5 @@ export const closeTableSession = (sessionId) => {
 };
 
 export const validateTableSessionCode = (sessionCode) => {
-  return axios.get(
-    `${API_URL}/code/${encodeURIComponent(sessionCode)}`
-  );
+  return axios.get( `${API_URL}/code/${encodeURIComponent(sessionCode)}` );
 };

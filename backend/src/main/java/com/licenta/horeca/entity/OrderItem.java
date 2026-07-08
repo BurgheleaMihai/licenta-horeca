@@ -1,17 +1,14 @@
 package com.licenta.horeca.entity;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.licenta.horeca.enums.OrderStatus;
+import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     private Integer quantity;
 
@@ -19,20 +16,13 @@ public class OrderItem {
 
     private BigDecimal subtotal;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    @Enumerated(EnumType.STRING) private OrderStatus status;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JsonIgnore @ManyToOne @JoinColumn(name = "order_id") private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @ManyToOne @JoinColumn(name = "product_id") private Product product;
 
-    public OrderItem() {
-    }
+    public OrderItem() {}
 
     public OrderItem(Product product, Integer quantity, BigDecimal unitPrice) {
         this.product = product;

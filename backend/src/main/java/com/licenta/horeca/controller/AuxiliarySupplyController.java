@@ -2,18 +2,17 @@ package com.licenta.horeca.controller;
 
 import com.licenta.horeca.entity.AuxiliarySupply;
 import com.licenta.horeca.service.AuxiliarySupplyService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auxiliary-supplies")
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuxiliarySupplyController {
-
     private final AuxiliarySupplyService auxiliarySupplyService;
 
-    public AuxiliarySupplyController(AuxiliarySupplyService auxiliarySupplyService) {
+    public AuxiliarySupplyController(
+            AuxiliarySupplyService auxiliarySupplyService) {
         this.auxiliarySupplyService = auxiliarySupplyService;
     }
 
