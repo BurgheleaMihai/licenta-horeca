@@ -13,112 +13,50 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeeShiftRepository
-        extends JpaRepository<EmployeeShift, Long> {
+public interface EmployeeShiftRepository extends JpaRepository<EmployeeShift, Long> {
 
     /*
      * Caută tura activă a unui angajat.
      */
-    @EntityGraph(
-            attributePaths = {
-                    "employee",
-                    "createdBy",
-                    "startedBy",
-                    "endedBy"
-            }
-    )
-    Optional<EmployeeShift>
-    findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(
-            Long employeeId
-    );
+    @EntityGraph(attributePaths = {"employee", "createdBy", "startedBy", "endedBy"})
+    Optional<EmployeeShift> findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(Long employeeId);
 
     /*
      * Caută prima tură planificată care poate fi pornită
      * prin autentificarea angajatului.
      */
-    @EntityGraph(
-            attributePaths = {
-                    "employee",
-                    "createdBy",
-                    "startedBy",
-                    "endedBy"
-            }
-    )
-    Optional<EmployeeShift>
-    findFirstByEmployeeIdAndStartedAtIsNullAndEndedAtIsNullAndPlannedStartAtLessThanEqualAndPlannedEndAtAfterOrderByPlannedStartAtAsc(
-            Long employeeId,
-            LocalDateTime latestAllowedStart,
-            LocalDateTime currentMoment
-    );
+    @EntityGraph(attributePaths = {"employee", "createdBy", "startedBy", "endedBy"})
+    Optional<EmployeeShift> findFirstByEmployeeIdAndStartedAtIsNullAndEndedAtIsNullAndPlannedStartAtLessThanEqualAndPlannedEndAtAfterOrderByPlannedStartAtAsc(Long employeeId, LocalDateTime latestAllowedStart, LocalDateTime currentMoment);
 
     /*
      * Verifică suprapunerea unei programări noi cu turele
      * nefinalizate ale aceluiași angajat.
      */
-    boolean
-    existsByEmployeeIdAndEndedAtIsNullAndPlannedStartAtLessThanAndPlannedEndAtGreaterThan(
-            Long employeeId,
-            LocalDateTime newPlannedEnd,
-            LocalDateTime newPlannedStart
-    );
+    boolean existsByEmployeeIdAndEndedAtIsNullAndPlannedStartAtLessThanAndPlannedEndAtGreaterThan(Long employeeId, LocalDateTime newPlannedEnd, LocalDateTime newPlannedStart);
 
     /*
      * Returnează turele aflate efectiv în desfășurare.
      */
-    @EntityGraph(
-            attributePaths = {
-                    "employee",
-                    "createdBy",
-                    "startedBy",
-                    "endedBy"
-            }
-    )
-    List<EmployeeShift>
-    findAllByStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByStartedAtAsc(
-            LocalDateTime currentMoment
-    );
+    @EntityGraph(attributePaths = {"employee", "createdBy", "startedBy", "endedBy"})
+    List<EmployeeShift> findAllByStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByStartedAtAsc(LocalDateTime currentMoment);
 
     /*
      * Returnează programările viitoare sau aflate încă
      * în interval, dar care nu au început.
      */
-    @EntityGraph(
-            attributePaths = {
-                    "employee",
-                    "createdBy",
-                    "startedBy",
-                    "endedBy"
-            }
-    )
-    List<EmployeeShift>
-    findAllByStartedAtIsNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByPlannedStartAtAsc(
-            LocalDateTime currentMoment
-    );
+    @EntityGraph(attributePaths = {"employee", "createdBy", "startedBy", "endedBy"})
+    List<EmployeeShift> findAllByStartedAtIsNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByPlannedStartAtAsc(LocalDateTime currentMoment);
 
     /*
      * Returnează istoricul complet al unui angajat.
      */
-    @EntityGraph(
-            attributePaths = {
-                    "employee",
-                    "createdBy",
-                    "startedBy",
-                    "endedBy"
-            }
-    )
-    List<EmployeeShift>
-    findAllByEmployeeIdOrderByPlannedStartAtDesc(
-            Long employeeId
-    );
+    @EntityGraph(attributePaths = {"employee", "createdBy", "startedBy", "endedBy"})
+    List<EmployeeShift> findAllByEmployeeIdOrderByPlannedStartAtDesc(Long employeeId);
 
     /*
      * Numără angajații aflați efectiv în tură pentru un rol.
      */
-    long
-    countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(
-            RoleType shiftRole,
-            LocalDateTime currentMoment
-    );
+    long countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(RoleType shiftRole, LocalDateTime currentMoment);
 
     /*
      * Citește și blochează o tură pentru actualizare.
@@ -133,10 +71,7 @@ public interface EmployeeShiftRepository
             LEFT JOIN FETCH shift.endedBy
             WHERE shift.id = :id
             """)
-    Optional<EmployeeShift> findByIdForUpdate(
-            @Param("id")
-            Long id
-    );
+    Optional<EmployeeShift> findByIdForUpdate(@Param("id") Long id);
 
     /*
      * Returnează și blochează turele active care au ajuns
@@ -155,10 +90,7 @@ public interface EmployeeShiftRepository
               AND shift.plannedEndAt <= :moment
             ORDER BY shift.plannedEndAt ASC
             """)
-    List<EmployeeShift> findExpiredActiveShiftsForUpdate(
-            @Param("moment")
-            LocalDateTime moment
-    );
+    List<EmployeeShift> findExpiredActiveShiftsForUpdate(@Param("moment") LocalDateTime moment);
 
     /*
      * Returnează și blochează programările încheiate
@@ -177,10 +109,7 @@ public interface EmployeeShiftRepository
               AND shift.plannedEndAt <= :moment
             ORDER BY shift.plannedEndAt ASC
             """)
-    List<EmployeeShift> findMissedPlannedShiftsForUpdate(
-            @Param("moment")
-            LocalDateTime moment
-    );
+    List<EmployeeShift> findMissedPlannedShiftsForUpdate(@Param("moment") LocalDateTime moment);
 
     /*
      * Verifică suprapunerea la modificarea unei programări,
@@ -195,19 +124,13 @@ public interface EmployeeShiftRepository
               AND shift.plannedStartAt < :newPlannedEndAt
               AND shift.plannedEndAt > :newPlannedStartAt
             """)
-    long countOverlappingShiftsExcludingId(
-            @Param("employeeId")
-            Long employeeId,
+    long countOverlappingShiftsExcludingId(@Param("employeeId") Long employeeId,
 
-            @Param("excludedShiftId")
-            Long excludedShiftId,
+                                           @Param("excludedShiftId") Long excludedShiftId,
 
-            @Param("newPlannedStartAt")
-            LocalDateTime newPlannedStartAt,
+                                           @Param("newPlannedStartAt") LocalDateTime newPlannedStartAt,
 
-            @Param("newPlannedEndAt")
-            LocalDateTime newPlannedEndAt
-    );
+                                           @Param("newPlannedEndAt") LocalDateTime newPlannedEndAt);
 
     /*
      * Blochează toate turele nefinalizate ale unui angajat.
@@ -222,8 +145,5 @@ public interface EmployeeShiftRepository
               AND shift.endedAt IS NULL
             ORDER BY shift.plannedStartAt ASC
             """)
-    List<EmployeeShift> findAllOpenByEmployeeIdForUpdate(
-            @Param("employeeId")
-            Long employeeId
-    );
+    List<EmployeeShift> findAllOpenByEmployeeIdForUpdate(@Param("employeeId") Long employeeId);
 }

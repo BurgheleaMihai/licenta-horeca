@@ -25,7 +25,7 @@ import java.util.List;
  * Gestionează ciclul de viață al comenzilor:
  * creare, trimitere la preparare, actualizarea produselor,
  * servire și calcularea statisticilor.
- *
+ * <p>
  * Tranzacțiile de citire păstrează sesiunea Hibernate activă pe
  * durata logicii serviciului. OrderRepository încarcă explicit și
  * colecția items, astfel încât răspunsurile pot fi serializate chiar
@@ -41,13 +41,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final FeedbackService feedbackService;
 
-    public OrderService(
-            OrderRepository orderRepository,
-            ProductRepository productRepository,
-            TableSessionRepository tableSessionRepository,
-            OrderItemRepository orderItemRepository,
-            FeedbackService feedbackService
-    ) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, TableSessionRepository tableSessionRepository, OrderItemRepository orderItemRepository, FeedbackService feedbackService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.tableSessionRepository = tableSessionRepository;
@@ -60,15 +54,8 @@ public class OrderService {
      * valoarea totală folosind prețurile curente ale produselor.
      */
     @Transactional
-    public Order createOrder(
-            String sessionCode,
-            List<OrderItemRequest> itemRequests
-    ) {
-        TableSession tableSession = tableSessionRepository
-                .findBySessionCodeAndActiveTrue(sessionCode)
-                .orElseThrow(() -> new BusinessException(
-                        "Sesiunea mesei nu exista sau nu este activa."
-                ));
+    public Order createOrder(String sessionCode, List<OrderItemRequest> itemRequests) {
+        TableSession tableSession = tableSessionRepository.findBySessionCodeAndActiveTrue(sessionCode).orElseThrow(() -> new BusinessException("Sesiunea mesei nu exista sau nu este activa."));
 
         Order order = new Order();
         order.setTableSession(tableSession);
@@ -76,33 +63,20 @@ public class OrderService {
         BigDecimal totalPrice = BigDecimal.ZERO;
 
         for (OrderItemRequest itemRequest : itemRequests) {
-            Product product = productRepository
-                    .findById(itemRequest.getProductId())
-                    .orElseThrow(() -> new BusinessException(
-                            "Produsul nu exista."
-                    ));
+            Product product = productRepository.findById(itemRequest.getProductId()).orElseThrow(() -> new BusinessException("Produsul nu exista."));
 
             if (!product.isAvailable()) {
-                throw new BusinessException(
-                        "Produsul nu este disponibil: "
-                                + product.getName()
-                );
+                throw new BusinessException("Produsul nu este disponibil: " + product.getName());
             }
 
             BigDecimal unitPrice = product.getPrice();
 
-            OrderItem orderItem = new OrderItem(
-                    product,
-                    itemRequest.getQuantity(),
-                    unitPrice
-            );
+            OrderItem orderItem = new OrderItem(product, itemRequest.getQuantity(), unitPrice);
 
             orderItem.setStatus(OrderStatus.NOUA);
             order.addItem(orderItem);
 
-            totalPrice = totalPrice.add(
-                    orderItem.getSubtotal()
-            );
+            totalPrice = totalPrice.add(orderItem.getSubtotal());
         }
 
         order.setTotalPrice(totalPrice);
@@ -123,46 +97,25 @@ public class OrderService {
      * Returnează comenzile active în ordinea creării lor.
      */
     public List<Order> getActiveOrders() {
-        return orderRepository
-                .findByStatusInOrderByCreatedAtAsc(
-                        getActiveStatuses()
-                );
+        return orderRepository.findByStatusInOrderByCreatedAtAsc(getActiveStatuses());
     }
 
     public OrderStatisticsResponse getTodayStatistics() {
-        return getStatistics(
-                LocalDate.now(),
-                LocalTime.of(0, 0),
-                LocalTime.of(23, 59)
-        );
+        return getStatistics(LocalDate.now(), LocalTime.of(0, 0), LocalTime.of(23, 59));
     }
 
-    public OrderStatisticsResponse getStatistics(
-            LocalDate date,
-            LocalTime startTime,
-            LocalTime endTime
-    ) {
-        LocalDate selectedDate =
-                date == null ? LocalDate.now() : date;
+    public OrderStatisticsResponse getStatistics(LocalDate date, LocalTime startTime, LocalTime endTime) {
+        LocalDate selectedDate = date == null ? LocalDate.now() : date;
 
-        LocalTime selectedStartTime =
-                startTime == null
-                        ? LocalTime.of(0, 0)
-                        : startTime;
+        LocalTime selectedStartTime = startTime == null ? LocalTime.of(0, 0) : startTime;
 
-        LocalTime selectedEndTime =
-                endTime == null
-                        ? LocalTime.of(23, 59)
-                        : endTime;
+        LocalTime selectedEndTime = endTime == null ? LocalTime.of(23, 59) : endTime;
 
         if (selectedEndTime.isBefore(selectedStartTime)) {
-            throw new BusinessException(
-                    "Ora de sfarsit trebuie sa fie dupa ora de inceput."
-            );
+            throw new BusinessException("Ora de sfarsit trebuie sa fie dupa ora de inceput.");
         }
 
-        LocalDateTime intervalStart =
-                selectedDate.atTime(selectedStartTime);
+        LocalDateTime intervalStart = selectedDate.atTime(selectedStartTime);
 
         /*
          * Adăugăm un minut deoarece inputurile HTML sunt introduse
@@ -171,60 +124,25 @@ public class OrderService {
          * Exemplu: 12:00 - 15:00 include și comenzile sau
          * feedbackurile din minutul 15:00.
          */
-        LocalDateTime intervalEndExclusive =
-                selectedDate
-                        .atTime(selectedEndTime)
-                        .plusMinutes(1);
+        LocalDateTime intervalEndExclusive = selectedDate.atTime(selectedEndTime).plusMinutes(1);
 
-        long activeOrdersCount =
-                orderRepository.countByStatusIn(
-                        getActiveStatuses()
-                );
+        long activeOrdersCount = orderRepository.countByStatusIn(getActiveStatuses());
 
-        List<Order> servedOrders =
-                orderRepository
-                        .findByStatusAndCompletedAtGreaterThanEqualAndCompletedAtLessThanOrderByCompletedAtAsc(
-                                OrderStatus.SERVITA,
-                                intervalStart,
-                                intervalEndExclusive
-                        );
+        List<Order> servedOrders = orderRepository.findByStatusAndCompletedAtGreaterThanEqualAndCompletedAtLessThanOrderByCompletedAtAsc(OrderStatus.SERVITA, intervalStart, intervalEndExclusive);
 
-        BigDecimal sales = servedOrders
-                .stream()
-                .map(Order::getTotalPrice)
-                .filter(totalPrice -> totalPrice != null)
-                .reduce(
-                        BigDecimal.ZERO,
-                        BigDecimal::add
-                );
+        BigDecimal sales = servedOrders.stream().map(Order::getTotalPrice).filter(totalPrice -> totalPrice != null).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        double averageRating =
-                feedbackService.getAverageRatingBetween(
-                        intervalStart,
-                        intervalEndExclusive
-                );
+        double averageRating = feedbackService.getAverageRatingBetween(intervalStart, intervalEndExclusive);
 
-        return new OrderStatisticsResponse(
-                Math.toIntExact(activeOrdersCount),
-                servedOrders.size(),
-                sales,
-                averageRating
-        );
+        return new OrderStatisticsResponse(Math.toIntExact(activeOrdersCount), servedOrders.size(), sales, averageRating);
     }
 
     private List<OrderStatus> getActiveStatuses() {
-        return List.of(
-                OrderStatus.NOUA,
-                OrderStatus.IN_PREPARARE,
-                OrderStatus.GATA
-        );
+        return List.of(OrderStatus.NOUA, OrderStatus.IN_PREPARARE, OrderStatus.GATA);
     }
 
-    public int countOrdersCreatedAfter(
-            LocalDateTime limit
-    ) {
-        long count =
-                orderRepository.countByCreatedAtAfter(limit);
+    public int countOrdersCreatedAfter(LocalDateTime limit) {
+        long count = orderRepository.countByCreatedAtAfter(limit);
 
         return Math.toIntExact(count);
     }
@@ -234,53 +152,36 @@ public class OrderService {
      * preparare, iar frontend-ul filtrează produsele după categorie.
      */
     public List<Order> getKitchenOrders() {
-        return orderRepository
-                .findByStatusOrderByCreatedAtAsc(
-                        OrderStatus.IN_PREPARARE
-                );
+        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE);
     }
 
     public List<Order> getBarOrders() {
-        return orderRepository
-                .findByStatusOrderByCreatedAtAsc(
-                        OrderStatus.IN_PREPARARE
-                );
+        return orderRepository.findByStatusOrderByCreatedAtAsc(OrderStatus.IN_PREPARARE);
     }
 
     /**
      * Actualizează starea generală a comenzii.
-     *
+     * <p>
      * La trimiterea în preparare, produsele noi sunt mutate în aceeași
      * stare. La servire se memorează momentul finalizării.
      */
     @Transactional
-    public Order updateOrderStatus(
-            Long orderId,
-            OrderStatus status
-    ) {
-        Order order = orderRepository
-                .findById(orderId)
-                .orElseThrow(() -> new BusinessException(
-                        "Comanda nu exista."
-                ));
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new BusinessException("Comanda nu exista."));
 
         order.setStatus(status);
 
         if (status == OrderStatus.IN_PREPARARE) {
             for (OrderItem item : order.getItems()) {
                 if (item.getStatus() == OrderStatus.NOUA) {
-                    item.setStatus(
-                            OrderStatus.IN_PREPARARE
-                    );
+                    item.setStatus(OrderStatus.IN_PREPARARE);
                 }
             }
         }
 
         if (status == OrderStatus.SERVITA) {
             if (order.getCompletedAt() == null) {
-                order.setCompletedAt(
-                        LocalDateTime.now()
-                );
+                order.setCompletedAt(LocalDateTime.now());
             }
         } else {
             order.setCompletedAt(null);
@@ -294,29 +195,16 @@ public class OrderService {
      * întreaga comandă ca GATA atunci când toate produsele sunt gata.
      */
     @Transactional
-    public OrderItem updateOrderItemStatus(
-            Long orderItemId,
-            OrderStatus status
-    ) {
-        OrderItem orderItem = orderItemRepository
-                .findById(orderItemId)
-                .orElseThrow(() -> new BusinessException(
-                        "Produsul din comanda nu exista."
-                ));
+    public OrderItem updateOrderItemStatus(Long orderItemId, OrderStatus status) {
+        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(() -> new BusinessException("Produsul din comanda nu exista."));
 
         orderItem.setStatus(status);
 
-        OrderItem savedItem =
-                orderItemRepository.save(orderItem);
+        OrderItem savedItem = orderItemRepository.save(orderItem);
 
         Order order = savedItem.getOrder();
 
-        boolean allItemsReady = order.getItems()
-                .stream()
-                .allMatch(
-                        item -> item.getStatus()
-                                == OrderStatus.GATA
-                );
+        boolean allItemsReady = order.getItems().stream().allMatch(item -> item.getStatus() == OrderStatus.GATA);
 
         if (allItemsReady) {
             order.setStatus(OrderStatus.GATA);

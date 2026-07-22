@@ -7,8 +7,7 @@ public class LoginResponse {
     private String role;
     private String token;
 
-    public LoginResponse(
-            Long userId, String fullName, String email, String role, String token) {
+    public LoginResponse(Long userId, String fullName, String email, String role, String token) {
         this.userId = userId;
         this.fullName = fullName;
         this.email = email;

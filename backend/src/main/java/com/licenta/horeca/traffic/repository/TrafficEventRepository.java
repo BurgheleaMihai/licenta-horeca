@@ -6,10 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 
-public interface TrafficEventRepository
-        extends JpaRepository<TrafficEvent, Long> {
+public interface TrafficEventRepository extends JpaRepository<TrafficEvent, Long> {
     long countByType(TrafficEventType type);
 
-    long countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-            TrafficEventType type, LocalDateTime startDate, LocalDateTime endDate);
+    long countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(TrafficEventType type, LocalDateTime startDate, LocalDateTime endDate);
 }

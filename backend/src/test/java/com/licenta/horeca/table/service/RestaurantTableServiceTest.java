@@ -20,17 +20,18 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantTableServiceTest {
-    @Mock private RestaurantTableRepository restaurantTableRepository;
+    @Mock
+    private RestaurantTableRepository restaurantTableRepository;
 
-    @InjectMocks private RestaurantTableService restaurantTableService;
+    @InjectMocks
+    private RestaurantTableService restaurantTableService;
 
     @Test
     void getAllTablesShouldReturnAllTables() {
         RestaurantTable table1 = new RestaurantTable(1, 4);
         RestaurantTable table2 = new RestaurantTable(2, 2);
 
-        when(restaurantTableRepository.findAll())
-                .thenReturn(List.of(table1, table2));
+        when(restaurantTableRepository.findAll()).thenReturn(List.of(table1, table2));
 
         List<RestaurantTable> tables = restaurantTableService.getAllTables();
 
@@ -46,8 +47,7 @@ class RestaurantTableServiceTest {
         RestaurantTable table1 = new RestaurantTable(1, 4);
         RestaurantTable table2 = new RestaurantTable(2, 2);
 
-        when(restaurantTableRepository.findByActiveTrue())
-                .thenReturn(List.of(table1, table2));
+        when(restaurantTableRepository.findByActiveTrue()).thenReturn(List.of(table1, table2));
 
         List<RestaurantTable> tables = restaurantTableService.getActiveTables();
 
@@ -75,8 +75,7 @@ class RestaurantTableServiceTest {
     void getTableByIdShouldThrowExceptionWhenTableDoesNotExist() {
         when(restaurantTableRepository.findById(99L)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> restaurantTableService.getTableById(99L));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> restaurantTableService.getTableById(99L));
 
         assertTrue(exception.getMessage().contains("Masa nu exista"));
 

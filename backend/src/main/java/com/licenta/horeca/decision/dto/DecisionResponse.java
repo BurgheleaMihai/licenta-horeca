@@ -49,22 +49,16 @@ public class DecisionResponse {
         return recommendedKitchenStaff;
     }
 
-    public void setRecommendedKitchenStaff(
-            int recommendedKitchenStaff
-    ) {
-        this.recommendedKitchenStaff =
-                recommendedKitchenStaff;
+    public void setRecommendedKitchenStaff(int recommendedKitchenStaff) {
+        this.recommendedKitchenStaff = recommendedKitchenStaff;
     }
 
     public int getRecommendedBarStaff() {
         return recommendedBarStaff;
     }
 
-    public void setRecommendedBarStaff(
-            int recommendedBarStaff
-    ) {
-        this.recommendedBarStaff =
-                recommendedBarStaff;
+    public void setRecommendedBarStaff(int recommendedBarStaff) {
+        this.recommendedBarStaff = recommendedBarStaff;
     }
 
     public String getDelayRisk() {
@@ -87,11 +81,8 @@ public class DecisionResponse {
         return activeKitchenStaff;
     }
 
-    public void setActiveKitchenStaff(
-            int activeKitchenStaff
-    ) {
-        this.activeKitchenStaff =
-                activeKitchenStaff;
+    public void setActiveKitchenStaff(int activeKitchenStaff) {
+        this.activeKitchenStaff = activeKitchenStaff;
     }
 
     public int getActiveBarStaff() {
@@ -114,9 +105,7 @@ public class DecisionResponse {
         return kitchenDeficit;
     }
 
-    public void setKitchenDeficit(
-            int kitchenDeficit
-    ) {
+    public void setKitchenDeficit(int kitchenDeficit) {
         this.kitchenDeficit = kitchenDeficit;
     }
 
@@ -132,10 +121,7 @@ public class DecisionResponse {
         return totalStaffDeficit;
     }
 
-    public void setTotalStaffDeficit(
-            int totalStaffDeficit
-    ) {
-        this.totalStaffDeficit =
-                totalStaffDeficit;
+    public void setTotalStaffDeficit(int totalStaffDeficit) {
+        this.totalStaffDeficit = totalStaffDeficit;
     }
 }

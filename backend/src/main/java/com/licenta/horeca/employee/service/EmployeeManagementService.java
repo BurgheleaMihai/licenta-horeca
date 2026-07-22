@@ -27,94 +27,49 @@ public class EmployeeManagementService {
 
     private final EmployeeShiftService employeeShiftService;
 
-    public EmployeeManagementService(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder,
-            EmployeeShiftService employeeShiftService
-    ) {
-        this.userRepository =
-                userRepository;
+    public EmployeeManagementService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, EmployeeShiftService employeeShiftService) {
+        this.userRepository = userRepository;
 
-        this.roleRepository =
-                roleRepository;
+        this.roleRepository = roleRepository;
 
-        this.passwordEncoder =
-                passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
 
-        this.employeeShiftService =
-                employeeShiftService;
+        this.employeeShiftService = employeeShiftService;
     }
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getUserById(
-            Long id
-    ) {
-        User user =
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Utilizatorul nu exista."
-                                )
-                        );
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BusinessException("Utilizatorul nu exista."));
 
         return mapToResponse(user);
     }
 
     @Transactional
-    public UserResponse createUser(
-            CreateUserRequest request
-    ) {
-        if (userRepository
-                .findByEmail(request.getEmail())
-                .isPresent()) {
-            throw new BusinessException(
-                    "Exista deja un utilizator cu acest email."
-            );
+    public UserResponse createUser(CreateUserRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BusinessException("Exista deja un utilizator cu acest email.");
         }
 
-        Role role =
-                roleRepository
-                        .findByName(request.getRole())
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Rolul nu exista."
-                                )
-                        );
+        Role role = roleRepository.findByName(request.getRole()).orElseThrow(() -> new BusinessException("Rolul nu exista."));
 
-        User user =
-                new User();
+        User user = new User();
 
-        user.setFullName(
-                request.getFullName()
-        );
+        user.setFullName(request.getFullName());
 
-        user.setEmail(
-                request.getEmail()
-        );
+        user.setEmail(request.getEmail());
 
-        user.setPassword(
-                passwordEncoder.encode(
-                        request.getPassword()
-                )
-        );
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         user.setRole(role);
 
         user.setActive(true);
 
-        User savedUser =
-                userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         return mapToResponse(savedUser);
     }
@@ -126,68 +81,32 @@ public class EmployeeManagementService {
      * sunt finalizate înainte de salvarea noului rol.
      */
     @Transactional
-    public UserResponse updateUser(
-            Long id,
-            UpdateUserRequest request
-    ) {
-        User user =
-                userRepository
-                        .findByIdForUpdate(id)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Utilizatorul nu exista."
-                                )
-                        );
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+        User user = userRepository.findByIdForUpdate(id).orElseThrow(() -> new BusinessException("Utilizatorul nu exista."));
 
-        boolean emailChanged =
-                !user.getEmail()
-                        .equalsIgnoreCase(
-                                request.getEmail()
-                        );
+        boolean emailChanged = !user.getEmail().equalsIgnoreCase(request.getEmail());
 
-        if (emailChanged
-                && userRepository
-                .findByEmail(request.getEmail())
-                .isPresent()) {
-            throw new BusinessException(
-                    "Emailul este deja utilizat."
-            );
+        if (emailChanged && userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BusinessException("Emailul este deja utilizat.");
         }
 
-        Role role =
-                roleRepository
-                        .findByName(request.getRole())
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Rolul nu exista."
-                                )
-                        );
+        Role role = roleRepository.findByName(request.getRole()).orElseThrow(() -> new BusinessException("Rolul nu exista."));
 
-        RoleType currentRole =
-                user.getRole().getName();
+        RoleType currentRole = user.getRole().getName();
 
-        RoleType newRole =
-                role.getName();
+        RoleType newRole = role.getName();
 
         if (currentRole != newRole) {
-            employeeShiftService
-                    .closeOpenShiftsForRoleChange(
-                            user.getId()
-                    );
+            employeeShiftService.closeOpenShiftsForRoleChange(user.getId());
         }
 
-        user.setFullName(
-                request.getFullName()
-        );
+        user.setFullName(request.getFullName());
 
-        user.setEmail(
-                request.getEmail()
-        );
+        user.setEmail(request.getEmail());
 
         user.setRole(role);
 
-        User updatedUser =
-                userRepository.save(user);
+        User updatedUser = userRepository.save(user);
 
         return mapToResponse(updatedUser);
     }
@@ -199,28 +118,15 @@ public class EmployeeManagementService {
      * programările viitoare ale angajatului.
      */
     @Transactional
-    public void changeStatus(
-            Long id,
-            boolean active
-    ) {
-        User user =
-                userRepository
-                        .findByIdForUpdate(id)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Utilizatorul nu exista."
-                                )
-                        );
+    public void changeStatus(Long id, boolean active) {
+        User user = userRepository.findByIdForUpdate(id).orElseThrow(() -> new BusinessException("Utilizatorul nu exista."));
 
         if (user.isActive() == active) {
             return;
         }
 
         if (!active) {
-            employeeShiftService
-                    .closeOpenShiftsForAccountDeactivation(
-                            user.getId()
-                    );
+            employeeShiftService.closeOpenShiftsForAccountDeactivation(user.getId());
         }
 
         user.setActive(active);
@@ -232,70 +138,36 @@ public class EmployeeManagementService {
      * Schimbă direct rolul utilizatorului.
      */
     @Transactional
-    public void changeRole(
-            Long id,
-            RoleType roleType
-    ) {
-        User user =
-                userRepository
-                        .findByIdForUpdate(id)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Utilizatorul nu exista."
-                                )
-                        );
+    public void changeRole(Long id, RoleType roleType) {
+        User user = userRepository.findByIdForUpdate(id).orElseThrow(() -> new BusinessException("Utilizatorul nu exista."));
 
-        Role role =
-                roleRepository
-                        .findByName(roleType)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Rolul nu exista."
-                                )
-                        );
+        Role role = roleRepository.findByName(roleType).orElseThrow(() -> new BusinessException("Rolul nu exista."));
 
-        RoleType currentRole =
-                user.getRole().getName();
+        RoleType currentRole = user.getRole().getName();
 
         if (currentRole == roleType) {
             return;
         }
 
-        employeeShiftService
-                .closeOpenShiftsForRoleChange(
-                        user.getId()
-                );
+        employeeShiftService.closeOpenShiftsForRoleChange(user.getId());
 
         user.setRole(role);
 
         userRepository.save(user);
     }
 
-    private UserResponse mapToResponse(
-            User user
-    ) {
-        UserResponse response =
-                new UserResponse();
+    private UserResponse mapToResponse(User user) {
+        UserResponse response = new UserResponse();
 
-        response.setId(
-                user.getId()
-        );
+        response.setId(user.getId());
 
-        response.setFullName(
-                user.getFullName()
-        );
+        response.setFullName(user.getFullName());
 
-        response.setEmail(
-                user.getEmail()
-        );
+        response.setEmail(user.getEmail());
 
-        response.setRole(
-                user.getRole().getName()
-        );
+        response.setRole(user.getRole().getName());
 
-        response.setActive(
-                user.isActive()
-        );
+        response.setActive(user.isActive());
 
         return response;
     }

@@ -5,17 +5,26 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class DecisionLabelRequest {
-    @NotBlank private String observedTrafficLevel;
+    @NotBlank
+    private String observedTrafficLevel;
 
-    @NotBlank private String observedDelayRisk;
+    @NotBlank
+    private String observedDelayRisk;
 
-    @NotNull @Min(0) private Integer actualWaiters;
+    @NotNull
+    @Min(0)
+    private Integer actualWaiters;
 
-    @NotNull @Min(0) private Integer actualKitchenStaff;
+    @NotNull
+    @Min(0)
+    private Integer actualKitchenStaff;
 
-    @NotNull @Min(0) private Integer actualBarStaff;
+    @NotNull
+    @Min(0)
+    private Integer actualBarStaff;
 
-    public DecisionLabelRequest() {}
+    public DecisionLabelRequest() {
+    }
 
     public String getObservedTrafficLevel() {
         return observedTrafficLevel;

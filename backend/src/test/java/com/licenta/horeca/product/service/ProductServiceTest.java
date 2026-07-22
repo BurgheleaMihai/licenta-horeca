@@ -17,9 +17,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
-    @Mock private ProductRepository productRepository;
+    @Mock
+    private ProductRepository productRepository;
 
-    @InjectMocks private ProductService productService;
+    @InjectMocks
+    private ProductService productService;
 
     @Test
     void getAvailableProductsShouldReturnOnlyAvailableProducts() {
@@ -35,8 +37,7 @@ class ProductServiceTest {
         tiramisu.setPrice(BigDecimal.valueOf(22.00));
         tiramisu.setAvailable(true);
 
-        when(productRepository.findByAvailableTrue())
-                .thenReturn(List.of(pizza, tiramisu));
+        when(productRepository.findByAvailableTrue()).thenReturn(List.of(pizza, tiramisu));
 
         List<Product> result = productService.getAvailableProducts();
 

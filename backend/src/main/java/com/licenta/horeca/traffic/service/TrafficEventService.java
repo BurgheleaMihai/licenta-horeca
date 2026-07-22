@@ -14,11 +14,11 @@ public class TrafficEventService {
 
     private final TrafficEventRepository trafficEventRepository;
 
-    public TrafficEventService(TrafficEventRepository trafficEventRepository){
+    public TrafficEventService(TrafficEventRepository trafficEventRepository) {
         this.trafficEventRepository = trafficEventRepository;
     }
 
-    public TrafficEvent saveEvent(TrafficEventType type){
+    public TrafficEvent saveEvent(TrafficEventType type) {
         TrafficEvent event = new TrafficEvent(type);
         return trafficEventRepository.save(event);
     }
@@ -31,16 +31,14 @@ public class TrafficEventService {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime startOfNextDay = LocalDate.now().plusDays(1).atStartOfDay();
 
-        return trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                TrafficEventType.ENTRY, startOfDay, startOfNextDay);
+        return trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(TrafficEventType.ENTRY, startOfDay, startOfNextDay);
     }
 
     public long getExitCount() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime startOfNextDay = LocalDate.now().plusDays(1).atStartOfDay();
 
-        return trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                        TrafficEventType.EXIT, startOfDay, startOfNextDay);
+        return trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(TrafficEventType.EXIT, startOfDay, startOfNextDay);
     }
 
     public long getEstimatedOccupancy() {

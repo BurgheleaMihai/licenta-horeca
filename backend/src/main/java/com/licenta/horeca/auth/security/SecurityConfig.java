@@ -16,397 +16,182 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter
-            jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter
-    ) {
-        this.jwtAuthenticationFilter =
-                jwtAuthenticationFilter;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(
-                        AbstractHttpConfigurer::disable
-                )
+        http.csrf(AbstractHttpConfigurer::disable)
 
-                .cors(
-                        Customizer.withDefaults()
-                )
+                .cors(Customizer.withDefaults())
 
-                .sessionManagement(
-                        session ->
-                                session.sessionCreationPolicy(
-                                        SessionCreationPolicy.STATELESS
-                                )
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .formLogin(
-                        AbstractHttpConfigurer::disable
-                )
+                .formLogin(AbstractHttpConfigurer::disable)
 
-                .httpBasic(
-                        AbstractHttpConfigurer::disable
-                )
+                .httpBasic(AbstractHttpConfigurer::disable)
 
-                .exceptionHandling(
-                        exception ->
-                                exception
+                .exceptionHandling(exception -> exception
 
-                                        .authenticationEntryPoint(
-                                                (
-                                                        request,
-                                                        response,
-                                                        authenticationException
-                                                ) -> {
+                        .authenticationEntryPoint((request, response, authenticationException) -> {
 
-                                                    response.setStatus(
-                                                            HttpServletResponse
-                                                                    .SC_UNAUTHORIZED
-                                                    );
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-                                                    response.setContentType(
-                                                            "application/json"
-                                                    );
+                            response.setContentType("application/json");
 
-                                                    response.setCharacterEncoding(
-                                                            "UTF-8"
-                                                    );
+                            response.setCharacterEncoding("UTF-8");
 
-                                                    response.getWriter().write(
-                                                            """
-                                                            {
-                                                              "status": 401,
-                                                              "message": "Autentificare necesara."
-                                                            }
-                                                            """
-                                                    );
-                                                }
-                                        )
+                            response.getWriter().write("""
+                                    {
+                                      "status": 401,
+                                      "message": "Autentificare necesara."
+                                    }
+                                    """);
+                        })
 
-                                        .accessDeniedHandler(
-                                                (
-                                                        request,
-                                                        response,
-                                                        accessDeniedException
-                                                ) -> {
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
 
-                                                    response.setStatus(
-                                                            HttpServletResponse
-                                                                    .SC_FORBIDDEN
-                                                    );
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-                                                    response.setContentType(
-                                                            "application/json"
-                                                    );
+                            response.setContentType("application/json");
 
-                                                    response.setCharacterEncoding(
-                                                            "UTF-8"
-                                                    );
+                            response.setCharacterEncoding("UTF-8");
 
-                                                    response.getWriter().write(
-                                                            """
-                                                            {
-                                                              "status": 403,
-                                                              "message": "Nu aveti permisiunea necesara."
-                                                            }
-                                                            """
-                                                    );
-                                                }
-                                        )
-                )
+                            response.getWriter().write("""
+                                    {
+                                      "status": 403,
+                                      "message": "Nu aveti permisiunea necesara."
+                                    }
+                                    """);
+                        }))
 
-                .authorizeHttpRequests(
-                        authorization ->
-                                authorization
+                .authorizeHttpRequests(authorization -> authorization
 
-                                        /*
-                                         * Permite procesarea interna a erorilor.
-                                         *
-                                         * Fara aceasta regula, o exceptie produsa
-                                         * de un endpoint poate ajunge pe /error si
-                                         * poate fi raportata incorect drept 401.
-                                         */
-                                        .dispatcherTypeMatchers(
-                                                DispatcherType.ERROR
-                                        )
-                                        .permitAll()
+                        /*
+                         * Permite procesarea interna a erorilor.
+                         *
+                         * Fara aceasta regula, o exceptie produsa
+                         * de un endpoint poate ajunge pe /error si
+                         * poate fi raportata incorect drept 401.
+                         */.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 
-                                        .requestMatchers(
-                                                "/error"
-                                        )
-                                        .permitAll()
+                        .requestMatchers("/error").permitAll()
 
-                                        /*
-                                         * ENDPOINTURI PUBLICE
-                                         */
+                        /*
+                         * ENDPOINTURI PUBLICE
+                         */
 
-                                        // Login angajați.
-                                        .requestMatchers(
-                                                HttpMethod.POST,
-                                                "/api/auth/login"
-                                        )
-                                        .permitAll()
+                        // Login angajați.
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
-                                        // Meniul clientului.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/products",
-                                                "/api/products/**"
-                                        )
-                                        .permitAll()
+                        // Meniul clientului.
+                        .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
 
-                                        // Trimiterea feedbackului.
-                                        .requestMatchers(
-                                                HttpMethod.POST,
-                                                "/api/feedback"
-                                        )
-                                        .permitAll()
+                        // Trimiterea feedbackului.
+                        .requestMatchers(HttpMethod.POST, "/api/feedback").permitAll()
 
-                                        /*
-                                         * COMENZI
-                                         */
+                        /*
+                         * COMENZI
+                         */
 
-                                        // Crearea unei comenzi.
-                                        .requestMatchers(
-                                                HttpMethod.POST,
-                                                "/api/orders"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "ADMIN"
-                                        )
+                        // Crearea unei comenzi.
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("WAITER", "ADMIN")
 
-                                        // Lista tuturor comenzilor.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/orders"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        // Lista tuturor comenzilor.
+                        .requestMatchers(HttpMethod.GET, "/api/orders").hasAnyRole("MANAGER", "ADMIN")
 
-                                        // Comenzile active.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/orders/active"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        // Comenzile active.
+                        .requestMatchers(HttpMethod.GET, "/api/orders/active").hasAnyRole("WAITER", "MANAGER", "ADMIN")
 
-                                        // Statisticile comenzilor.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/orders/statistics",
-                                                "/api/orders/statistics/today"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        // Statisticile comenzilor.
+                        .requestMatchers(HttpMethod.GET, "/api/orders/statistics", "/api/orders/statistics/today").hasAnyRole("MANAGER", "ADMIN")
 
-                                        // Comenzile pentru bucătărie.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/orders/kitchen"
-                                        )
-                                        .hasAnyRole(
-                                                "KITCHEN",
-                                                "ADMIN"
-                                        )
+                        // Comenzile pentru bucătărie.
+                        .requestMatchers(HttpMethod.GET, "/api/orders/kitchen").hasAnyRole("KITCHEN", "ADMIN")
 
-                                        // Comenzile pentru bar.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/orders/bar"
-                                        )
-                                        .hasAnyRole(
-                                                "BAR",
-                                                "ADMIN"
-                                        )
+                        // Comenzile pentru bar.
+                        .requestMatchers(HttpMethod.GET, "/api/orders/bar").hasAnyRole("BAR", "ADMIN")
 
-                                        // Actualizarea stării unui produs.
-                                        .requestMatchers(
-                                                HttpMethod.PUT,
-                                                "/api/orders/items/*/status"
-                                        )
-                                        .hasAnyRole(
-                                                "KITCHEN",
-                                                "BAR",
-                                                "ADMIN"
-                                        )
+                        // Actualizarea stării unui produs.
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/items/*/status").hasAnyRole("KITCHEN", "BAR", "ADMIN")
 
-                                        // Actualizarea stării generale a comenzii.
-                                        .requestMatchers(
-                                                HttpMethod.PUT,
-                                                "/api/orders/*/status"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "ADMIN"
-                                        )
+                        // Actualizarea stării generale a comenzii.
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/*/status").hasAnyRole("WAITER", "ADMIN")
 
-                                        /*
-                                         * MESE
-                                         */
+                        /*
+                         * MESE
+                         */
 
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/tables",
-                                                "/api/tables/**"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        .requestMatchers(HttpMethod.GET, "/api/tables", "/api/tables/**").hasAnyRole("WAITER", "MANAGER", "ADMIN")
 
-                                        /*
-                                         * SESIUNI MESE
-                                         */
+                        /*
+                         * SESIUNI MESE
+                         */
 
-                                        // Vizualizarea sesiunilor active.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/table-sessions/active"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        // Vizualizarea sesiunilor active.
+                        .requestMatchers(HttpMethod.GET, "/api/table-sessions/active").hasAnyRole("WAITER", "MANAGER", "ADMIN")
 
-                                        // Crearea sesiunii unei mese.
-                                        .requestMatchers(
-                                                HttpMethod.POST,
-                                                "/api/table-sessions/table/*"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "ADMIN"
-                                        )
+                        // Crearea sesiunii unei mese.
+                        .requestMatchers(HttpMethod.POST, "/api/table-sessions/table/*").hasAnyRole("WAITER", "ADMIN")
 
-                                        // Închiderea sesiunii unei mese.
-                                        .requestMatchers(
-                                                HttpMethod.PUT,
-                                                "/api/table-sessions/*/close"
-                                        )
-                                        .hasAnyRole(
-                                                "WAITER",
-                                                "ADMIN"
-                                        )
+                        // Închiderea sesiunii unei mese.
+                        .requestMatchers(HttpMethod.PUT, "/api/table-sessions/*/close").hasAnyRole("WAITER", "ADMIN")
 
-                                        /*
-                                         * FEEDBACK
-                                         */
+                        /*
+                         * FEEDBACK
+                         */
 
-                                        // Citirea tuturor recenziilor.
-                                        .requestMatchers(
-                                                HttpMethod.GET,
-                                                "/api/feedback"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        // Citirea tuturor recenziilor.
+                        .requestMatchers(HttpMethod.GET, "/api/feedback").hasAnyRole("MANAGER", "ADMIN")
 
-                                        /*
-                                         * STOC AUXILIAR
-                                         */
+                        /*
+                         * STOC AUXILIAR
+                         */
 
-                                        .requestMatchers(
-                                                "/api/auxiliary-supplies",
-                                                "/api/auxiliary-supplies/**"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        .requestMatchers("/api/auxiliary-supplies", "/api/auxiliary-supplies/**").hasAnyRole("MANAGER", "ADMIN")
 
-                                        /*
-                                         * TRAFIC
-                                         */
+                        /*
+                         * TRAFIC
+                         */
 
-                                        .requestMatchers(
-                                                "/api/traffic",
-                                                "/api/traffic/**"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        .requestMatchers("/api/traffic", "/api/traffic/**").hasAnyRole("MANAGER", "ADMIN")
 
-                                        /*
-                                         * SISTEM DECIZIONAL AI
-                                         */
+                        /*
+                         * SISTEM DECIZIONAL AI
+                         */
 
-                                        .requestMatchers(
-                                                "/api/decision",
-                                                "/api/decision/**"
-                                        )
-                                        .hasRole(
-                                                "ADMIN"
-                                        )
+                        .requestMatchers("/api/decision", "/api/decision/**").hasRole("ADMIN")
 
-                                        /*
-                                         * GESTIONAREA TURELOR ANGAJATILOR
-                                         */
+                        /*
+                         * GESTIONAREA TURELOR ANGAJATILOR
+                         */
 
-                                        .requestMatchers(
-                                                "/api/employee-shifts",
-                                                "/api/employee-shifts/**"
-                                        )
-                                        .hasAnyRole(
-                                                "MANAGER",
-                                                "ADMIN"
-                                        )
+                        .requestMatchers("/api/employee-shifts", "/api/employee-shifts/**").hasAnyRole("MANAGER", "ADMIN")
 
-                                        /*
-                                         * ADMINISTRARE ANGAJATI
-                                         */
+                        /*
+                         * ADMINISTRARE ANGAJATI
+                         */
 
-                                        .requestMatchers(
-                                                "/api/employees",
-                                                "/api/employees/**"
-                                        )
-                                        .hasRole(
-                                                "ADMIN"
-                                        )
+                        .requestMatchers("/api/employees", "/api/employees/**").hasRole("ADMIN")
 
-                                        /*
-                                         * RESTUL ENDPOINTURILOR
-                                         */
+                        /*
+                         * RESTUL ENDPOINTURILOR
+                         */
 
-                                        .anyRequest()
-                                        .authenticated()
-                )
+                        .anyRequest().authenticated())
 
-                .addFilterBefore(
-                        jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter>
-    jwtAuthenticationFilterRegistration(
-            JwtAuthenticationFilter filter
-    ) {
-        FilterRegistrationBean<JwtAuthenticationFilter>
-                registration =
-                new FilterRegistrationBean<>(filter);
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
 
         registration.setEnabled(false);
 

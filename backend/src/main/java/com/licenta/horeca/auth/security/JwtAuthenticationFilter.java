@@ -19,98 +19,52 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String BEARER_PREFIX =
-            "Bearer ";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            CustomUserDetailsService customUserDetailsService
-    ) {
+    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader =
-                request.getHeader(
-                        HttpHeaders.AUTHORIZATION
-                );
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (authorizationHeader == null
-                || !authorizationHeader.startsWith(
-                BEARER_PREFIX
-        )) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
 
-            filterChain.doFilter(
-                    request,
-                    response
-            );
+            filterChain.doFilter(request, response);
 
             return;
         }
 
-        String token =
-                authorizationHeader.substring(
-                        BEARER_PREFIX.length()
-                );
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
 
         try {
-            String email =
-                    jwtService.extractUsername(token);
+            String email = jwtService.extractUsername(token);
 
-            boolean authenticationMissing =
-                    SecurityContextHolder
-                            .getContext()
-                            .getAuthentication() == null;
+            boolean authenticationMissing = SecurityContextHolder.getContext().getAuthentication() == null;
 
             if (email != null && authenticationMissing) {
-                UserDetails userDetails =
-                        customUserDetailsService
-                                .loadUserByUsername(email);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-                if (jwtService.isTokenValid(
-                        token,
-                        userDetails
-                )) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+                if (jwtService.isTokenValid(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    SecurityContextHolder
-                            .getContext()
-                            .setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
 
-        } catch (
-                JwtException
-                | IllegalArgumentException
-                | UsernameNotFoundException exception
-        ) {
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException exception) {
             SecurityContextHolder.clearContext();
         }
 
-        filterChain.doFilter(
-                request,
-                response
-        );
+        filterChain.doFilter(request, response);
     }
 }

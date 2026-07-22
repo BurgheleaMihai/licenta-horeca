@@ -12,26 +12,35 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "app_users")
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // Numele complet al utilizatorului/angajatului
-    @Column(nullable = false) private String fullName;
+    @Column(nullable = false)
+    private String fullName;
 
     // Email folosit pentru autentificare
-    @Column(nullable = false, unique = true) private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
     // Parola utilizatorului
-    @Column(nullable = false) private String password;
+    @Column(nullable = false)
+    private String password;
 
     // Indică dacă utilizatorul are un cont activ și se poate autentifica.
     // Nu reprezintă prezența angajatului într-o tură.
-    @Column(nullable = false) private boolean active = true;
+    @Column(nullable = false)
+    private boolean active = true;
 
     // Un utilizator are un singur rol.
     // Mai multi utilizatori pot avea acelasi rol.
-    @ManyToOne @JoinColumn(name = "role_id", nullable = false) private Role role;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
-    public User() {}
+    public User() {
+    }
 
     public User(String fullName, String email, String password, Role role) {
         this.fullName = fullName;

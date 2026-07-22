@@ -54,26 +54,22 @@ public class StockEntryRequest {
         this.supplyId = supplyId;
     }
 
-    public void setPackageQuantity(
-            BigDecimal packageQuantity) {
+    public void setPackageQuantity(BigDecimal packageQuantity) {
 
         this.packageQuantity = packageQuantity;
     }
 
-    public void setPackageType(
-            StockPackageType packageType) {
+    public void setPackageType(StockPackageType packageType) {
 
         this.packageType = packageType;
     }
 
-    public void setQuantityPerPackage(
-            BigDecimal quantityPerPackage) {
+    public void setQuantityPerPackage(BigDecimal quantityPerPackage) {
 
         this.quantityPerPackage = quantityPerPackage;
     }
 
-    public void setInputUnit(
-            MeasurementUnit inputUnit) {
+    public void setInputUnit(MeasurementUnit inputUnit) {
 
         this.inputUnit = inputUnit;
     }

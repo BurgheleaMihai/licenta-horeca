@@ -5,12 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface StockEntryRepository
-        extends JpaRepository<StockEntry, Long> {
+public interface StockEntryRepository extends JpaRepository<StockEntry, Long> {
 
-    List<StockEntry> findBySupplyIdOrderByCreatedAtDesc(
-            Long supplyId
-    );
+    List<StockEntry> findBySupplyIdOrderByCreatedAtDesc(Long supplyId);
 
     void deleteBySupplyId(Long supplyId);
 }

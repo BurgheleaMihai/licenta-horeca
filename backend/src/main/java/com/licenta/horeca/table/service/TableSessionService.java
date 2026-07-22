@@ -17,142 +17,73 @@ import java.util.List;
 @Service
 public class TableSessionService {
 
-    private final TableSessionRepository
-            tableSessionRepository;
+    private final TableSessionRepository tableSessionRepository;
 
-    private final RestaurantTableRepository
-            restaurantTableRepository;
+    private final RestaurantTableRepository restaurantTableRepository;
 
-    private final TrafficEventService
-            trafficEventService;
+    private final TrafficEventService trafficEventService;
 
-    public TableSessionService(
-            TableSessionRepository tableSessionRepository,
-            RestaurantTableRepository restaurantTableRepository,
-            TrafficEventService trafficEventService
-    ) {
-        this.tableSessionRepository =
-                tableSessionRepository;
+    public TableSessionService(TableSessionRepository tableSessionRepository, RestaurantTableRepository restaurantTableRepository, TrafficEventService trafficEventService) {
+        this.tableSessionRepository = tableSessionRepository;
 
-        this.restaurantTableRepository =
-                restaurantTableRepository;
+        this.restaurantTableRepository = restaurantTableRepository;
 
-        this.trafficEventService =
-                trafficEventService;
+        this.trafficEventService = trafficEventService;
     }
 
     @Transactional(readOnly = true)
     public List<TableSession> getActiveSessions() {
-        return tableSessionRepository
-                .findByActiveTrue();
+        return tableSessionRepository.findByActiveTrue();
     }
 
     @Transactional
-    public TableSession createSessionForTable(
-            Long tableId
-    ) {
-        RestaurantTable restaurantTable =
-                restaurantTableRepository
-                        .findById(tableId)
-                        .orElseThrow(
-                                () ->
-                                        new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
-                                                "Masa nu exista."
-                                        )
-                        );
+    public TableSession createSessionForTable(Long tableId) {
+        RestaurantTable restaurantTable = restaurantTableRepository.findById(tableId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Masa nu exista."));
 
-        boolean alreadyHasActiveSession =
-                tableSessionRepository
-                        .existsByRestaurantTable_IdAndActiveTrue(
-                                tableId
-                        );
+        boolean alreadyHasActiveSession = tableSessionRepository.existsByRestaurantTable_IdAndActiveTrue(tableId);
 
         if (alreadyHasActiveSession) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Masa este deja deschisa."
-            );
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Masa este deja deschisa.");
         }
 
-        TableSession tableSession =
-                new TableSession();
+        TableSession tableSession = new TableSession();
 
-        tableSession.setRestaurantTable(
-                restaurantTable
-        );
+        tableSession.setRestaurantTable(restaurantTable);
 
-        tableSession.setSessionCode(
-                generateSessionCode(
-                        restaurantTable
-                )
-        );
+        tableSession.setSessionCode(generateSessionCode(restaurantTable));
 
-        tableSession.setStartedAt(
-                LocalDateTime.now()
-        );
+        tableSession.setStartedAt(LocalDateTime.now());
 
         tableSession.setEndedAt(null);
         tableSession.setActive(true);
 
-        TableSession savedSession =
-                tableSessionRepository.save(
-                        tableSession
-                );
+        TableSession savedSession = tableSessionRepository.save(tableSession);
 
-        trafficEventService.saveEvent(
-                TrafficEventType.ENTRY
-        );
+        trafficEventService.saveEvent(TrafficEventType.ENTRY);
 
         return savedSession;
     }
 
     @Transactional
-    public TableSession closeSession(
-            Long sessionId
-    ) {
-        TableSession tableSession =
-                tableSessionRepository
-                        .findById(sessionId)
-                        .orElseThrow(
-                                () ->
-                                        new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
-                                                "Sesiunea nu exista."
-                                        )
-                        );
+    public TableSession closeSession(Long sessionId) {
+        TableSession tableSession = tableSessionRepository.findById(sessionId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sesiunea nu exista."));
 
         if (!tableSession.isActive()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Masa este deja inchisa."
-            );
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Masa este deja inchisa.");
         }
 
         tableSession.setActive(false);
 
-        tableSession.setEndedAt(
-                LocalDateTime.now()
-        );
+        tableSession.setEndedAt(LocalDateTime.now());
 
-        TableSession savedSession =
-                tableSessionRepository.save(
-                        tableSession
-                );
+        TableSession savedSession = tableSessionRepository.save(tableSession);
 
-        trafficEventService.saveEvent(
-                TrafficEventType.EXIT
-        );
+        trafficEventService.saveEvent(TrafficEventType.EXIT);
 
         return savedSession;
     }
 
-    private String generateSessionCode(
-            RestaurantTable restaurantTable
-    ) {
-        return "MASA-"
-                + restaurantTable.getTableNumber()
-                + "-"
-                + System.currentTimeMillis();
+    private String generateSessionCode(RestaurantTable restaurantTable) {
+        return "MASA-" + restaurantTable.getTableNumber() + "-" + System.currentTimeMillis();
     }
 }

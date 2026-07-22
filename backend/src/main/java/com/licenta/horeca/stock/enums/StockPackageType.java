@@ -2,10 +2,5 @@ package com.licenta.horeca.stock.enums;
 
 public enum StockPackageType {
 
-    DIRECT,
-    BOX,
-    PACK,
-    BUNDLE,
-    BAG,
-    BOTTLE
+    DIRECT, BOX, PACK, BUNDLE, BAG, BOTTLE
 }

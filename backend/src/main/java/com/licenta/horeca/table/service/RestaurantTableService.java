@@ -13,14 +13,16 @@ public class RestaurantTableService {
     public RestaurantTableService(RestaurantTableRepository restaurantTableRepository) {
         this.restaurantTableRepository = restaurantTableRepository;
     }
+
     public List<RestaurantTable> getAllTables() {
         return restaurantTableRepository.findAll();
     }
+
     public List<RestaurantTable> getActiveTables() {
         return restaurantTableRepository.findByActiveTrue();
     }
+
     public RestaurantTable getTableById(Long tableId) {
-        return restaurantTableRepository.findById(tableId)
-                .orElseThrow(() -> new RuntimeException("Masa nu exista."));
+        return restaurantTableRepository.findById(tableId).orElseThrow(() -> new RuntimeException("Masa nu exista."));
     }
 }

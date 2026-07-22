@@ -39,8 +39,6 @@ public class TrafficEventController {
 
     @GetMapping("/summary")
     public Map<String, Long> getSummary() {
-        return Map.of("entries", trafficEventService.getEntryCount(), "exits",
-                trafficEventService.getExitCount(), "estimatedOccupancy",
-                trafficEventService.getEstimatedOccupancy());
+        return Map.of("entries", trafficEventService.getEntryCount(), "exits", trafficEventService.getExitCount(), "estimatedOccupancy", trafficEventService.getEstimatedOccupancy());
     }
 }

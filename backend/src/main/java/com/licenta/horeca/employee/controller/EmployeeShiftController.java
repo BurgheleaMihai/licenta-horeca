@@ -25,9 +25,7 @@ public class EmployeeShiftController {
 
     private final EmployeeShiftService employeeShiftService;
 
-    public EmployeeShiftController(
-            EmployeeShiftService employeeShiftService
-    ) {
+    public EmployeeShiftController(EmployeeShiftService employeeShiftService) {
         this.employeeShiftService = employeeShiftService;
     }
 
@@ -38,34 +36,18 @@ public class EmployeeShiftController {
      * din tokenul JWT, nu din date trimise de frontend.
      */
     @PostMapping
-    public ResponseEntity<EmployeeShiftResponse> startShift(
-            @Valid @RequestBody StartEmployeeShiftRequest request,
-            Principal principal
-    ) {
-        EmployeeShiftResponse response =
-                employeeShiftService.startShift(
-                        request.getEmployeeId(),
-                        principal.getName()
-                );
+    public ResponseEntity<EmployeeShiftResponse> startShift(@Valid @RequestBody StartEmployeeShiftRequest request, Principal principal) {
+        EmployeeShiftResponse response = employeeShiftService.startShift(request.getEmployeeId(), principal.getName());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /*
      * Închide o tură existentă.
      */
     @PutMapping("/{shiftId}/close")
-    public ResponseEntity<EmployeeShiftResponse> closeShift(
-            @PathVariable Long shiftId,
-            Principal principal
-    ) {
-        EmployeeShiftResponse response =
-                employeeShiftService.closeShift(
-                        shiftId,
-                        principal.getName()
-                );
+    public ResponseEntity<EmployeeShiftResponse> closeShift(@PathVariable Long shiftId, Principal principal) {
+        EmployeeShiftResponse response = employeeShiftService.closeShift(shiftId, principal.getName());
 
         return ResponseEntity.ok(response);
     }
@@ -74,26 +56,17 @@ public class EmployeeShiftController {
      * Returnează toate turele care sunt încă deschise.
      */
     @GetMapping("/active")
-    public ResponseEntity<List<EmployeeShiftResponse>>
-    getActiveShifts() {
+    public ResponseEntity<List<EmployeeShiftResponse>> getActiveShifts() {
 
-        return ResponseEntity.ok(
-                employeeShiftService.getActiveShifts()
-        );
+        return ResponseEntity.ok(employeeShiftService.getActiveShifts());
     }
 
     /*
      * Returnează istoricul turelor unui angajat.
      */
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<List<EmployeeShiftResponse>>
-    getEmployeeShiftHistory(
-            @PathVariable Long employeeId
-    ) {
-        return ResponseEntity.ok(
-                employeeShiftService
-                        .getEmployeeShiftHistory(employeeId)
-        );
+    public ResponseEntity<List<EmployeeShiftResponse>> getEmployeeShiftHistory(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(employeeShiftService.getEmployeeShiftHistory(employeeId));
     }
 
     /*
@@ -104,34 +77,17 @@ public class EmployeeShiftController {
      * și de sistemul decizional.
      */
     @GetMapping("/summary")
-    public ResponseEntity<ActiveStaffSummaryResponse>
-    getActiveStaffSummary() {
+    public ResponseEntity<ActiveStaffSummaryResponse> getActiveStaffSummary() {
 
-        return ResponseEntity.ok(
-                employeeShiftService.getActiveStaffSummary()
-        );
+        return ResponseEntity.ok(employeeShiftService.getActiveStaffSummary());
     }
 
     /*
      * Modifica intervalul unei ture planificate.
      */
     @PutMapping("/{shiftId}/planned")
-    public ResponseEntity<EmployeeShiftResponse>
-    updatePlannedShift(
-            @PathVariable Long shiftId,
-            @Valid
-            @RequestBody
-            UpdatePlannedShiftRequest request,
-            Principal principal
-    ) {
-        EmployeeShiftResponse response =
-                employeeShiftService
-                        .updatePlannedShift(
-                                shiftId,
-                                request.getPlannedStartAt(),
-                                request.getPlannedEndAt(),
-                                principal.getName()
-                        );
+    public ResponseEntity<EmployeeShiftResponse> updatePlannedShift(@PathVariable Long shiftId, @Valid @RequestBody UpdatePlannedShiftRequest request, Principal principal) {
+        EmployeeShiftResponse response = employeeShiftService.updatePlannedShift(shiftId, request.getPlannedStartAt(), request.getPlannedEndAt(), principal.getName());
 
         return ResponseEntity.ok(response);
     }
@@ -143,17 +99,8 @@ public class EmployeeShiftController {
      * in baza de date cu motivul CANCELLED.
      */
     @PutMapping("/{shiftId}/cancel")
-    public ResponseEntity<EmployeeShiftResponse>
-    cancelPlannedShift(
-            @PathVariable Long shiftId,
-            Principal principal
-    ) {
-        EmployeeShiftResponse response =
-                employeeShiftService
-                        .cancelPlannedShift(
-                                shiftId,
-                                principal.getName()
-                        );
+    public ResponseEntity<EmployeeShiftResponse> cancelPlannedShift(@PathVariable Long shiftId, Principal principal) {
+        EmployeeShiftResponse response = employeeShiftService.cancelPlannedShift(shiftId, principal.getName());
 
         return ResponseEntity.ok(response);
     }

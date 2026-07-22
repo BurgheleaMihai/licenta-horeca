@@ -21,116 +21,76 @@ public class AuxiliarySupplyService {
 
     private final StockEntryRepository stockEntryRepository;
 
-    public AuxiliarySupplyService(
-            AuxiliarySupplyRepository auxiliarySupplyRepository,
-            StockEntryRepository stockEntryRepository) {
+    public AuxiliarySupplyService(AuxiliarySupplyRepository auxiliarySupplyRepository, StockEntryRepository stockEntryRepository) {
 
-        this.auxiliarySupplyRepository =
-                auxiliarySupplyRepository;
+        this.auxiliarySupplyRepository = auxiliarySupplyRepository;
 
-        this.stockEntryRepository =
-                stockEntryRepository;
+        this.stockEntryRepository = stockEntryRepository;
     }
 
     public List<AuxiliarySupply> getAllSupplies() {
-        return auxiliarySupplyRepository
-                .findAllOrderedByStockTypeNameAndVariant();
+        return auxiliarySupplyRepository.findAllOrderedByStockTypeNameAndVariant();
     }
 
     public List<AuxiliarySupply> getAllActiveSupplies() {
-        return auxiliarySupplyRepository
-                .findAllActiveOrderedByStockTypeNameAndVariant();
+        return auxiliarySupplyRepository.findAllActiveOrderedByStockTypeNameAndVariant();
     }
 
     public List<AuxiliarySupply> getUnavailableSupplies() {
-        return auxiliarySupplyRepository
-                .findByAvailableInWarehouseFalseAndActiveTrueOrderByNameAscVariantNameAsc();
+        return auxiliarySupplyRepository.findByAvailableInWarehouseFalseAndActiveTrueOrderByNameAscVariantNameAsc();
     }
 
     public AuxiliarySupply getSupplyById(Long supplyId) {
-        return auxiliarySupplyRepository
-                .findById(supplyId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Varianta articolului de stoc nu a fost gasita."
-                        )
-                );
+        return auxiliarySupplyRepository.findById(supplyId).orElseThrow(() -> new RuntimeException("Varianta articolului de stoc nu a fost gasita."));
     }
 
-    public AuxiliarySupply createSupply(
-            AuxiliarySupplyRequest request) {
+    public AuxiliarySupply createSupply(AuxiliarySupplyRequest request) {
 
         validateRequest(request);
 
-        String normalizedName =
-                request.getName().trim();
+        String normalizedName = request.getName().trim();
 
-        String normalizedVariant =
-                normalizeVariantName(request);
+        String normalizedVariant = normalizeVariantName(request);
 
         boolean alreadyExists;
 
         if (normalizedVariant == null) {
-            alreadyExists = auxiliarySupplyRepository
-                    .existsByNameIgnoreCaseAndVariantNameIsNull(
-                            normalizedName
-                    );
+            alreadyExists = auxiliarySupplyRepository.existsByNameIgnoreCaseAndVariantNameIsNull(normalizedName);
         } else {
-            alreadyExists = auxiliarySupplyRepository
-                    .existsByNameIgnoreCaseAndVariantNameIgnoreCase(
-                            normalizedName,
-                            normalizedVariant
-                    );
+            alreadyExists = auxiliarySupplyRepository.existsByNameIgnoreCaseAndVariantNameIgnoreCase(normalizedName, normalizedVariant);
         }
 
         if (alreadyExists) {
-            throw new RuntimeException(
-                    "Exista deja aceasta varianta pentru produsul selectat."
-            );
+            throw new RuntimeException("Exista deja aceasta varianta pentru produsul selectat.");
         }
 
-        AuxiliarySupply supply =
-                new AuxiliarySupply();
+        AuxiliarySupply supply = new AuxiliarySupply();
 
-        applyRequestData(
-                supply,
-                request,
-                normalizedVariant
-        );
+        applyRequestData(supply, request, normalizedVariant);
 
         updateAvailabilityFromQuantity(supply);
 
         return auxiliarySupplyRepository.save(supply);
     }
 
-    public AuxiliarySupply updateSupply(
-            Long supplyId,
-            AuxiliarySupplyRequest request) {
+    public AuxiliarySupply updateSupply(Long supplyId, AuxiliarySupplyRequest request) {
 
         validateRequest(request);
 
-        AuxiliarySupply supply =
-                getSupplyById(supplyId);
+        AuxiliarySupply supply = getSupplyById(supplyId);
 
-        String normalizedVariant =
-                normalizeVariantName(request);
+        String normalizedVariant = normalizeVariantName(request);
 
-        applyRequestData(
-                supply,
-                request,
-                normalizedVariant
-        );
+        applyRequestData(supply, request, normalizedVariant);
 
         updateAvailabilityFromQuantity(supply);
 
         return auxiliarySupplyRepository.save(supply);
     }
 
-    public AuxiliarySupply markUnavailable(
-            Long supplyId) {
+    public AuxiliarySupply markUnavailable(Long supplyId) {
 
-        AuxiliarySupply supply =
-                getSupplyById(supplyId);
+        AuxiliarySupply supply = getSupplyById(supplyId);
 
         supply.setAvailableInWarehouse(false);
         supply.setReportedAt(LocalDateTime.now());
@@ -138,11 +98,9 @@ public class AuxiliarySupplyService {
         return auxiliarySupplyRepository.save(supply);
     }
 
-    public AuxiliarySupply markAvailable(
-            Long supplyId) {
+    public AuxiliarySupply markAvailable(Long supplyId) {
 
-        AuxiliarySupply supply =
-                getSupplyById(supplyId);
+        AuxiliarySupply supply = getSupplyById(supplyId);
 
         supply.setAvailableInWarehouse(true);
         supply.setReportedAt(null);
@@ -152,8 +110,7 @@ public class AuxiliarySupplyService {
 
     @Transactional
     public void deleteSupply(Long supplyId) {
-        AuxiliarySupply supply =
-                getSupplyById(supplyId);
+        AuxiliarySupply supply = getSupplyById(supplyId);
 
         /*
          * Intrările trebuie șterse înaintea variantei,
@@ -165,84 +122,47 @@ public class AuxiliarySupplyService {
         auxiliarySupplyRepository.delete(supply);
     }
 
-    private void applyRequestData(
-            AuxiliarySupply supply,
-            AuxiliarySupplyRequest request,
-            String normalizedVariant) {
+    private void applyRequestData(AuxiliarySupply supply, AuxiliarySupplyRequest request, String normalizedVariant) {
 
         supply.setName(request.getName().trim());
 
-        supply.setVariantName(
-                normalizedVariant
-        );
+        supply.setVariantName(normalizedVariant);
 
-        supply.setSpecificationValue(
-                request.getSpecificationValue()
-        );
+        supply.setSpecificationValue(request.getSpecificationValue());
 
-        supply.setSpecificationUnit(
-                request.getSpecificationUnit()
-        );
+        supply.setSpecificationUnit(request.getSpecificationUnit());
 
-        supply.setStockType(
-                request.getStockType()
-        );
+        supply.setStockType(request.getStockType());
 
-        supply.setCategory(
-                request.getCategory()
-        );
+        supply.setCategory(request.getCategory());
 
-        supply.setBaseUnit(
-                request.getBaseUnit()
-        );
+        supply.setBaseUnit(request.getBaseUnit());
 
-        supply.setCurrentQuantity(
-                request.getCurrentQuantity()
-        );
+        supply.setCurrentQuantity(request.getCurrentQuantity());
 
-        supply.setMinimumQuantity(
-                request.getMinimumQuantity()
-        );
+        supply.setMinimumQuantity(request.getMinimumQuantity());
 
-        supply.setActive(
-                request.getActive() == null
-                        || request.getActive()
-        );
+        supply.setActive(request.getActive() == null || request.getActive());
     }
 
-    private String normalizeVariantName(
-            AuxiliarySupplyRequest request) {
+    private String normalizeVariantName(AuxiliarySupplyRequest request) {
 
-        if (request.getVariantName() != null
-                && !request.getVariantName()
-                .trim()
-                .isEmpty()) {
+        if (request.getVariantName() != null && !request.getVariantName().trim().isEmpty()) {
 
-            return request
-                    .getVariantName()
-                    .trim();
+            return request.getVariantName().trim();
         }
 
-        if (request.getSpecificationValue() != null
-                && request.getSpecificationUnit() != null) {
+        if (request.getSpecificationValue() != null && request.getSpecificationUnit() != null) {
 
-            String value = request
-                    .getSpecificationValue()
-                    .stripTrailingZeros()
-                    .toPlainString();
+            String value = request.getSpecificationValue().stripTrailingZeros().toPlainString();
 
-            return value
-                    + " "
-                    + getUnitLabel(
-                    request.getSpecificationUnit()
-            );
+            return value + " " + getUnitLabel(request.getSpecificationUnit());
         }
 
         return null;
     }
 
-    private String getUnitLabel(
-            MeasurementUnit unit) {
+    private String getUnitLabel(MeasurementUnit unit) {
 
         return switch (unit) {
             case PIECE -> "buc";
@@ -253,104 +173,68 @@ public class AuxiliarySupplyService {
         };
     }
 
-    private void updateAvailabilityFromQuantity(
-            AuxiliarySupply supply) {
+    private void updateAvailabilityFromQuantity(AuxiliarySupply supply) {
 
-        boolean available =
-                supply.getCurrentQuantity()
-                        .compareTo(BigDecimal.ZERO) > 0;
+        boolean available = supply.getCurrentQuantity().compareTo(BigDecimal.ZERO) > 0;
 
         supply.setAvailableInWarehouse(available);
 
         if (available) {
             supply.setReportedAt(null);
         } else if (supply.getReportedAt() == null) {
-            supply.setReportedAt(
-                    LocalDateTime.now()
-            );
+            supply.setReportedAt(LocalDateTime.now());
         }
     }
 
-    private void validateRequest(
-            AuxiliarySupplyRequest request) {
+    private void validateRequest(AuxiliarySupplyRequest request) {
 
         if (request == null) {
-            throw new RuntimeException(
-                    "Datele articolului de stoc sunt obligatorii."
-            );
+            throw new RuntimeException("Datele articolului de stoc sunt obligatorii.");
         }
 
-        if (request.getName() == null
-                || request.getName()
-                .trim()
-                .isEmpty()) {
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
 
-            throw new RuntimeException(
-                    "Denumirea produsului este obligatorie."
-            );
+            throw new RuntimeException("Denumirea produsului este obligatorie.");
         }
 
         if (request.getStockType() == null) {
-            request.setStockType(
-                    StockType.AUXILIARY
-            );
+            request.setStockType(StockType.AUXILIARY);
         }
 
         if (request.getCategory() == null) {
-            request.setCategory(
-                    StockCategory.OTHER
-            );
+            request.setCategory(StockCategory.OTHER);
         }
 
         if (request.getBaseUnit() == null) {
-            request.setBaseUnit(
-                    MeasurementUnit.PIECE
-            );
+            request.setBaseUnit(MeasurementUnit.PIECE);
         }
 
         if (request.getCurrentQuantity() == null) {
-            request.setCurrentQuantity(
-                    BigDecimal.ZERO
-            );
+            request.setCurrentQuantity(BigDecimal.ZERO);
         }
 
         if (request.getMinimumQuantity() == null) {
-            request.setMinimumQuantity(
-                    BigDecimal.ZERO
-            );
+            request.setMinimumQuantity(BigDecimal.ZERO);
         }
 
-        if (request.getCurrentQuantity()
-                .compareTo(BigDecimal.ZERO) < 0) {
+        if (request.getCurrentQuantity().compareTo(BigDecimal.ZERO) < 0) {
 
-            throw new RuntimeException(
-                    "Cantitatea curenta nu poate fi negativa."
-            );
+            throw new RuntimeException("Cantitatea curenta nu poate fi negativa.");
         }
 
-        if (request.getMinimumQuantity()
-                .compareTo(BigDecimal.ZERO) < 0) {
+        if (request.getMinimumQuantity().compareTo(BigDecimal.ZERO) < 0) {
 
-            throw new RuntimeException(
-                    "Pragul minim nu poate fi negativ."
-            );
+            throw new RuntimeException("Pragul minim nu poate fi negativ.");
         }
 
-        if (request.getSpecificationValue() != null
-                && request.getSpecificationValue()
-                .compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getSpecificationValue() != null && request.getSpecificationValue().compareTo(BigDecimal.ZERO) <= 0) {
 
-            throw new RuntimeException(
-                    "Valoarea specificatiei trebuie sa fie mai mare decat zero."
-            );
+            throw new RuntimeException("Valoarea specificatiei trebuie sa fie mai mare decat zero.");
         }
 
-        if (request.getSpecificationValue() != null
-                && request.getSpecificationUnit() == null) {
+        if (request.getSpecificationValue() != null && request.getSpecificationUnit() == null) {
 
-            throw new RuntimeException(
-                    "Unitatea specificatiei este obligatorie."
-            );
+            throw new RuntimeException("Unitatea specificatiei este obligatorie.");
         }
 
         if (request.getSpecificationValue() == null) {

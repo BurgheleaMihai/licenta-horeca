@@ -13,12 +13,15 @@ public class ProductService {
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+
     public List<Product> getAvailableProducts() {
         return productRepository.findByAvailableTrue();
     }
+
     public List<Product> getProductsByCategory(Long categoryId) {
         return productRepository.findByCategoryId(categoryId);
     }

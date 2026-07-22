@@ -13,15 +13,11 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
-    public FeedbackService(
-            FeedbackRepository feedbackRepository
-    ) {
+    public FeedbackService(FeedbackRepository feedbackRepository) {
         this.feedbackRepository = feedbackRepository;
     }
 
-    public Feedback saveFeedback(
-            Feedback feedback
-    ) {
+    public Feedback saveFeedback(Feedback feedback) {
         return feedbackRepository.save(feedback);
     }
 
@@ -29,23 +25,9 @@ public class FeedbackService {
         return feedbackRepository.findAll();
     }
 
-    public double getAverageRatingBetween(
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
-        List<Feedback> feedbackList =
-                feedbackRepository
-                        .findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                                start,
-                                end
-                        );
+    public double getAverageRatingBetween(LocalDateTime start, LocalDateTime end) {
+        List<Feedback> feedbackList = feedbackRepository.findByCreatedAtGreaterThanEqualAndCreatedAtLessThan(start, end);
 
-        return feedbackList
-                .stream()
-                .map(Feedback::getRating)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .average()
-                .orElse(0.0);
+        return feedbackList.stream().map(Feedback::getRating).filter(Objects::nonNull).mapToInt(Integer::intValue).average().orElse(0.0);
     }
 }

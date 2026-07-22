@@ -22,20 +22,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(RestaurantTableController.class)
 @Import(SecurityConfig.class)
-@WithMockUser(
-        username = "waiter@test.com",
-        roles = "WAITER"
-)
+@WithMockUser(username = "waiter@test.com", roles = "WAITER")
 class RestaurantTableControllerTest {
 
-    private static final String TABLES_ENDPOINT =
-            "/api/tables";
+    private static final String TABLES_ENDPOINT = "/api/tables";
 
-    private static final String ACTIVE_TABLES_ENDPOINT =
-            "/api/tables/active";
+    private static final String ACTIVE_TABLES_ENDPOINT = "/api/tables/active";
 
-    private static final String TABLE_BY_ID_ENDPOINT =
-            "/api/tables/1";
+    private static final String TABLE_BY_ID_ENDPOINT = "/api/tables/1";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,111 +44,38 @@ class RestaurantTableControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Test
-    void getAllTablesShouldReturnAllTables()
-            throws Exception {
+    void getAllTablesShouldReturnAllTables() throws Exception {
 
-        RestaurantTable table1 =
-                new RestaurantTable(1, 4);
+        RestaurantTable table1 = new RestaurantTable(1, 4);
 
-        RestaurantTable table2 =
-                new RestaurantTable(2, 2);
+        RestaurantTable table2 = new RestaurantTable(2, 2);
 
-        when(restaurantTableService.getAllTables())
-                .thenReturn(
-                        List.of(
-                                table1,
-                                table2
-                        )
-                );
+        when(restaurantTableService.getAllTables()).thenReturn(List.of(table1, table2));
 
-        mockMvc
-                .perform(
-                        get(TABLES_ENDPOINT)
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.length()")
-                                .value(2)
-                )
-                .andExpect(
-                        jsonPath("$[0].tableNumber")
-                                .value(1)
-                )
-                .andExpect(
-                        jsonPath("$[0].capacity")
-                                .value(4)
-                )
-                .andExpect(
-                        jsonPath("$[1].tableNumber")
-                                .value(2)
-                )
-                .andExpect(
-                        jsonPath("$[1].capacity")
-                                .value(2)
-                );
+        mockMvc.perform(get(TABLES_ENDPOINT)).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2)).andExpect(jsonPath("$[0].tableNumber").value(1)).andExpect(jsonPath("$[0].capacity").value(4)).andExpect(jsonPath("$[1].tableNumber").value(2)).andExpect(jsonPath("$[1].capacity").value(2));
     }
 
     @Test
-    void getActiveTablesShouldReturnActiveTables()
-            throws Exception {
+    void getActiveTablesShouldReturnActiveTables() throws Exception {
 
-        RestaurantTable table =
-                new RestaurantTable(1, 4);
+        RestaurantTable table = new RestaurantTable(1, 4);
 
         table.setActive(true);
 
-        when(restaurantTableService.getActiveTables())
-                .thenReturn(
-                        List.of(table)
-                );
+        when(restaurantTableService.getActiveTables()).thenReturn(List.of(table));
 
-        mockMvc
-                .perform(
-                        get(ACTIVE_TABLES_ENDPOINT)
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.length()")
-                                .value(1)
-                )
-                .andExpect(
-                        jsonPath("$[0].tableNumber")
-                                .value(1)
-                )
-                .andExpect(
-                        jsonPath("$[0].active")
-                                .value(true)
-                );
+        mockMvc.perform(get(ACTIVE_TABLES_ENDPOINT)).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1)).andExpect(jsonPath("$[0].tableNumber").value(1)).andExpect(jsonPath("$[0].active").value(true));
     }
 
     @Test
-    void getTableByIdShouldReturnTable()
-            throws Exception {
+    void getTableByIdShouldReturnTable() throws Exception {
 
-        RestaurantTable table =
-                new RestaurantTable(1, 4);
+        RestaurantTable table = new RestaurantTable(1, 4);
 
         table.setActive(true);
 
-        when(restaurantTableService.getTableById(1L))
-                .thenReturn(table);
+        when(restaurantTableService.getTableById(1L)).thenReturn(table);
 
-        mockMvc
-                .perform(
-                        get(TABLE_BY_ID_ENDPOINT)
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.tableNumber")
-                                .value(1)
-                )
-                .andExpect(
-                        jsonPath("$.capacity")
-                                .value(4)
-                )
-                .andExpect(
-                        jsonPath("$.active")
-                                .value(true)
-                );
+        mockMvc.perform(get(TABLE_BY_ID_ENDPOINT)).andExpect(status().isOk()).andExpect(jsonPath("$.tableNumber").value(1)).andExpect(jsonPath("$.capacity").value(4)).andExpect(jsonPath("$.active").value(true));
     }
 }

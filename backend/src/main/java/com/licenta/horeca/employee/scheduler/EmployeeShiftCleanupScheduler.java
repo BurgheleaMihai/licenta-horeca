@@ -9,18 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmployeeShiftCleanupScheduler {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(
-                    EmployeeShiftCleanupScheduler.class
-            );
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeShiftCleanupScheduler.class);
 
     private final EmployeeShiftService employeeShiftService;
 
-    public EmployeeShiftCleanupScheduler(
-            EmployeeShiftService employeeShiftService
-    ) {
-        this.employeeShiftService =
-                employeeShiftService;
+    public EmployeeShiftCleanupScheduler(EmployeeShiftService employeeShiftService) {
+        this.employeeShiftService = employeeShiftService;
     }
 
     /*
@@ -29,24 +23,14 @@ public class EmployeeShiftCleanupScheduler {
      * Nu afiseaza nimic atunci cand nu exista ture de procesat,
      * pentru a pastra terminalul backend curat.
      */
-    @Scheduled(
-            fixedDelayString =
-                    "${app.shifts.cleanup-delay-ms:300000}",
-            initialDelayString =
-                    "${app.shifts.cleanup-initial-delay-ms:60000}"
-    )
+    @Scheduled(fixedDelayString = "${app.shifts.cleanup-delay-ms:300000}", initialDelayString = "${app.shifts.cleanup-initial-delay-ms:60000}")
     public void cleanupExpiredShifts() {
 
         try {
-            int processedShiftCount =
-                    employeeShiftService
-                            .cleanupExpiredShifts();
+            int processedShiftCount = employeeShiftService.cleanupExpiredShifts();
 
             if (processedShiftCount > 0) {
-                LOGGER.info(
-                        "Au fost procesate automat {} ture expirate.",
-                        processedShiftCount
-                );
+                LOGGER.info("Au fost procesate automat {} ture expirate.", processedShiftCount);
             }
 
         } catch (RuntimeException exception) {
@@ -54,10 +38,7 @@ public class EmployeeShiftCleanupScheduler {
              * Afisam eroarea reala, deoarece o problema in acest
              * proces ar putea afecta numarul de angajati transmis AI-ului.
              */
-            LOGGER.error(
-                    "Procesarea automata a turelor a esuat.",
-                    exception
-            );
+            LOGGER.error("Procesarea automata a turelor a esuat.", exception);
         }
     }
 }

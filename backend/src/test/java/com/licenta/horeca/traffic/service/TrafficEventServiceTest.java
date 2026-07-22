@@ -52,17 +52,9 @@ class TrafficEventServiceTest {
 
     @Test
     void getEstimatedOccupancyReturnsEntriesMinusExits() {
-        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                eq(TrafficEventType.ENTRY),
-                any(LocalDateTime.class),
-                any(LocalDateTime.class)
-        )).thenReturn(10L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(eq(TrafficEventType.ENTRY), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(10L);
 
-        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                eq(TrafficEventType.EXIT),
-                any(LocalDateTime.class),
-                any(LocalDateTime.class)
-        )).thenReturn(4L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(eq(TrafficEventType.EXIT), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(4L);
 
         long result = trafficEventService.getEstimatedOccupancy();
 
@@ -71,17 +63,9 @@ class TrafficEventServiceTest {
 
     @Test
     void getEstimatedOccupancyWhenExitsAreGreaterThanEntriesReturnsZero() {
-        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                eq(TrafficEventType.ENTRY),
-                any(LocalDateTime.class),
-                any(LocalDateTime.class)
-        )).thenReturn(3L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(eq(TrafficEventType.ENTRY), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(3L);
 
-        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
-                eq(TrafficEventType.EXIT),
-                any(LocalDateTime.class),
-                any(LocalDateTime.class)
-        )).thenReturn(8L);
+        when(trafficEventRepository.countByTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(eq(TrafficEventType.EXIT), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(8L);
 
         long result = trafficEventService.getEstimatedOccupancy();
 

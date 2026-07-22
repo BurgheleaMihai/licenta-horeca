@@ -18,14 +18,15 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
-    private static final String EASY_MENU_COMMENT =
-            "Meniul este usor de folosit.";
+    private static final String EASY_MENU_COMMENT = "Meniul este usor de folosit.";
     private static final String VERY_GOOD_COMMENT = "Foarte bine.";
     private static final String GOOD_SERVICE_COMMENT = "Servire buna.";
 
-    @Mock private FeedbackRepository feedbackRepository;
+    @Mock
+    private FeedbackRepository feedbackRepository;
 
-    @InjectMocks private FeedbackService feedbackService;
+    @InjectMocks
+    private FeedbackService feedbackService;
 
     @Test
     void saveFeedbackShouldSaveFeedback() {
@@ -33,8 +34,7 @@ class FeedbackServiceTest {
         feedback.setRating(5);
         feedback.setComment(EASY_MENU_COMMENT);
 
-        when(feedbackRepository.save(any(Feedback.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(feedbackRepository.save(any(Feedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Feedback savedFeedback = feedbackService.saveFeedback(feedback);
 
@@ -54,8 +54,7 @@ class FeedbackServiceTest {
         feedback2.setRating(4);
         feedback2.setComment(GOOD_SERVICE_COMMENT);
 
-        when(feedbackRepository.findAll())
-                .thenReturn(List.of(feedback1, feedback2));
+        when(feedbackRepository.findAll()).thenReturn(List.of(feedback1, feedback2));
 
         List<Feedback> feedbackList = feedbackService.getAllFeedback();
 

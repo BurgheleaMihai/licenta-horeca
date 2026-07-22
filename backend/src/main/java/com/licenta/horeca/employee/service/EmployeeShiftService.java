@@ -25,18 +25,9 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeShiftService {
 
-    private static final Set<RoleType> OPERATIONAL_ROLES =
-            EnumSet.of(
-                    RoleType.WAITER,
-                    RoleType.KITCHEN,
-                    RoleType.BAR
-            );
+    private static final Set<RoleType> OPERATIONAL_ROLES = EnumSet.of(RoleType.WAITER, RoleType.KITCHEN, RoleType.BAR);
 
-    private static final Set<RoleType> SHIFT_OPERATOR_ROLES =
-            EnumSet.of(
-                    RoleType.MANAGER,
-                    RoleType.ADMIN
-            );
+    private static final Set<RoleType> SHIFT_OPERATOR_ROLES = EnumSet.of(RoleType.MANAGER, RoleType.ADMIN);
 
     private final EmployeeShiftRepository employeeShiftRepository;
 
@@ -48,38 +39,20 @@ public class EmployeeShiftService {
 
     private final long earlyLoginMinutes;
 
-    public EmployeeShiftService(
-            EmployeeShiftRepository employeeShiftRepository,
-            UserRepository userRepository,
-            @Value("${app.shifts.unscheduled-max-hours:16}")
-            long unscheduledMaxHours,
-            @Value("${app.shifts.maximum-duration-hours:16}")
-            long maximumDurationHours,
-            @Value("${app.shifts.early-login-minutes:60}")
-            long earlyLoginMinutes
-    ) {
-        if (unscheduledMaxHours <= 0
-                || maximumDurationHours <= 0
-                || earlyLoginMinutes < 0) {
-            throw new IllegalArgumentException(
-                    "Configuratia turelor este invalida."
-            );
+    public EmployeeShiftService(EmployeeShiftRepository employeeShiftRepository, UserRepository userRepository, @Value("${app.shifts.unscheduled-max-hours:16}") long unscheduledMaxHours, @Value("${app.shifts.maximum-duration-hours:16}") long maximumDurationHours, @Value("${app.shifts.early-login-minutes:60}") long earlyLoginMinutes) {
+        if (unscheduledMaxHours <= 0 || maximumDurationHours <= 0 || earlyLoginMinutes < 0) {
+            throw new IllegalArgumentException("Configuratia turelor este invalida.");
         }
 
-        this.employeeShiftRepository =
-                employeeShiftRepository;
+        this.employeeShiftRepository = employeeShiftRepository;
 
-        this.userRepository =
-                userRepository;
+        this.userRepository = userRepository;
 
-        this.unscheduledMaxHours =
-                unscheduledMaxHours;
+        this.unscheduledMaxHours = unscheduledMaxHours;
 
-        this.maximumDurationHours =
-                maximumDurationHours;
+        this.maximumDurationHours = maximumDurationHours;
 
-        this.earlyLoginMinutes =
-                earlyLoginMinutes;
+        this.earlyLoginMinutes = earlyLoginMinutes;
     }
 
     /*
@@ -87,43 +60,25 @@ public class EmployeeShiftService {
      * un angajat operațional autentificat.
      */
     @Transactional
-    public void ensureShiftForLogin(
-            Long employeeId
-    ) {
-        User employee =
-                userRepository
-                        .findByIdForUpdate(employeeId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Angajatul nu exista."
-                                )
-                        );
+    public void ensureShiftForLogin(Long employeeId) {
+        User employee = userRepository.findByIdForUpdate(employeeId).orElseThrow(() -> new BusinessException("Angajatul nu exista."));
 
         if (!employee.isActive()) {
-            throw new BusinessException(
-                    "Tura nu poate fi pornita pentru un cont dezactivat."
-            );
+            throw new BusinessException("Tura nu poate fi pornita pentru un cont dezactivat.");
         }
 
-        RoleType employeeRole =
-                employee.getRole().getName();
+        RoleType employeeRole = employee.getRole().getName();
 
         if (!OPERATIONAL_ROLES.contains(employeeRole)) {
             return;
         }
 
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        Optional<EmployeeShift> activeShift =
-                employeeShiftRepository
-                        .findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(
-                                employeeId
-                        );
+        Optional<EmployeeShift> activeShift = employeeShiftRepository.findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(employeeId);
 
         if (activeShift.isPresent()) {
-            EmployeeShift shift =
-                    activeShift.get();
+            EmployeeShift shift = activeShift.get();
 
             if (shift.getPlannedEndAt().isAfter(now)) {
                 return;
@@ -134,26 +89,14 @@ public class EmployeeShiftService {
             employeeShiftRepository.save(shift);
         }
 
-        LocalDateTime latestAllowedStart =
-                now.plusMinutes(earlyLoginMinutes);
+        LocalDateTime latestAllowedStart = now.plusMinutes(earlyLoginMinutes);
 
-        Optional<EmployeeShift> plannedShift =
-                employeeShiftRepository
-                        .findFirstByEmployeeIdAndStartedAtIsNullAndEndedAtIsNullAndPlannedStartAtLessThanEqualAndPlannedEndAtAfterOrderByPlannedStartAtAsc(
-                                employeeId,
-                                latestAllowedStart,
-                                now
-                        );
+        Optional<EmployeeShift> plannedShift = employeeShiftRepository.findFirstByEmployeeIdAndStartedAtIsNullAndEndedAtIsNullAndPlannedStartAtLessThanEqualAndPlannedEndAtAfterOrderByPlannedStartAtAsc(employeeId, latestAllowedStart, now);
 
         if (plannedShift.isPresent()) {
-            EmployeeShift shift =
-                    plannedShift.get();
+            EmployeeShift shift = plannedShift.get();
 
-            shift.start(
-                    now,
-                    ShiftStartSource.SCHEDULED_LOGIN,
-                    employee
-            );
+            shift.start(now, ShiftStartSource.SCHEDULED_LOGIN, employee);
 
             employeeShiftRepository.save(shift);
 
@@ -164,367 +107,165 @@ public class EmployeeShiftService {
          * Dacă managerul nu a creat programarea, angajatul
          * nu este blocat. Se creează o tură neplanificată.
          */
-        EmployeeShift unscheduledShift =
-                new EmployeeShift(
-                        employee,
-                        employeeRole,
-                        now,
-                        now.plusHours(unscheduledMaxHours),
-                        employee
-                );
+        EmployeeShift unscheduledShift = new EmployeeShift(employee, employeeRole, now, now.plusHours(unscheduledMaxHours), employee);
 
-        unscheduledShift.start(
-                now,
-                ShiftStartSource.UNSCHEDULED_LOGIN,
-                employee
-        );
+        unscheduledShift.start(now, ShiftStartSource.UNSCHEDULED_LOGIN, employee);
 
-        employeeShiftRepository.save(
-                unscheduledShift
-        );
+        employeeShiftRepository.save(unscheduledShift);
     }
 
     /*
      * Creează o programare flexibilă.
      */
     @Transactional
-    public EmployeeShiftResponse createPlannedShift(
-            Long employeeId,
-            LocalDateTime plannedStartAt,
-            LocalDateTime plannedEndAt,
-            String operatorEmail
-    ) {
-        User operator =
-                findAndValidateOperator(
-                        operatorEmail
-                );
+    public EmployeeShiftResponse createPlannedShift(Long employeeId, LocalDateTime plannedStartAt, LocalDateTime plannedEndAt, String operatorEmail) {
+        User operator = findAndValidateOperator(operatorEmail);
 
-        User employee =
-                userRepository
-                        .findByIdForUpdate(employeeId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Angajatul nu exista."
-                                )
-                        );
+        User employee = userRepository.findByIdForUpdate(employeeId).orElseThrow(() -> new BusinessException("Angajatul nu exista."));
 
         validateEmployeeForShift(employee);
 
-        validatePlannedInterval(
-                plannedStartAt,
-                plannedEndAt
-        );
+        validatePlannedInterval(plannedStartAt, plannedEndAt);
 
-        boolean overlappingShift =
-                employeeShiftRepository
-                        .existsByEmployeeIdAndEndedAtIsNullAndPlannedStartAtLessThanAndPlannedEndAtGreaterThan(
-                                employeeId,
-                                plannedEndAt,
-                                plannedStartAt
-                        );
+        boolean overlappingShift = employeeShiftRepository.existsByEmployeeIdAndEndedAtIsNullAndPlannedStartAtLessThanAndPlannedEndAtGreaterThan(employeeId, plannedEndAt, plannedStartAt);
 
         if (overlappingShift) {
-            throw new BusinessException(
-                    "Angajatul are deja o tura care se suprapune cu intervalul ales."
-            );
+            throw new BusinessException("Angajatul are deja o tura care se suprapune cu intervalul ales.");
         }
 
-        EmployeeShift shift =
-                new EmployeeShift(
-                        employee,
-                        employee.getRole().getName(),
-                        plannedStartAt,
-                        plannedEndAt,
-                        operator
-                );
+        EmployeeShift shift = new EmployeeShift(employee, employee.getRole().getName(), plannedStartAt, plannedEndAt, operator);
 
-        return mapToResponse(
-                employeeShiftRepository.save(shift)
-        );
+        return mapToResponse(employeeShiftRepository.save(shift));
     }
 
     /*
      * Pornește manual o tură neplanificată.
      */
     @Transactional
-    public EmployeeShiftResponse startShift(
-            Long employeeId,
-            String operatorEmail
-    ) {
-        User operator =
-                findAndValidateOperator(
-                        operatorEmail
-                );
+    public EmployeeShiftResponse startShift(Long employeeId, String operatorEmail) {
+        User operator = findAndValidateOperator(operatorEmail);
 
-        User employee =
-                userRepository
-                        .findByIdForUpdate(employeeId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Angajatul nu exista."
-                                )
-                        );
+        User employee = userRepository.findByIdForUpdate(employeeId).orElseThrow(() -> new BusinessException("Angajatul nu exista."));
 
         validateEmployeeForShift(employee);
 
-        Optional<EmployeeShift> existingShift =
-                employeeShiftRepository
-                        .findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(
-                                employeeId
-                        );
+        Optional<EmployeeShift> existingShift = employeeShiftRepository.findByEmployeeIdAndStartedAtIsNotNullAndEndedAtIsNull(employeeId);
 
         if (existingShift.isPresent()) {
-            throw new BusinessException(
-                    "Angajatul are deja o tura activa."
-            );
+            throw new BusinessException("Angajatul are deja o tura activa.");
         }
 
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        EmployeeShift shift =
-                new EmployeeShift(
-                        employee,
-                        employee.getRole().getName(),
-                        now,
-                        now.plusHours(unscheduledMaxHours),
-                        operator
-                );
+        EmployeeShift shift = new EmployeeShift(employee, employee.getRole().getName(), now, now.plusHours(unscheduledMaxHours), operator);
 
-        shift.start(
-                now,
-                ShiftStartSource.MANUAL_MANAGER,
-                operator
-        );
+        shift.start(now, ShiftStartSource.MANUAL_MANAGER, operator);
 
-        return mapToResponse(
-                employeeShiftRepository.save(shift)
-        );
+        return mapToResponse(employeeShiftRepository.save(shift));
     }
 
     /*
      * Închide manual o tură activă.
      */
     @Transactional
-    public EmployeeShiftResponse closeShift(
-            Long shiftId,
-            String operatorEmail
-    ) {
-        User operator =
-                findAndValidateOperator(
-                        operatorEmail
-                );
+    public EmployeeShiftResponse closeShift(Long shiftId, String operatorEmail) {
+        User operator = findAndValidateOperator(operatorEmail);
 
-        EmployeeShift shift =
-                employeeShiftRepository
-                        .findByIdForUpdate(shiftId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Tura nu exista."
-                                )
-                        );
+        EmployeeShift shift = employeeShiftRepository.findByIdForUpdate(shiftId).orElseThrow(() -> new BusinessException("Tura nu exista."));
 
         if (!shift.isActive()) {
-            throw new BusinessException(
-                    "Tura nu este activa."
-            );
+            throw new BusinessException("Tura nu este activa.");
         }
 
-        shift.close(
-                LocalDateTime.now(),
-                operator,
-                ShiftEndReason.MANUAL_MANAGER
-        );
+        shift.close(LocalDateTime.now(), operator, ShiftEndReason.MANUAL_MANAGER);
 
-        return mapToResponse(
-                employeeShiftRepository.save(shift)
-        );
+        return mapToResponse(employeeShiftRepository.save(shift));
     }
 
     /*
      * Modifică intervalul unei programări.
      */
     @Transactional
-    public EmployeeShiftResponse updatePlannedShift(
-            Long shiftId,
-            LocalDateTime plannedStartAt,
-            LocalDateTime plannedEndAt,
-            String operatorEmail
-    ) {
-        findAndValidateOperator(
-                operatorEmail
-        );
+    public EmployeeShiftResponse updatePlannedShift(Long shiftId, LocalDateTime plannedStartAt, LocalDateTime plannedEndAt, String operatorEmail) {
+        findAndValidateOperator(operatorEmail);
 
-        EmployeeShift shift =
-                employeeShiftRepository
-                        .findByIdForUpdate(shiftId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Tura nu exista."
-                                )
-                        );
+        EmployeeShift shift = employeeShiftRepository.findByIdForUpdate(shiftId).orElseThrow(() -> new BusinessException("Tura nu exista."));
 
         if (!shift.isPlanned()) {
-            throw new BusinessException(
-                    "Doar o tura care nu a inceput poate fi modificata."
-            );
+            throw new BusinessException("Doar o tura care nu a inceput poate fi modificata.");
         }
 
-        validatePlannedInterval(
-                plannedStartAt,
-                plannedEndAt
-        );
+        validatePlannedInterval(plannedStartAt, plannedEndAt);
 
-        long overlappingShiftCount =
-                employeeShiftRepository
-                        .countOverlappingShiftsExcludingId(
-                                shift.getEmployee().getId(),
-                                shift.getId(),
-                                plannedStartAt,
-                                plannedEndAt
-                        );
+        long overlappingShiftCount = employeeShiftRepository.countOverlappingShiftsExcludingId(shift.getEmployee().getId(), shift.getId(), plannedStartAt, plannedEndAt);
 
         if (overlappingShiftCount > 0) {
-            throw new BusinessException(
-                    "Angajatul are deja o alta tura care se suprapune cu intervalul ales."
-            );
+            throw new BusinessException("Angajatul are deja o alta tura care se suprapune cu intervalul ales.");
         }
 
-        shift.reschedule(
-                plannedStartAt,
-                plannedEndAt
-        );
+        shift.reschedule(plannedStartAt, plannedEndAt);
 
-        return mapToResponse(
-                employeeShiftRepository.save(shift)
-        );
+        return mapToResponse(employeeShiftRepository.save(shift));
     }
 
     /*
      * Anulează o programare, fără să o șteargă.
      */
     @Transactional
-    public EmployeeShiftResponse cancelPlannedShift(
-            Long shiftId,
-            String operatorEmail
-    ) {
-        User operator =
-                findAndValidateOperator(
-                        operatorEmail
-                );
+    public EmployeeShiftResponse cancelPlannedShift(Long shiftId, String operatorEmail) {
+        User operator = findAndValidateOperator(operatorEmail);
 
-        EmployeeShift shift =
-                employeeShiftRepository
-                        .findByIdForUpdate(shiftId)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Tura nu exista."
-                                )
-                        );
+        EmployeeShift shift = employeeShiftRepository.findByIdForUpdate(shiftId).orElseThrow(() -> new BusinessException("Tura nu exista."));
 
         if (!shift.isPlanned()) {
-            throw new BusinessException(
-                    "Doar o tura care nu a inceput poate fi anulata."
-            );
+            throw new BusinessException("Doar o tura care nu a inceput poate fi anulata.");
         }
 
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
         if (!shift.getPlannedEndAt().isAfter(now)) {
-            throw new BusinessException(
-                    "Tura a ajuns deja la final si nu mai poate fi anulata."
-            );
+            throw new BusinessException("Tura a ajuns deja la final si nu mai poate fi anulata.");
         }
 
-        shift.cancel(
-                now,
-                operator
-        );
+        shift.cancel(now, operator);
 
-        return mapToResponse(
-                employeeShiftRepository.save(shift)
-        );
+        return mapToResponse(employeeShiftRepository.save(shift));
     }
 
     @Transactional(readOnly = true)
     public List<EmployeeShiftResponse> getActiveShifts() {
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        return employeeShiftRepository
-                .findAllByStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByStartedAtAsc(
-                        now
-                )
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return employeeShiftRepository.findAllByStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByStartedAtAsc(now).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<EmployeeShiftResponse> getPlannedShifts() {
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        return employeeShiftRepository
-                .findAllByStartedAtIsNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByPlannedStartAtAsc(
-                        now
-                )
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return employeeShiftRepository.findAllByStartedAtIsNullAndEndedAtIsNullAndPlannedEndAtAfterOrderByPlannedStartAtAsc(now).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeShiftResponse> getEmployeeShiftHistory(
-            Long employeeId
-    ) {
+    public List<EmployeeShiftResponse> getEmployeeShiftHistory(Long employeeId) {
         if (!userRepository.existsById(employeeId)) {
-            throw new BusinessException(
-                    "Angajatul nu exista."
-            );
+            throw new BusinessException("Angajatul nu exista.");
         }
 
-        return employeeShiftRepository
-                .findAllByEmployeeIdOrderByPlannedStartAtDesc(
-                        employeeId
-                )
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return employeeShiftRepository.findAllByEmployeeIdOrderByPlannedStartAtDesc(employeeId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public ActiveStaffSummaryResponse getActiveStaffSummary() {
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        long waiters =
-                employeeShiftRepository
-                        .countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(
-                                RoleType.WAITER,
-                                now
-                        );
+        long waiters = employeeShiftRepository.countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(RoleType.WAITER, now);
 
-        long kitchenEmployees =
-                employeeShiftRepository
-                        .countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(
-                                RoleType.KITCHEN,
-                                now
-                        );
+        long kitchenEmployees = employeeShiftRepository.countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(RoleType.KITCHEN, now);
 
-        long barEmployees =
-                employeeShiftRepository
-                        .countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(
-                                RoleType.BAR,
-                                now
-                        );
+        long barEmployees = employeeShiftRepository.countByShiftRoleAndStartedAtIsNotNullAndEndedAtIsNullAndPlannedEndAtAfter(RoleType.BAR, now);
 
-        return new ActiveStaffSummaryResponse(
-                waiters,
-                kitchenEmployees,
-                barEmployees
-        );
+        return new ActiveStaffSummaryResponse(waiters, kitchenEmployees, barEmployees);
     }
 
     /*
@@ -532,35 +273,25 @@ public class EmployeeShiftService {
      */
     @Transactional
     public int cleanupExpiredShifts() {
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-        List<EmployeeShift> expiredActiveShifts =
-                employeeShiftRepository
-                        .findExpiredActiveShiftsForUpdate(now);
+        List<EmployeeShift> expiredActiveShifts = employeeShiftRepository.findExpiredActiveShiftsForUpdate(now);
 
         for (EmployeeShift shift : expiredActiveShifts) {
             closeAutomatically(shift);
         }
 
-        List<EmployeeShift> missedPlannedShifts =
-                employeeShiftRepository
-                        .findMissedPlannedShiftsForUpdate(now);
+        List<EmployeeShift> missedPlannedShifts = employeeShiftRepository.findMissedPlannedShiftsForUpdate(now);
 
         for (EmployeeShift shift : missedPlannedShifts) {
             shift.markMissed(now);
         }
 
-        employeeShiftRepository.saveAll(
-                expiredActiveShifts
-        );
+        employeeShiftRepository.saveAll(expiredActiveShifts);
 
-        employeeShiftRepository.saveAll(
-                missedPlannedShifts
-        );
+        employeeShiftRepository.saveAll(missedPlannedShifts);
 
-        return expiredActiveShifts.size()
-                + missedPlannedShifts.size();
+        return expiredActiveShifts.size() + missedPlannedShifts.size();
     }
 
     /*
@@ -568,13 +299,8 @@ public class EmployeeShiftService {
      * angajatului este dezactivat.
      */
     @Transactional
-    public int closeOpenShiftsForAccountDeactivation(
-            Long employeeId
-    ) {
-        return finishOpenShifts(
-                employeeId,
-                ShiftEndReason.ACCOUNT_DEACTIVATED
-        );
+    public int closeOpenShiftsForAccountDeactivation(Long employeeId) {
+        return finishOpenShifts(employeeId, ShiftEndReason.ACCOUNT_DEACTIVATED);
     }
 
     /*
@@ -582,270 +308,145 @@ public class EmployeeShiftService {
      * angajatului este schimbat.
      */
     @Transactional
-    public int closeOpenShiftsForRoleChange(
-            Long employeeId
-    ) {
-        return finishOpenShifts(
-                employeeId,
-                ShiftEndReason.ROLE_CHANGED
-        );
+    public int closeOpenShiftsForRoleChange(Long employeeId) {
+        return finishOpenShifts(employeeId, ShiftEndReason.ROLE_CHANGED);
     }
 
-    private int finishOpenShifts(
-            Long employeeId,
-            ShiftEndReason endReason
-    ) {
-        List<EmployeeShift> openShifts =
-                employeeShiftRepository
-                        .findAllOpenByEmployeeIdForUpdate(
-                                employeeId
-                        );
+    private int finishOpenShifts(Long employeeId, ShiftEndReason endReason) {
+        List<EmployeeShift> openShifts = employeeShiftRepository.findAllOpenByEmployeeIdForUpdate(employeeId);
 
         if (openShifts.isEmpty()) {
             return 0;
         }
 
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
         int processedShiftCount = 0;
 
         for (EmployeeShift shift : openShifts) {
             if (shift.isActive()) {
-                shift.close(
-                        now,
-                        null,
-                        endReason
-                );
+                shift.close(now, null, endReason);
 
                 processedShiftCount++;
 
             } else if (shift.isPlanned()) {
-                shift.cancel(
-                        now,
-                        null,
-                        endReason
-                );
+                shift.cancel(now, null, endReason);
 
                 processedShiftCount++;
             }
         }
 
-        employeeShiftRepository.saveAll(
-                openShifts
-        );
+        employeeShiftRepository.saveAll(openShifts);
 
         return processedShiftCount;
     }
 
-    private void closeAutomatically(
-            EmployeeShift shift
-    ) {
-        ShiftEndReason endReason =
-                shift.getStartSource()
-                        == ShiftStartSource.SCHEDULED_LOGIN
-                        ? ShiftEndReason.AUTO_PLANNED_END
-                        : ShiftEndReason.AUTO_SAFETY_LIMIT;
+    private void closeAutomatically(EmployeeShift shift) {
+        ShiftEndReason endReason = shift.getStartSource() == ShiftStartSource.SCHEDULED_LOGIN ? ShiftEndReason.AUTO_PLANNED_END : ShiftEndReason.AUTO_SAFETY_LIMIT;
 
-        shift.close(
-                shift.getPlannedEndAt(),
-                null,
-                endReason
-        );
+        shift.close(shift.getPlannedEndAt(), null, endReason);
     }
 
-    private void validatePlannedInterval(
-            LocalDateTime plannedStartAt,
-            LocalDateTime plannedEndAt
-    ) {
-        if (plannedStartAt == null
-                || plannedEndAt == null) {
-            throw new BusinessException(
-                    "Intervalul turei este obligatoriu."
-            );
+    private void validatePlannedInterval(LocalDateTime plannedStartAt, LocalDateTime plannedEndAt) {
+        if (plannedStartAt == null || plannedEndAt == null) {
+            throw new BusinessException("Intervalul turei este obligatoriu.");
         }
 
         if (!plannedEndAt.isAfter(plannedStartAt)) {
-            throw new BusinessException(
-                    "Ora de final trebuie sa fie ulterioara orei de inceput."
-            );
+            throw new BusinessException("Ora de final trebuie sa fie ulterioara orei de inceput.");
         }
 
-        LocalDateTime now =
-                LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
         if (!plannedEndAt.isAfter(now)) {
-            throw new BusinessException(
-                    "Ora de final a turei trebuie sa fie in viitor."
-            );
+            throw new BusinessException("Ora de final a turei trebuie sa fie in viitor.");
         }
 
-        long durationMinutes =
-                Duration.between(
-                        plannedStartAt,
-                        plannedEndAt
-                ).toMinutes();
+        long durationMinutes = Duration.between(plannedStartAt, plannedEndAt).toMinutes();
 
-        if (durationMinutes
-                > maximumDurationHours * 60) {
-            throw new BusinessException(
-                    "O tura nu poate depasi "
-                            + maximumDurationHours
-                            + " ore."
-            );
+        if (durationMinutes > maximumDurationHours * 60) {
+            throw new BusinessException("O tura nu poate depasi " + maximumDurationHours + " ore.");
         }
     }
 
-    private User findAndValidateOperator(
-            String operatorEmail
-    ) {
-        if (operatorEmail == null
-                || operatorEmail.isBlank()) {
-            throw new BusinessException(
-                    "Utilizatorul autentificat nu a putut fi identificat."
-            );
+    private User findAndValidateOperator(String operatorEmail) {
+        if (operatorEmail == null || operatorEmail.isBlank()) {
+            throw new BusinessException("Utilizatorul autentificat nu a putut fi identificat.");
         }
 
-        User operator =
-                userRepository
-                        .findByEmail(operatorEmail)
-                        .orElseThrow(() ->
-                                new BusinessException(
-                                        "Utilizatorul autentificat nu exista."
-                                )
-                        );
+        User operator = userRepository.findByEmail(operatorEmail).orElseThrow(() -> new BusinessException("Utilizatorul autentificat nu exista."));
 
         if (!operator.isActive()) {
-            throw new BusinessException(
-                    "Contul utilizatorului este dezactivat."
-            );
+            throw new BusinessException("Contul utilizatorului este dezactivat.");
         }
 
-        if (!SHIFT_OPERATOR_ROLES.contains(
-                operator.getRole().getName()
-        )) {
-            throw new BusinessException(
-                    "Nu aveti permisiunea sa gestionati ture."
-            );
+        if (!SHIFT_OPERATOR_ROLES.contains(operator.getRole().getName())) {
+            throw new BusinessException("Nu aveti permisiunea sa gestionati ture.");
         }
 
         return operator;
     }
 
-    private void validateEmployeeForShift(
-            User employee
-    ) {
+    private void validateEmployeeForShift(User employee) {
         if (!employee.isActive()) {
-            throw new BusinessException(
-                    "Tura nu poate fi pornita pentru un cont dezactivat."
-            );
+            throw new BusinessException("Tura nu poate fi pornita pentru un cont dezactivat.");
         }
 
-        if (!OPERATIONAL_ROLES.contains(
-                employee.getRole().getName()
-        )) {
-            throw new BusinessException(
-                    "Doar ospatarii si angajatii din bucatarie sau bar pot avea ture operationale."
-            );
+        if (!OPERATIONAL_ROLES.contains(employee.getRole().getName())) {
+            throw new BusinessException("Doar ospatarii si angajatii din bucatarie sau bar pot avea ture operationale.");
         }
     }
 
-    private EmployeeShiftResponse mapToResponse(
-            EmployeeShift shift
-    ) {
-        EmployeeShiftResponse response =
-                new EmployeeShiftResponse();
+    private EmployeeShiftResponse mapToResponse(EmployeeShift shift) {
+        EmployeeShiftResponse response = new EmployeeShiftResponse();
 
-        response.setId(
-                shift.getId()
-        );
+        response.setId(shift.getId());
 
-        response.setEmployeeId(
-                shift.getEmployee().getId()
-        );
+        response.setEmployeeId(shift.getEmployee().getId());
 
-        response.setEmployeeName(
-                shift.getEmployee().getFullName()
-        );
+        response.setEmployeeName(shift.getEmployee().getFullName());
 
-        response.setShiftRole(
-                shift.getShiftRole()
-        );
+        response.setShiftRole(shift.getShiftRole());
 
-        response.setPlannedStartAt(
-                shift.getPlannedStartAt()
-        );
+        response.setPlannedStartAt(shift.getPlannedStartAt());
 
-        response.setPlannedEndAt(
-                shift.getPlannedEndAt()
-        );
+        response.setPlannedEndAt(shift.getPlannedEndAt());
 
-        response.setStartedAt(
-                shift.getStartedAt()
-        );
+        response.setStartedAt(shift.getStartedAt());
 
-        response.setEndedAt(
-                shift.getEndedAt()
-        );
+        response.setEndedAt(shift.getEndedAt());
 
-        response.setStartSource(
-                shift.getStartSource()
-        );
+        response.setStartSource(shift.getStartSource());
 
-        response.setEndReason(
-                shift.getEndReason()
-        );
+        response.setEndReason(shift.getEndReason());
 
-        response.setOpen(
-                shift.isActive()
-        );
+        response.setOpen(shift.isActive());
 
-        response.setCreatedByUserId(
-                shift.getCreatedBy().getId()
-        );
+        response.setCreatedByUserId(shift.getCreatedBy().getId());
 
-        response.setCreatedByName(
-                shift.getCreatedBy().getFullName()
-        );
+        response.setCreatedByName(shift.getCreatedBy().getFullName());
 
         if (shift.getStartedAt() != null) {
-            LocalDateTime durationEnd =
-                    shift.getEndedAt() == null
-                            ? LocalDateTime.now()
-                            : shift.getEndedAt();
+            LocalDateTime durationEnd = shift.getEndedAt() == null ? LocalDateTime.now() : shift.getEndedAt();
 
-            long durationMinutes =
-                    Duration.between(
-                            shift.getStartedAt(),
-                            durationEnd
-                    ).toMinutes();
+            long durationMinutes = Duration.between(shift.getStartedAt(), durationEnd).toMinutes();
 
-            response.setDurationMinutes(
-                    Math.max(durationMinutes, 0)
-            );
+            response.setDurationMinutes(Math.max(durationMinutes, 0));
 
         } else {
             response.setDurationMinutes(0L);
         }
 
         if (shift.getStartedBy() != null) {
-            response.setStartedByUserId(
-                    shift.getStartedBy().getId()
-            );
+            response.setStartedByUserId(shift.getStartedBy().getId());
 
-            response.setStartedByName(
-                    shift.getStartedBy().getFullName()
-            );
+            response.setStartedByName(shift.getStartedBy().getFullName());
         }
 
         if (shift.getEndedBy() != null) {
-            response.setEndedByUserId(
-                    shift.getEndedBy().getId()
-            );
+            response.setEndedByUserId(shift.getEndedBy().getId());
 
-            response.setEndedByName(
-                    shift.getEndedBy().getFullName()
-            );
+            response.setEndedByName(shift.getEndedBy().getFullName());
         }
 
         return response;

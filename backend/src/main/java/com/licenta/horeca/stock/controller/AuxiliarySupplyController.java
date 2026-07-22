@@ -25,138 +25,95 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuxiliarySupplyController {
 
-    private final AuxiliarySupplyService
-            auxiliarySupplyService;
+    private final AuxiliarySupplyService auxiliarySupplyService;
 
-    private final StockEntryService
-            stockEntryService;
+    private final StockEntryService stockEntryService;
 
-    public AuxiliarySupplyController(
-            AuxiliarySupplyService auxiliarySupplyService,
-            StockEntryService stockEntryService) {
+    public AuxiliarySupplyController(AuxiliarySupplyService auxiliarySupplyService, StockEntryService stockEntryService) {
 
-        this.auxiliarySupplyService =
-                auxiliarySupplyService;
+        this.auxiliarySupplyService = auxiliarySupplyService;
 
-        this.stockEntryService =
-                stockEntryService;
+        this.stockEntryService = stockEntryService;
     }
 
     @GetMapping
     public List<AuxiliarySupply> getAllSupplies() {
-        return auxiliarySupplyService
-                .getAllSupplies();
+        return auxiliarySupplyService.getAllSupplies();
     }
 
     @GetMapping("/active")
-    public List<AuxiliarySupply>
-    getAllActiveSupplies() {
+    public List<AuxiliarySupply> getAllActiveSupplies() {
 
-        return auxiliarySupplyService
-                .getAllActiveSupplies();
+        return auxiliarySupplyService.getAllActiveSupplies();
     }
 
     @GetMapping("/unavailable")
-    public List<AuxiliarySupply>
-    getUnavailableSupplies() {
+    public List<AuxiliarySupply> getUnavailableSupplies() {
 
-        return auxiliarySupplyService
-                .getUnavailableSupplies();
+        return auxiliarySupplyService.getUnavailableSupplies();
     }
 
     @GetMapping("/{supplyId}")
-    public AuxiliarySupply getSupplyById(
-            @PathVariable Long supplyId) {
+    public AuxiliarySupply getSupplyById(@PathVariable Long supplyId) {
 
-        return auxiliarySupplyService
-                .getSupplyById(supplyId);
+        return auxiliarySupplyService.getSupplyById(supplyId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AuxiliarySupply createSupply(
-            @RequestBody AuxiliarySupplyRequest request) {
+    public AuxiliarySupply createSupply(@RequestBody AuxiliarySupplyRequest request) {
 
-        return auxiliarySupplyService
-                .createSupply(request);
+        return auxiliarySupplyService.createSupply(request);
     }
 
     @PutMapping("/{supplyId}")
-    public AuxiliarySupply updateSupply(
-            @PathVariable Long supplyId,
-            @RequestBody AuxiliarySupplyRequest request) {
+    public AuxiliarySupply updateSupply(@PathVariable Long supplyId, @RequestBody AuxiliarySupplyRequest request) {
 
-        return auxiliarySupplyService
-                .updateSupply(
-                        supplyId,
-                        request
-                );
+        return auxiliarySupplyService.updateSupply(supplyId, request);
     }
 
     @PutMapping("/{supplyId}/mark-unavailable")
-    public AuxiliarySupply markUnavailable(
-            @PathVariable Long supplyId) {
+    public AuxiliarySupply markUnavailable(@PathVariable Long supplyId) {
 
-        return auxiliarySupplyService
-                .markUnavailable(supplyId);
+        return auxiliarySupplyService.markUnavailable(supplyId);
     }
 
     @PutMapping("/{supplyId}/mark-available")
-    public AuxiliarySupply markAvailable(
-            @PathVariable Long supplyId) {
+    public AuxiliarySupply markAvailable(@PathVariable Long supplyId) {
 
-        return auxiliarySupplyService
-                .markAvailable(supplyId);
+        return auxiliarySupplyService.markAvailable(supplyId);
     }
 
     @GetMapping("/{supplyId}/entries")
-    public List<StockEntry> getStockEntries(
-            @PathVariable Long supplyId) {
+    public List<StockEntry> getStockEntries(@PathVariable Long supplyId) {
 
-        return stockEntryService
-                .getEntriesForSupply(supplyId);
+        return stockEntryService.getEntriesForSupply(supplyId);
     }
 
     @PostMapping("/{supplyId}/entries")
     @ResponseStatus(HttpStatus.CREATED)
-    public StockEntry addStockEntry(
-            @PathVariable Long supplyId,
-            @RequestBody StockEntryRequest request) {
+    public StockEntry addStockEntry(@PathVariable Long supplyId, @RequestBody StockEntryRequest request) {
 
-        return stockEntryService
-                .addStockEntry(
-                        supplyId,
-                        request
-                );
+        return stockEntryService.addStockEntry(supplyId, request);
     }
 
     @PutMapping("/entries/{entryId}")
-    public StockEntry updateStockEntry(
-            @PathVariable Long entryId,
-            @RequestBody StockEntryRequest request) {
+    public StockEntry updateStockEntry(@PathVariable Long entryId, @RequestBody StockEntryRequest request) {
 
-        return stockEntryService
-                .updateStockEntry(
-                        entryId,
-                        request
-                );
+        return stockEntryService.updateStockEntry(entryId, request);
     }
 
     @DeleteMapping("/entries/{entryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteStockEntry(
-            @PathVariable Long entryId) {
+    public void deleteStockEntry(@PathVariable Long entryId) {
 
-        stockEntryService
-                .deleteStockEntry(entryId);
+        stockEntryService.deleteStockEntry(entryId);
     }
 
     @DeleteMapping("/{supplyId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSupply(
-            @PathVariable Long supplyId) {
+    public void deleteSupply(@PathVariable Long supplyId) {
 
-        auxiliarySupplyService
-                .deleteSupply(supplyId);
+        auxiliarySupplyService.deleteSupply(supplyId);
     }
 }

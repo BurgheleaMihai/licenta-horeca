@@ -147,9 +147,7 @@ public class EmployeeShiftResponse {
         return plannedStartAt;
     }
 
-    public void setPlannedStartAt(
-            LocalDateTime plannedStartAt
-    ) {
+    public void setPlannedStartAt(LocalDateTime plannedStartAt) {
         this.plannedStartAt = plannedStartAt;
     }
 
@@ -157,9 +155,7 @@ public class EmployeeShiftResponse {
         return plannedEndAt;
     }
 
-    public void setPlannedEndAt(
-            LocalDateTime plannedEndAt
-    ) {
+    public void setPlannedEndAt(LocalDateTime plannedEndAt) {
         this.plannedEndAt = plannedEndAt;
     }
 
@@ -167,9 +163,7 @@ public class EmployeeShiftResponse {
         return startSource;
     }
 
-    public void setStartSource(
-            ShiftStartSource startSource
-    ) {
+    public void setStartSource(ShiftStartSource startSource) {
         this.startSource = startSource;
     }
 
@@ -177,9 +171,7 @@ public class EmployeeShiftResponse {
         return endReason;
     }
 
-    public void setEndReason(
-            ShiftEndReason endReason
-    ) {
+    public void setEndReason(ShiftEndReason endReason) {
         this.endReason = endReason;
     }
 
@@ -187,9 +179,7 @@ public class EmployeeShiftResponse {
         return createdByUserId;
     }
 
-    public void setCreatedByUserId(
-            Long createdByUserId
-    ) {
+    public void setCreatedByUserId(Long createdByUserId) {
         this.createdByUserId = createdByUserId;
     }
 
@@ -197,9 +187,7 @@ public class EmployeeShiftResponse {
         return createdByName;
     }
 
-    public void setCreatedByName(
-            String createdByName
-    ) {
+    public void setCreatedByName(String createdByName) {
         this.createdByName = createdByName;
     }
 }

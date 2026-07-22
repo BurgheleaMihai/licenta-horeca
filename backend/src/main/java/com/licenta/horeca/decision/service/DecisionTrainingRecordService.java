@@ -13,32 +13,27 @@ import java.util.Set;
 
 @Service
 public class DecisionTrainingRecordService {
-    private static final Set<String> ALLOWED_LEVELS =
-            Set.of("SCAZUT", "MEDIU", "RIDICAT");
+    private static final Set<String> ALLOWED_LEVELS = Set.of("SCAZUT", "MEDIU", "RIDICAT");
     private final DecisionTrainingRecordRepository repository;
+
     public DecisionTrainingRecordService(DecisionTrainingRecordRepository repository) {
         this.repository = repository;
     }
+
     @Transactional(readOnly = true)
     public DecisionTrainingRecord getLatestUnlabeledRecord() {
-        return repository
-                .findFirstByLabeledAtIsNullOrderByCreatedAtDesc()
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Nu exista nicio predictie neetichetata."));
+        return repository.findFirstByLabeledAtIsNullOrderByCreatedAtDesc().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nu exista nicio predictie neetichetata."));
     }
 
     @Transactional
     public DecisionTrainingRecord labelRecord(Long recordId, DecisionLabelRequest request) {
-        DecisionTrainingRecord record = repository
-                .findById(recordId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Inregistrarea nu exista."));
+        DecisionTrainingRecord record = repository.findById(recordId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inregistrarea nu exista."));
         if (record.getLabeledAt() != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Inregistrarea a fost deja etichetata.");
         }
 
-        String observedTrafficLevel = normalizeLevel(request.getObservedTrafficLevel(),"Nivelul real de trafic");
-        String observedDelayRisk = normalizeLevel(request.getObservedDelayRisk(),"Riscul real de intarziere");
+        String observedTrafficLevel = normalizeLevel(request.getObservedTrafficLevel(), "Nivelul real de trafic");
+        String observedDelayRisk = normalizeLevel(request.getObservedDelayRisk(), "Riscul real de intarziere");
 
         record.setObservedTrafficLevel(observedTrafficLevel);
         record.setObservedDelayRisk(observedDelayRisk);
@@ -56,8 +51,7 @@ public class DecisionTrainingRecordService {
 
         String normalizedValue = value.trim().toUpperCase();
         if (!ALLOWED_LEVELS.contains(normalizedValue)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, fieldName + " trebuie sa fie SCAZUT, MEDIU sau RIDICAT.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, fieldName + " trebuie sa fie SCAZUT, MEDIU sau RIDICAT.");
         }
 
         return normalizedValue;

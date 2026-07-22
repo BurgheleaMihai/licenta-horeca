@@ -9,12 +9,7 @@ public class OrderStatisticsResponse {
     private BigDecimal sales;
     private double averageRating;
 
-    public OrderStatisticsResponse(
-            int activeOrders,
-            int servedOrders,
-            BigDecimal sales,
-            double averageRating
-    ) {
+    public OrderStatisticsResponse(int activeOrders, int servedOrders, BigDecimal sales, double averageRating) {
         this.activeOrders = activeOrders;
         this.servedOrders = servedOrders;
         this.sales = sales;
@@ -25,9 +20,7 @@ public class OrderStatisticsResponse {
         return activeOrders;
     }
 
-    public void setActiveOrders(
-            int activeOrders
-    ) {
+    public void setActiveOrders(int activeOrders) {
         this.activeOrders = activeOrders;
     }
 
@@ -35,9 +28,7 @@ public class OrderStatisticsResponse {
         return servedOrders;
     }
 
-    public void setServedOrders(
-            int servedOrders
-    ) {
+    public void setServedOrders(int servedOrders) {
         this.servedOrders = servedOrders;
     }
 
@@ -45,9 +36,7 @@ public class OrderStatisticsResponse {
         return sales;
     }
 
-    public void setSales(
-            BigDecimal sales
-    ) {
+    public void setSales(BigDecimal sales) {
         this.sales = sales;
     }
 
@@ -55,9 +44,7 @@ public class OrderStatisticsResponse {
         return averageRating;
     }
 
-    public void setAverageRating(
-            double averageRating
-    ) {
+    public void setAverageRating(double averageRating) {
         this.averageRating = averageRating;
     }
 }

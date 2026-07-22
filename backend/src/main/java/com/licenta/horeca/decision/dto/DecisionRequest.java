@@ -53,53 +53,11 @@ public class DecisionRequest {
      * Constructor păstrat pentru compatibilitate
      * cu testele și codul existent.
      */
-    public DecisionRequest(
-            int dayOfWeek,
-            int hour,
-            int activeOrders,
-            int occupiedTables,
-            int estimatedOccupancy,
-            int kitchenLoad,
-            int barLoad,
-            int avgPreparationTime,
-            int ordersLast30Min,
-            int orderAgeMinutes,
-            int itemCount
-    ) {
-        this(
-                dayOfWeek,
-                hour,
-                activeOrders,
-                occupiedTables,
-                estimatedOccupancy,
-                kitchenLoad,
-                barLoad,
-                avgPreparationTime,
-                ordersLast30Min,
-                orderAgeMinutes,
-                itemCount,
-                0,
-                0,
-                0
-        );
+    public DecisionRequest(int dayOfWeek, int hour, int activeOrders, int occupiedTables, int estimatedOccupancy, int kitchenLoad, int barLoad, int avgPreparationTime, int ordersLast30Min, int orderAgeMinutes, int itemCount) {
+        this(dayOfWeek, hour, activeOrders, occupiedTables, estimatedOccupancy, kitchenLoad, barLoad, avgPreparationTime, ordersLast30Min, orderAgeMinutes, itemCount, 0, 0, 0);
     }
 
-    public DecisionRequest(
-            int dayOfWeek,
-            int hour,
-            int activeOrders,
-            int occupiedTables,
-            int estimatedOccupancy,
-            int kitchenLoad,
-            int barLoad,
-            int avgPreparationTime,
-            int ordersLast30Min,
-            int orderAgeMinutes,
-            int itemCount,
-            int activeWaiters,
-            int activeKitchen,
-            int activeBar
-    ) {
+    public DecisionRequest(int dayOfWeek, int hour, int activeOrders, int occupiedTables, int estimatedOccupancy, int kitchenLoad, int barLoad, int avgPreparationTime, int ordersLast30Min, int orderAgeMinutes, int itemCount, int activeWaiters, int activeKitchen, int activeBar) {
         this.dayOfWeek = dayOfWeek;
         this.hour = hour;
         this.activeOrders = activeOrders;

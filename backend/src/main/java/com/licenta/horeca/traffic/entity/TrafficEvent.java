@@ -16,15 +16,19 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "traffic_events")
 public class TrafficEvent {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TrafficEventType type;
 
-    @Column(nullable = false) private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
-    public TrafficEvent() {}
+    public TrafficEvent() {
+    }
 
     public TrafficEvent(TrafficEventType type) {
         this.type = type;

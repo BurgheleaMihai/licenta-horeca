@@ -6,11 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface AuxiliarySupplyRepository
-        extends JpaRepository<AuxiliarySupply, Long> {
+public interface AuxiliarySupplyRepository extends JpaRepository<AuxiliarySupply, Long> {
 
-    List<AuxiliarySupply>
-    findByAvailableInWarehouseFalseAndActiveTrueOrderByNameAscVariantNameAsc();
+    List<AuxiliarySupply> findByAvailableInWarehouseFalseAndActiveTrueOrderByNameAscVariantNameAsc();
 
     @Query("""
             SELECT supply
@@ -43,12 +41,7 @@ public interface AuxiliarySupplyRepository
             """)
     List<AuxiliarySupply> findAllActiveOrderedByStockTypeNameAndVariant();
 
-    boolean existsByNameIgnoreCaseAndVariantNameIgnoreCase(
-            String name,
-            String variantName
-    );
+    boolean existsByNameIgnoreCaseAndVariantNameIgnoreCase(String name, String variantName);
 
-    boolean existsByNameIgnoreCaseAndVariantNameIsNull(
-            String name
-    );
+    boolean existsByNameIgnoreCaseAndVariantNameIsNull(String name);
 }

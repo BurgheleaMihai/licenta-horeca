@@ -39,663 +39,285 @@ import static org.mockito.Mockito.when;
 class TableSessionServiceTest {
 
     @Mock
-    private TableSessionRepository
-            tableSessionRepository;
+    private TableSessionRepository tableSessionRepository;
 
     @Mock
-    private RestaurantTableRepository
-            restaurantTableRepository;
+    private RestaurantTableRepository restaurantTableRepository;
 
     @Mock
-    private TrafficEventService
-            trafficEventService;
+    private TrafficEventService trafficEventService;
 
-    private TableSessionService
-            tableSessionService;
+    private TableSessionService tableSessionService;
 
     @BeforeEach
     void setUp() {
-        tableSessionService =
-                new TableSessionService(
-                        tableSessionRepository,
-                        restaurantTableRepository,
-                        trafficEventService
-                );
+        tableSessionService = new TableSessionService(tableSessionRepository, restaurantTableRepository, trafficEventService);
     }
 
     @Test
     void getActiveSessionsShouldReturnRepositoryResult() {
-        TableSession firstSession =
-                createSession(true);
+        TableSession firstSession = createSession(true);
 
-        TableSession secondSession =
-                createSession(true);
+        TableSession secondSession = createSession(true);
 
-        List<TableSession> activeSessions =
-                List.of(
-                        firstSession,
-                        secondSession
-                );
+        List<TableSession> activeSessions = List.of(firstSession, secondSession);
 
-        when(
-                tableSessionRepository
-                        .findByActiveTrue()
-        ).thenReturn(activeSessions);
+        when(tableSessionRepository.findByActiveTrue()).thenReturn(activeSessions);
 
-        List<TableSession> result =
-                tableSessionService
-                        .getActiveSessions();
+        List<TableSession> result = tableSessionService.getActiveSessions();
 
         assertSame(activeSessions, result);
         assertEquals(2, result.size());
-        assertSame(
-                firstSession,
-                result.get(0)
-        );
-        assertSame(
-                secondSession,
-                result.get(1)
-        );
+        assertSame(firstSession, result.get(0));
+        assertSame(secondSession, result.get(1));
 
-        verify(
-                tableSessionRepository
-        ).findByActiveTrue();
+        verify(tableSessionRepository).findByActiveTrue();
 
-        verifyNoInteractions(
-                restaurantTableRepository,
-                trafficEventService
-        );
+        verifyNoInteractions(restaurantTableRepository, trafficEventService);
     }
 
     @Test
     void createSessionForTableShouldThrowWhenTableDoesNotExist() {
-        when(
-                restaurantTableRepository
-                        .findById(99L)
-        ).thenReturn(Optional.empty());
+        when(restaurantTableRepository.findById(99L)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception =
-                assertThrows(
-                        ResponseStatusException.class,
-                        () ->
-                                tableSessionService
-                                        .createSessionForTable(
-                                                99L
-                                        )
-                );
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> tableSessionService.createSessionForTable(99L));
 
-        assertEquals(
-                HttpStatus.NOT_FOUND,
-                exception.getStatusCode()
-        );
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
 
-        assertEquals(
-                "Masa nu exista.",
-                exception.getReason()
-        );
+        assertEquals("Masa nu exista.", exception.getReason());
 
-        verify(
-                restaurantTableRepository
-        ).findById(99L);
+        verify(restaurantTableRepository).findById(99L);
 
-        verify(
-                tableSessionRepository,
-                never()
-        ).existsByRestaurantTable_IdAndActiveTrue(
-                anyLong()
-        );
+        verify(tableSessionRepository, never()).existsByRestaurantTable_IdAndActiveTrue(anyLong());
 
-        verify(
-                tableSessionRepository,
-                never()
-        ).save(any(TableSession.class));
+        verify(tableSessionRepository, never()).save(any(TableSession.class));
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
     @Test
     void createSessionForTableShouldRejectTableWithActiveSession() {
-        RestaurantTable restaurantTable =
-                new RestaurantTable(5, 4);
+        RestaurantTable restaurantTable = new RestaurantTable(5, 4);
 
-        when(
-                restaurantTableRepository
-                        .findById(5L)
-        ).thenReturn(
-                Optional.of(restaurantTable)
-        );
+        when(restaurantTableRepository.findById(5L)).thenReturn(Optional.of(restaurantTable));
 
-        when(
-                tableSessionRepository
-                        .existsByRestaurantTable_IdAndActiveTrue(
-                                5L
-                        )
-        ).thenReturn(true);
+        when(tableSessionRepository.existsByRestaurantTable_IdAndActiveTrue(5L)).thenReturn(true);
 
-        ResponseStatusException exception =
-                assertThrows(
-                        ResponseStatusException.class,
-                        () ->
-                                tableSessionService
-                                        .createSessionForTable(
-                                                5L
-                                        )
-                );
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> tableSessionService.createSessionForTable(5L));
 
-        assertEquals(
-                HttpStatus.CONFLICT,
-                exception.getStatusCode()
-        );
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
 
-        assertEquals(
-                "Masa este deja deschisa.",
-                exception.getReason()
-        );
+        assertEquals("Masa este deja deschisa.", exception.getReason());
 
-        verify(
-                restaurantTableRepository
-        ).findById(5L);
+        verify(restaurantTableRepository).findById(5L);
 
-        verify(
-                tableSessionRepository
-        ).existsByRestaurantTable_IdAndActiveTrue(
-                5L
-        );
+        verify(tableSessionRepository).existsByRestaurantTable_IdAndActiveTrue(5L);
 
-        verify(
-                tableSessionRepository,
-                never()
-        ).save(any(TableSession.class));
+        verify(tableSessionRepository, never()).save(any(TableSession.class));
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
     @Test
     void createSessionForTableShouldCreateSessionAndSaveEntryEvent() {
-        RestaurantTable restaurantTable =
-                new RestaurantTable(7, 4);
+        RestaurantTable restaurantTable = new RestaurantTable(7, 4);
 
-        TableSession repositoryResult =
-                new TableSession();
+        TableSession repositoryResult = new TableSession();
 
-        when(
-                restaurantTableRepository
-                        .findById(5L)
-        ).thenReturn(
-                Optional.of(restaurantTable)
-        );
+        when(restaurantTableRepository.findById(5L)).thenReturn(Optional.of(restaurantTable));
 
-        when(
-                tableSessionRepository
-                        .existsByRestaurantTable_IdAndActiveTrue(
-                                5L
-                        )
-        ).thenReturn(false);
+        when(tableSessionRepository.existsByRestaurantTable_IdAndActiveTrue(5L)).thenReturn(false);
 
-        when(
-                tableSessionRepository.save(
-                        any(TableSession.class)
-                )
-        ).thenReturn(repositoryResult);
+        when(tableSessionRepository.save(any(TableSession.class))).thenReturn(repositoryResult);
 
-        long beforeCreation =
-                System.currentTimeMillis();
+        long beforeCreation = System.currentTimeMillis();
 
-        LocalDateTime beforeStartedAt =
-                LocalDateTime.now();
+        LocalDateTime beforeStartedAt = LocalDateTime.now();
 
-        TableSession result =
-                tableSessionService
-                        .createSessionForTable(
-                                5L
-                        );
+        TableSession result = tableSessionService.createSessionForTable(5L);
 
-        LocalDateTime afterStartedAt =
-                LocalDateTime.now();
+        LocalDateTime afterStartedAt = LocalDateTime.now();
 
-        long afterCreation =
-                System.currentTimeMillis();
+        long afterCreation = System.currentTimeMillis();
 
         assertSame(repositoryResult, result);
 
-        ArgumentCaptor<TableSession>
-                sessionCaptor =
-                ArgumentCaptor.forClass(
-                        TableSession.class
-                );
+        ArgumentCaptor<TableSession> sessionCaptor = ArgumentCaptor.forClass(TableSession.class);
 
-        verify(
-                tableSessionRepository
-        ).save(sessionCaptor.capture());
+        verify(tableSessionRepository).save(sessionCaptor.capture());
 
-        TableSession sessionPassedToRepository =
-                sessionCaptor.getValue();
+        TableSession sessionPassedToRepository = sessionCaptor.getValue();
 
-        assertSame(
-                restaurantTable,
-                sessionPassedToRepository
-                        .getRestaurantTable()
-        );
+        assertSame(restaurantTable, sessionPassedToRepository.getRestaurantTable());
 
-        assertTrue(
-                sessionPassedToRepository
-                        .isActive()
-        );
+        assertTrue(sessionPassedToRepository.isActive());
 
-        assertNotNull(
-                sessionPassedToRepository
-                        .getStartedAt()
-        );
+        assertNotNull(sessionPassedToRepository.getStartedAt());
 
-        assertNull(
-                sessionPassedToRepository
-                        .getEndedAt()
-        );
+        assertNull(sessionPassedToRepository.getEndedAt());
 
-        assertFalse(
-                sessionPassedToRepository
-                        .getStartedAt()
-                        .isBefore(
-                                beforeStartedAt
-                        )
-        );
+        assertFalse(sessionPassedToRepository.getStartedAt().isBefore(beforeStartedAt));
 
-        assertFalse(
-                sessionPassedToRepository
-                        .getStartedAt()
-                        .isAfter(
-                                afterStartedAt
-                        )
-        );
+        assertFalse(sessionPassedToRepository.getStartedAt().isAfter(afterStartedAt));
 
-        String sessionCode =
-                sessionPassedToRepository
-                        .getSessionCode();
+        String sessionCode = sessionPassedToRepository.getSessionCode();
 
         assertNotNull(sessionCode);
 
-        assertTrue(
-                sessionCode.matches(
-                        "^MASA-7-\\d+$"
-                ),
-                "Codul trebuie sa respecte formatul "
-                        + "MASA-numar-timestamp."
-        );
+        assertTrue(sessionCode.matches("^MASA-7-\\d+$"), "Codul trebuie sa respecte formatul " + "MASA-numar-timestamp.");
 
-        String timestampText =
-                sessionCode.substring(
-                        sessionCode
-                                .lastIndexOf('-')
-                                + 1
-                );
+        String timestampText = sessionCode.substring(sessionCode.lastIndexOf('-') + 1);
 
-        long timestamp =
-                Long.parseLong(
-                        timestampText
-                );
+        long timestamp = Long.parseLong(timestampText);
 
-        assertTrue(
-                timestamp >= beforeCreation
-                        && timestamp
-                        <= afterCreation
-        );
+        assertTrue(timestamp >= beforeCreation && timestamp <= afterCreation);
 
-        verify(
-                restaurantTableRepository
-        ).findById(5L);
+        verify(restaurantTableRepository).findById(5L);
 
-        verify(
-                tableSessionRepository
-        ).existsByRestaurantTable_IdAndActiveTrue(
-                5L
-        );
+        verify(tableSessionRepository).existsByRestaurantTable_IdAndActiveTrue(5L);
 
-        verify(
-                trafficEventService
-        ).saveEvent(
-                TrafficEventType.ENTRY
-        );
+        verify(trafficEventService).saveEvent(TrafficEventType.ENTRY);
 
-        InOrder operationOrder =
-                inOrder(
-                        tableSessionRepository,
-                        trafficEventService
-                );
+        InOrder operationOrder = inOrder(tableSessionRepository, trafficEventService);
 
-        operationOrder.verify(
-                tableSessionRepository
-        ).save(any(TableSession.class));
+        operationOrder.verify(tableSessionRepository).save(any(TableSession.class));
 
-        operationOrder.verify(
-                trafficEventService
-        ).saveEvent(
-                TrafficEventType.ENTRY
-        );
+        operationOrder.verify(trafficEventService).saveEvent(TrafficEventType.ENTRY);
     }
 
     @Test
     void createSessionForTableShouldNotSaveEntryEventWhenSessionSaveFails() {
-        RestaurantTable restaurantTable =
-                new RestaurantTable(2, 2);
+        RestaurantTable restaurantTable = new RestaurantTable(2, 2);
 
-        when(
-                restaurantTableRepository
-                        .findById(2L)
-        ).thenReturn(
-                Optional.of(restaurantTable)
-        );
+        when(restaurantTableRepository.findById(2L)).thenReturn(Optional.of(restaurantTable));
 
-        when(
-                tableSessionRepository
-                        .existsByRestaurantTable_IdAndActiveTrue(
-                                2L
-                        )
-        ).thenReturn(false);
+        when(tableSessionRepository.existsByRestaurantTable_IdAndActiveTrue(2L)).thenReturn(false);
 
-        when(
-                tableSessionRepository.save(
-                        any(TableSession.class)
-                )
-        ).thenThrow(
-                new RuntimeException(
-                        "Eroare la salvarea sesiunii."
-                )
-        );
+        when(tableSessionRepository.save(any(TableSession.class))).thenThrow(new RuntimeException("Eroare la salvarea sesiunii."));
 
-        RuntimeException exception =
-                assertThrows(
-                        RuntimeException.class,
-                        () ->
-                                tableSessionService
-                                        .createSessionForTable(
-                                                2L
-                                        )
-                );
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tableSessionService.createSessionForTable(2L));
 
-        assertEquals(
-                "Eroare la salvarea sesiunii.",
-                exception.getMessage()
-        );
+        assertEquals("Eroare la salvarea sesiunii.", exception.getMessage());
 
-        verify(
-                restaurantTableRepository
-        ).findById(2L);
+        verify(restaurantTableRepository).findById(2L);
 
-        verify(
-                tableSessionRepository
-        ).existsByRestaurantTable_IdAndActiveTrue(
-                2L
-        );
+        verify(tableSessionRepository).existsByRestaurantTable_IdAndActiveTrue(2L);
 
-        verify(
-                tableSessionRepository
-        ).save(any(TableSession.class));
+        verify(tableSessionRepository).save(any(TableSession.class));
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
     @Test
     void closeSessionShouldThrowWhenSessionDoesNotExist() {
-        when(
-                tableSessionRepository
-                        .findById(99L)
-        ).thenReturn(Optional.empty());
+        when(tableSessionRepository.findById(99L)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception =
-                assertThrows(
-                        ResponseStatusException.class,
-                        () ->
-                                tableSessionService
-                                        .closeSession(
-                                                99L
-                                        )
-                );
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> tableSessionService.closeSession(99L));
 
-        assertEquals(
-                HttpStatus.NOT_FOUND,
-                exception.getStatusCode()
-        );
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
 
-        assertEquals(
-                "Sesiunea nu exista.",
-                exception.getReason()
-        );
+        assertEquals("Sesiunea nu exista.", exception.getReason());
 
-        verify(
-                tableSessionRepository
-        ).findById(99L);
+        verify(tableSessionRepository).findById(99L);
 
-        verify(
-                tableSessionRepository,
-                never()
-        ).save(any(TableSession.class));
+        verify(tableSessionRepository, never()).save(any(TableSession.class));
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
     @Test
     void closeSessionShouldRejectAlreadyClosedSession() {
-        TableSession closedSession =
-                createSession(false);
+        TableSession closedSession = createSession(false);
 
-        LocalDateTime originalEndedAt =
-                LocalDateTime.now()
-                        .minusMinutes(10);
+        LocalDateTime originalEndedAt = LocalDateTime.now().minusMinutes(10);
 
-        closedSession.setEndedAt(
-                originalEndedAt
-        );
+        closedSession.setEndedAt(originalEndedAt);
 
-        when(
-                tableSessionRepository
-                        .findById(10L)
-        ).thenReturn(
-                Optional.of(closedSession)
-        );
+        when(tableSessionRepository.findById(10L)).thenReturn(Optional.of(closedSession));
 
-        ResponseStatusException exception =
-                assertThrows(
-                        ResponseStatusException.class,
-                        () ->
-                                tableSessionService
-                                        .closeSession(
-                                                10L
-                                        )
-                );
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> tableSessionService.closeSession(10L));
 
-        assertEquals(
-                HttpStatus.CONFLICT,
-                exception.getStatusCode()
-        );
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
 
-        assertEquals(
-                "Masa este deja inchisa.",
-                exception.getReason()
-        );
+        assertEquals("Masa este deja inchisa.", exception.getReason());
 
-        assertFalse(
-                closedSession.isActive()
-        );
+        assertFalse(closedSession.isActive());
 
-        assertEquals(
-                originalEndedAt,
-                closedSession.getEndedAt()
-        );
+        assertEquals(originalEndedAt, closedSession.getEndedAt());
 
-        verify(
-                tableSessionRepository
-        ).findById(10L);
+        verify(tableSessionRepository).findById(10L);
 
-        verify(
-                tableSessionRepository,
-                never()
-        ).save(any(TableSession.class));
+        verify(tableSessionRepository, never()).save(any(TableSession.class));
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
     @Test
     void closeSessionShouldCloseSessionAndSaveExitEvent() {
-        TableSession activeSession =
-                createSession(true);
+        TableSession activeSession = createSession(true);
 
-        assertNull(
-                activeSession.getEndedAt()
-        );
+        assertNull(activeSession.getEndedAt());
 
-        when(
-                tableSessionRepository
-                        .findById(10L)
-        ).thenReturn(
-                Optional.of(activeSession)
-        );
+        when(tableSessionRepository.findById(10L)).thenReturn(Optional.of(activeSession));
 
-        when(
-                tableSessionRepository.save(
-                        activeSession
-                )
-        ).thenReturn(activeSession);
+        when(tableSessionRepository.save(activeSession)).thenReturn(activeSession);
 
-        LocalDateTime beforeClosing =
-                LocalDateTime.now();
+        LocalDateTime beforeClosing = LocalDateTime.now();
 
-        TableSession result =
-                tableSessionService
-                        .closeSession(10L);
+        TableSession result = tableSessionService.closeSession(10L);
 
-        LocalDateTime afterClosing =
-                LocalDateTime.now();
+        LocalDateTime afterClosing = LocalDateTime.now();
 
         assertSame(activeSession, result);
         assertFalse(result.isActive());
         assertNotNull(result.getEndedAt());
 
-        assertFalse(
-                result.getEndedAt()
-                        .isBefore(
-                                beforeClosing
-                        )
-        );
+        assertFalse(result.getEndedAt().isBefore(beforeClosing));
 
-        assertFalse(
-                result.getEndedAt()
-                        .isAfter(
-                                afterClosing
-                        )
-        );
+        assertFalse(result.getEndedAt().isAfter(afterClosing));
 
-        verify(
-                tableSessionRepository
-        ).findById(10L);
+        verify(tableSessionRepository).findById(10L);
 
-        verify(
-                tableSessionRepository
-        ).save(activeSession);
+        verify(tableSessionRepository).save(activeSession);
 
-        verify(
-                trafficEventService
-        ).saveEvent(
-                TrafficEventType.EXIT
-        );
+        verify(trafficEventService).saveEvent(TrafficEventType.EXIT);
 
-        InOrder operationOrder =
-                inOrder(
-                        tableSessionRepository,
-                        trafficEventService
-                );
+        InOrder operationOrder = inOrder(tableSessionRepository, trafficEventService);
 
-        operationOrder.verify(
-                tableSessionRepository
-        ).save(activeSession);
+        operationOrder.verify(tableSessionRepository).save(activeSession);
 
-        operationOrder.verify(
-                trafficEventService
-        ).saveEvent(
-                TrafficEventType.EXIT
-        );
+        operationOrder.verify(trafficEventService).saveEvent(TrafficEventType.EXIT);
     }
 
     @Test
     void closeSessionShouldNotSaveExitEventWhenSessionSaveFails() {
-        TableSession activeSession =
-                createSession(true);
+        TableSession activeSession = createSession(true);
 
-        when(
-                tableSessionRepository
-                        .findById(10L)
-        ).thenReturn(
-                Optional.of(activeSession)
-        );
+        when(tableSessionRepository.findById(10L)).thenReturn(Optional.of(activeSession));
 
-        when(
-                tableSessionRepository.save(
-                        activeSession
-                )
-        ).thenThrow(
-                new RuntimeException(
-                        "Eroare la inchiderea sesiunii."
-                )
-        );
+        when(tableSessionRepository.save(activeSession)).thenThrow(new RuntimeException("Eroare la inchiderea sesiunii."));
 
-        RuntimeException exception =
-                assertThrows(
-                        RuntimeException.class,
-                        () ->
-                                tableSessionService
-                                        .closeSession(
-                                                10L
-                                        )
-                );
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tableSessionService.closeSession(10L));
 
-        assertEquals(
-                "Eroare la inchiderea sesiunii.",
-                exception.getMessage()
-        );
+        assertEquals("Eroare la inchiderea sesiunii.", exception.getMessage());
 
-        verify(
-                tableSessionRepository
-        ).findById(10L);
+        verify(tableSessionRepository).findById(10L);
 
-        verify(
-                tableSessionRepository
-        ).save(activeSession);
+        verify(tableSessionRepository).save(activeSession);
 
-        verifyNoInteractions(
-                trafficEventService
-        );
+        verifyNoInteractions(trafficEventService);
     }
 
-    private TableSession createSession(
-            boolean active
-    ) {
-        RestaurantTable restaurantTable =
-                new RestaurantTable(1, 4);
+    private TableSession createSession(boolean active) {
+        RestaurantTable restaurantTable = new RestaurantTable(1, 4);
 
-        TableSession tableSession =
-                new TableSession();
+        TableSession tableSession = new TableSession();
 
-        tableSession.setRestaurantTable(
-                restaurantTable
-        );
+        tableSession.setRestaurantTable(restaurantTable);
 
-        tableSession.setSessionCode(
-                "MASA-1-12345"
-        );
+        tableSession.setSessionCode("MASA-1-12345");
 
-        tableSession.setStartedAt(
-                LocalDateTime.now()
-                        .minusMinutes(30)
-        );
+        tableSession.setStartedAt(LocalDateTime.now().minusMinutes(30));
 
         tableSession.setActive(active);
 

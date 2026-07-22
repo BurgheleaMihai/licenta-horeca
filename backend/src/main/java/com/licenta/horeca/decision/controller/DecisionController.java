@@ -24,8 +24,7 @@ public class DecisionController {
 
     private final DecisionTrainingRecordService decisionTrainingRecordService;
 
-    public DecisionController(DecisionService decisionService,
-                              DecisionTrainingRecordService decisionTrainingRecordService) {
+    public DecisionController(DecisionService decisionService, DecisionTrainingRecordService decisionTrainingRecordService) {
         this.decisionService = decisionService;
 
         this.decisionTrainingRecordService = decisionTrainingRecordService;
@@ -42,8 +41,7 @@ public class DecisionController {
     }
 
     @PutMapping("/training-records/{recordId}/label")
-    public DecisionTrainingRecord labelRecord(@PathVariable Long recordId,
-                                              @Valid @RequestBody DecisionLabelRequest request) {
+    public DecisionTrainingRecord labelRecord(@PathVariable Long recordId, @Valid @RequestBody DecisionLabelRequest request) {
         return decisionTrainingRecordService.labelRecord(recordId, request);
     }
 

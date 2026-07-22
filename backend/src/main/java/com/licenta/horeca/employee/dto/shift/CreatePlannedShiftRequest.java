@@ -30,9 +30,7 @@ public class CreatePlannedShiftRequest {
         return plannedStartAt;
     }
 
-    public void setPlannedStartAt(
-            LocalDateTime plannedStartAt
-    ) {
+    public void setPlannedStartAt(LocalDateTime plannedStartAt) {
         this.plannedStartAt = plannedStartAt;
     }
 
@@ -40,9 +38,7 @@ public class CreatePlannedShiftRequest {
         return plannedEndAt;
     }
 
-    public void setPlannedEndAt(
-            LocalDateTime plannedEndAt
-    ) {
+    public void setPlannedEndAt(LocalDateTime plannedEndAt) {
         this.plannedEndAt = plannedEndAt;
     }
 }

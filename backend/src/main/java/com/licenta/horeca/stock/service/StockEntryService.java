@@ -18,313 +18,159 @@ import java.util.List;
 @Service
 public class StockEntryService {
 
-    private static final BigDecimal ONE_THOUSAND =
-            BigDecimal.valueOf(1000);
+    private static final BigDecimal ONE_THOUSAND = BigDecimal.valueOf(1000);
 
     private final StockEntryRepository stockEntryRepository;
 
-    private final AuxiliarySupplyRepository
-            auxiliarySupplyRepository;
+    private final AuxiliarySupplyRepository auxiliarySupplyRepository;
 
-    public StockEntryService(
-            StockEntryRepository stockEntryRepository,
-            AuxiliarySupplyRepository auxiliarySupplyRepository) {
+    public StockEntryService(StockEntryRepository stockEntryRepository, AuxiliarySupplyRepository auxiliarySupplyRepository) {
 
-        this.stockEntryRepository =
-                stockEntryRepository;
+        this.stockEntryRepository = stockEntryRepository;
 
-        this.auxiliarySupplyRepository =
-                auxiliarySupplyRepository;
+        this.auxiliarySupplyRepository = auxiliarySupplyRepository;
     }
 
-    public List<StockEntry> getEntriesForSupply(
-            Long supplyId) {
+    public List<StockEntry> getEntriesForSupply(Long supplyId) {
 
         getSupplyById(supplyId);
 
-        return stockEntryRepository
-                .findBySupplyIdOrderByCreatedAtDesc(
-                        supplyId
-                );
+        return stockEntryRepository.findBySupplyIdOrderByCreatedAtDesc(supplyId);
     }
 
     public StockEntry getEntryById(Long entryId) {
-        return stockEntryRepository
-                .findById(entryId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Intrarea de stoc nu a fost gasita."
-                        )
-                );
+        return stockEntryRepository.findById(entryId).orElseThrow(() -> new RuntimeException("Intrarea de stoc nu a fost gasita."));
     }
 
     @Transactional
-    public StockEntry addStockEntry(
-            Long supplyId,
-            StockEntryRequest request) {
+    public StockEntry addStockEntry(Long supplyId, StockEntryRequest request) {
 
-        AuxiliarySupply supply =
-                getSupplyById(supplyId);
+        AuxiliarySupply supply = getSupplyById(supplyId);
 
         validateRequest(request);
 
-        BigDecimal packageQuantity =
-                request.getPackageQuantity();
+        BigDecimal packageQuantity = request.getPackageQuantity();
 
-        BigDecimal quantityPerPackage =
-                determineQuantityPerPackage(request);
+        BigDecimal quantityPerPackage = determineQuantityPerPackage(request);
 
-        BigDecimal convertedQuantity =
-                calculateConvertedQuantity(
-                        packageQuantity,
-                        quantityPerPackage,
-                        request.getInputUnit(),
-                        supply.getBaseUnit()
-                );
+        BigDecimal convertedQuantity = calculateConvertedQuantity(packageQuantity, quantityPerPackage, request.getInputUnit(), supply.getBaseUnit());
 
-        BigDecimal previousQuantity =
-                getCurrentQuantity(supply);
+        BigDecimal previousQuantity = getCurrentQuantity(supply);
 
-        BigDecimal newQuantity =
-                previousQuantity.add(
-                        convertedQuantity
-                );
+        BigDecimal newQuantity = previousQuantity.add(convertedQuantity);
 
-        updateSupplyQuantity(
-                supply,
-                newQuantity
-        );
+        updateSupplyQuantity(supply, newQuantity);
 
         auxiliarySupplyRepository.save(supply);
 
-        StockEntry stockEntry =
-                new StockEntry();
+        StockEntry stockEntry = new StockEntry();
 
-        applyEntryData(
-                stockEntry,
-                supply,
-                request,
-                packageQuantity,
-                quantityPerPackage,
-                convertedQuantity,
-                previousQuantity,
-                newQuantity
-        );
+        applyEntryData(stockEntry, supply, request, packageQuantity, quantityPerPackage, convertedQuantity, previousQuantity, newQuantity);
 
-        stockEntry.setCreatedAt(
-                LocalDateTime.now()
-        );
+        stockEntry.setCreatedAt(LocalDateTime.now());
 
-        return stockEntryRepository.save(
-                stockEntry
-        );
+        return stockEntryRepository.save(stockEntry);
     }
 
     @Transactional
-    public StockEntry updateStockEntry(
-            Long entryId,
-            StockEntryRequest request) {
+    public StockEntry updateStockEntry(Long entryId, StockEntryRequest request) {
 
         validateRequest(request);
 
-        StockEntry stockEntry =
-                getEntryById(entryId);
+        StockEntry stockEntry = getEntryById(entryId);
 
-        AuxiliarySupply oldSupply =
-                stockEntry.getSupply();
+        AuxiliarySupply oldSupply = stockEntry.getSupply();
 
-        AuxiliarySupply targetSupply =
-                request.getSupplyId() == null
-                        ? oldSupply
-                        : getSupplyById(
-                        request.getSupplyId()
-                );
+        AuxiliarySupply targetSupply = request.getSupplyId() == null ? oldSupply : getSupplyById(request.getSupplyId());
 
-        BigDecimal oldConvertedQuantity =
-                stockEntry.getConvertedQuantity();
+        BigDecimal oldConvertedQuantity = stockEntry.getConvertedQuantity();
 
-        BigDecimal oldSupplyCurrentQuantity =
-                getCurrentQuantity(oldSupply);
+        BigDecimal oldSupplyCurrentQuantity = getCurrentQuantity(oldSupply);
 
-        BigDecimal oldSupplyQuantityAfterRemoval =
-                subtractWithoutNegativeResult(
-                        oldSupplyCurrentQuantity,
-                        oldConvertedQuantity
-                );
+        BigDecimal oldSupplyQuantityAfterRemoval = subtractWithoutNegativeResult(oldSupplyCurrentQuantity, oldConvertedQuantity);
 
-        BigDecimal packageQuantity =
-                request.getPackageQuantity();
+        BigDecimal packageQuantity = request.getPackageQuantity();
 
-        BigDecimal quantityPerPackage =
-                determineQuantityPerPackage(request);
+        BigDecimal quantityPerPackage = determineQuantityPerPackage(request);
 
-        BigDecimal newConvertedQuantity =
-                calculateConvertedQuantity(
-                        packageQuantity,
-                        quantityPerPackage,
-                        request.getInputUnit(),
-                        targetSupply.getBaseUnit()
-                );
+        BigDecimal newConvertedQuantity = calculateConvertedQuantity(packageQuantity, quantityPerPackage, request.getInputUnit(), targetSupply.getBaseUnit());
 
         BigDecimal targetPreviousQuantity;
         BigDecimal targetNewQuantity;
 
-        boolean sameSupply =
-                oldSupply.getId().equals(
-                        targetSupply.getId()
-                );
+        boolean sameSupply = oldSupply.getId().equals(targetSupply.getId());
 
         if (sameSupply) {
-            targetPreviousQuantity =
-                    oldSupplyQuantityAfterRemoval;
+            targetPreviousQuantity = oldSupplyQuantityAfterRemoval;
 
-            targetNewQuantity =
-                    targetPreviousQuantity.add(
-                            newConvertedQuantity
-                    );
+            targetNewQuantity = targetPreviousQuantity.add(newConvertedQuantity);
 
-            updateSupplyQuantity(
-                    oldSupply,
-                    targetNewQuantity
-            );
+            updateSupplyQuantity(oldSupply, targetNewQuantity);
 
-            auxiliarySupplyRepository.save(
-                    oldSupply
-            );
+            auxiliarySupplyRepository.save(oldSupply);
         } else {
-            updateSupplyQuantity(
-                    oldSupply,
-                    oldSupplyQuantityAfterRemoval
-            );
+            updateSupplyQuantity(oldSupply, oldSupplyQuantityAfterRemoval);
 
-            auxiliarySupplyRepository.save(
-                    oldSupply
-            );
+            auxiliarySupplyRepository.save(oldSupply);
 
-            targetPreviousQuantity =
-                    getCurrentQuantity(
-                            targetSupply
-                    );
+            targetPreviousQuantity = getCurrentQuantity(targetSupply);
 
-            targetNewQuantity =
-                    targetPreviousQuantity.add(
-                            newConvertedQuantity
-                    );
+            targetNewQuantity = targetPreviousQuantity.add(newConvertedQuantity);
 
-            updateSupplyQuantity(
-                    targetSupply,
-                    targetNewQuantity
-            );
+            updateSupplyQuantity(targetSupply, targetNewQuantity);
 
-            auxiliarySupplyRepository.save(
-                    targetSupply
-            );
+            auxiliarySupplyRepository.save(targetSupply);
         }
 
-        applyEntryData(
-                stockEntry,
-                targetSupply,
-                request,
-                packageQuantity,
-                quantityPerPackage,
-                newConvertedQuantity,
-                targetPreviousQuantity,
-                targetNewQuantity
-        );
+        applyEntryData(stockEntry, targetSupply, request, packageQuantity, quantityPerPackage, newConvertedQuantity, targetPreviousQuantity, targetNewQuantity);
 
-        return stockEntryRepository.save(
-                stockEntry
-        );
+        return stockEntryRepository.save(stockEntry);
     }
 
     @Transactional
     public void deleteStockEntry(Long entryId) {
-        StockEntry stockEntry =
-                getEntryById(entryId);
+        StockEntry stockEntry = getEntryById(entryId);
 
-        AuxiliarySupply supply =
-                stockEntry.getSupply();
+        AuxiliarySupply supply = stockEntry.getSupply();
 
-        BigDecimal currentQuantity =
-                getCurrentQuantity(supply);
+        BigDecimal currentQuantity = getCurrentQuantity(supply);
 
-        BigDecimal quantityAfterDeletion =
-                subtractWithoutNegativeResult(
-                        currentQuantity,
-                        stockEntry.getConvertedQuantity()
-                );
+        BigDecimal quantityAfterDeletion = subtractWithoutNegativeResult(currentQuantity, stockEntry.getConvertedQuantity());
 
-        updateSupplyQuantity(
-                supply,
-                quantityAfterDeletion
-        );
+        updateSupplyQuantity(supply, quantityAfterDeletion);
 
         auxiliarySupplyRepository.save(supply);
 
         stockEntryRepository.delete(stockEntry);
     }
 
-    private void applyEntryData(
-            StockEntry stockEntry,
-            AuxiliarySupply supply,
-            StockEntryRequest request,
-            BigDecimal packageQuantity,
-            BigDecimal quantityPerPackage,
-            BigDecimal convertedQuantity,
-            BigDecimal previousQuantity,
-            BigDecimal newQuantity) {
+    private void applyEntryData(StockEntry stockEntry, AuxiliarySupply supply, StockEntryRequest request, BigDecimal packageQuantity, BigDecimal quantityPerPackage, BigDecimal convertedQuantity, BigDecimal previousQuantity, BigDecimal newQuantity) {
 
         stockEntry.setSupply(supply);
 
-        stockEntry.setPackageQuantity(
-                packageQuantity
-        );
+        stockEntry.setPackageQuantity(packageQuantity);
 
-        stockEntry.setPackageType(
-                request.getPackageType()
-        );
+        stockEntry.setPackageType(request.getPackageType());
 
-        stockEntry.setQuantityPerPackage(
-                quantityPerPackage
-        );
+        stockEntry.setQuantityPerPackage(quantityPerPackage);
 
-        stockEntry.setInputUnit(
-                request.getInputUnit()
-        );
+        stockEntry.setInputUnit(request.getInputUnit());
 
-        stockEntry.setConvertedQuantity(
-                convertedQuantity
-        );
+        stockEntry.setConvertedQuantity(convertedQuantity);
 
-        stockEntry.setPreviousQuantity(
-                previousQuantity
-        );
+        stockEntry.setPreviousQuantity(previousQuantity);
 
-        stockEntry.setNewQuantity(
-                newQuantity
-        );
+        stockEntry.setNewQuantity(newQuantity);
 
-        stockEntry.setNotes(
-                normalizeNotes(
-                        request.getNotes()
-                )
-        );
+        stockEntry.setNotes(normalizeNotes(request.getNotes()));
     }
 
-    private AuxiliarySupply getSupplyById(
-            Long supplyId) {
+    private AuxiliarySupply getSupplyById(Long supplyId) {
 
-        return auxiliarySupplyRepository
-                .findById(supplyId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Varianta articolului de stoc nu a fost gasita."
-                        )
-                );
+        return auxiliarySupplyRepository.findById(supplyId).orElseThrow(() -> new RuntimeException("Varianta articolului de stoc nu a fost gasita."));
     }
 
-    private BigDecimal getCurrentQuantity(
-            AuxiliarySupply supply) {
+    private BigDecimal getCurrentQuantity(AuxiliarySupply supply) {
 
         if (supply.getCurrentQuantity() == null) {
             return BigDecimal.ZERO;
@@ -333,77 +179,44 @@ public class StockEntryService {
         return supply.getCurrentQuantity();
     }
 
-    private BigDecimal subtractWithoutNegativeResult(
-            BigDecimal currentQuantity,
-            BigDecimal quantityToRemove) {
+    private BigDecimal subtractWithoutNegativeResult(BigDecimal currentQuantity, BigDecimal quantityToRemove) {
 
-        BigDecimal result =
-                currentQuantity.subtract(
-                        quantityToRemove
-                );
+        BigDecimal result = currentQuantity.subtract(quantityToRemove);
 
         if (result.compareTo(BigDecimal.ZERO) < 0) {
-            return BigDecimal.ZERO.setScale(
-                    3,
-                    RoundingMode.HALF_UP
-            );
+            return BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP);
         }
 
         return normalizeQuantity(result);
     }
 
-    private void updateSupplyQuantity(
-            AuxiliarySupply supply,
-            BigDecimal newQuantity) {
+    private void updateSupplyQuantity(AuxiliarySupply supply, BigDecimal newQuantity) {
 
-        BigDecimal normalizedQuantity =
-                normalizeQuantity(newQuantity);
+        BigDecimal normalizedQuantity = normalizeQuantity(newQuantity);
 
-        supply.setCurrentQuantity(
-                normalizedQuantity
-        );
+        supply.setCurrentQuantity(normalizedQuantity);
 
-        boolean available =
-                normalizedQuantity.compareTo(
-                        BigDecimal.ZERO
-                ) > 0;
+        boolean available = normalizedQuantity.compareTo(BigDecimal.ZERO) > 0;
 
-        supply.setAvailableInWarehouse(
-                available
-        );
+        supply.setAvailableInWarehouse(available);
 
         if (available) {
             supply.setReportedAt(null);
         } else if (supply.getReportedAt() == null) {
-            supply.setReportedAt(
-                    LocalDateTime.now()
-            );
+            supply.setReportedAt(LocalDateTime.now());
         }
     }
 
-    private BigDecimal calculateConvertedQuantity(
-            BigDecimal packageQuantity,
-            BigDecimal quantityPerPackage,
-            MeasurementUnit inputUnit,
-            MeasurementUnit baseUnit) {
+    private BigDecimal calculateConvertedQuantity(BigDecimal packageQuantity, BigDecimal quantityPerPackage, MeasurementUnit inputUnit, MeasurementUnit baseUnit) {
 
-        BigDecimal totalInputQuantity =
-                packageQuantity.multiply(
-                        quantityPerPackage
-                );
+        BigDecimal totalInputQuantity = packageQuantity.multiply(quantityPerPackage);
 
-        return convertQuantity(
-                totalInputQuantity,
-                inputUnit,
-                baseUnit
-        );
+        return convertQuantity(totalInputQuantity, inputUnit, baseUnit);
     }
 
-    private BigDecimal determineQuantityPerPackage(
-            StockEntryRequest request) {
+    private BigDecimal determineQuantityPerPackage(StockEntryRequest request) {
 
-        if (request.getPackageType()
-                == StockPackageType.DIRECT) {
+        if (request.getPackageType() == StockPackageType.DIRECT) {
 
             return BigDecimal.ONE;
         }
@@ -411,77 +224,42 @@ public class StockEntryService {
         return request.getQuantityPerPackage();
     }
 
-    private BigDecimal convertQuantity(
-            BigDecimal quantity,
-            MeasurementUnit inputUnit,
-            MeasurementUnit baseUnit) {
+    private BigDecimal convertQuantity(BigDecimal quantity, MeasurementUnit inputUnit, MeasurementUnit baseUnit) {
 
         if (inputUnit == baseUnit) {
             return normalizeQuantity(quantity);
         }
 
-        if (inputUnit == MeasurementUnit.KILOGRAM
-                && baseUnit == MeasurementUnit.GRAM) {
+        if (inputUnit == MeasurementUnit.KILOGRAM && baseUnit == MeasurementUnit.GRAM) {
 
-            return normalizeQuantity(
-                    quantity.multiply(
-                            ONE_THOUSAND
-                    )
-            );
+            return normalizeQuantity(quantity.multiply(ONE_THOUSAND));
         }
 
-        if (inputUnit == MeasurementUnit.GRAM
-                && baseUnit == MeasurementUnit.KILOGRAM) {
+        if (inputUnit == MeasurementUnit.GRAM && baseUnit == MeasurementUnit.KILOGRAM) {
 
-            return normalizeQuantity(
-                    quantity.divide(
-                            ONE_THOUSAND,
-                            3,
-                            RoundingMode.HALF_UP
-                    )
-            );
+            return normalizeQuantity(quantity.divide(ONE_THOUSAND, 3, RoundingMode.HALF_UP));
         }
 
-        if (inputUnit == MeasurementUnit.LITER
-                && baseUnit == MeasurementUnit.MILLILITER) {
+        if (inputUnit == MeasurementUnit.LITER && baseUnit == MeasurementUnit.MILLILITER) {
 
-            return normalizeQuantity(
-                    quantity.multiply(
-                            ONE_THOUSAND
-                    )
-            );
+            return normalizeQuantity(quantity.multiply(ONE_THOUSAND));
         }
 
-        if (inputUnit == MeasurementUnit.MILLILITER
-                && baseUnit == MeasurementUnit.LITER) {
+        if (inputUnit == MeasurementUnit.MILLILITER && baseUnit == MeasurementUnit.LITER) {
 
-            return normalizeQuantity(
-                    quantity.divide(
-                            ONE_THOUSAND,
-                            3,
-                            RoundingMode.HALF_UP
-                    )
-            );
+            return normalizeQuantity(quantity.divide(ONE_THOUSAND, 3, RoundingMode.HALF_UP));
         }
 
-        throw new RuntimeException(
-                "Unitatea introdusa nu poate fi convertita "
-                        + "in unitatea de baza a variantei."
-        );
+        throw new RuntimeException("Unitatea introdusa nu poate fi convertita " + "in unitatea de baza a variantei.");
     }
 
-    private BigDecimal normalizeQuantity(
-            BigDecimal quantity) {
+    private BigDecimal normalizeQuantity(BigDecimal quantity) {
 
-        return quantity.setScale(
-                3,
-                RoundingMode.HALF_UP
-        );
+        return quantity.setScale(3, RoundingMode.HALF_UP);
     }
 
     private String normalizeNotes(String notes) {
-        if (notes == null
-                || notes.trim().isEmpty()) {
+        if (notes == null || notes.trim().isEmpty()) {
 
             return null;
         }
@@ -489,28 +267,19 @@ public class StockEntryService {
         return notes.trim();
     }
 
-    private void validateRequest(
-            StockEntryRequest request) {
+    private void validateRequest(StockEntryRequest request) {
 
         if (request == null) {
-            throw new RuntimeException(
-                    "Datele intrarii de stoc sunt obligatorii."
-            );
+            throw new RuntimeException("Datele intrarii de stoc sunt obligatorii.");
         }
 
         if (request.getPackageType() == null) {
-            request.setPackageType(
-                    StockPackageType.DIRECT
-            );
+            request.setPackageType(StockPackageType.DIRECT);
         }
 
-        if (request.getPackageQuantity() == null
-                || request.getPackageQuantity()
-                .compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getPackageQuantity() == null || request.getPackageQuantity().compareTo(BigDecimal.ZERO) <= 0) {
 
-            throw new RuntimeException(
-                    "Cantitatea primita trebuie sa fie mai mare decat zero."
-            );
+            throw new RuntimeException("Cantitatea primita trebuie sa fie mai mare decat zero.");
         }
 
         /*
@@ -520,34 +289,20 @@ public class StockEntryService {
          * Cantitatea directa poate fi zecimala:
          * 1.5 kg, 0.750 l etc.
          */
-        if (request.getPackageType()
-                != StockPackageType.DIRECT
-                && request.getPackageQuantity()
-                .stripTrailingZeros()
-                .scale() > 0) {
+        if (request.getPackageType() != StockPackageType.DIRECT && request.getPackageQuantity().stripTrailingZeros().scale() > 0) {
 
-            throw new RuntimeException(
-                    "Numarul de ambalaje trebuie sa fie un numar intreg."
-            );
+            throw new RuntimeException("Numarul de ambalaje trebuie sa fie un numar intreg.");
         }
 
         if (request.getInputUnit() == null) {
-            throw new RuntimeException(
-                    "Unitatea cantitatii primite este obligatorie."
-            );
+            throw new RuntimeException("Unitatea cantitatii primite este obligatorie.");
         }
 
-        if (request.getPackageType()
-                != StockPackageType.DIRECT) {
+        if (request.getPackageType() != StockPackageType.DIRECT) {
 
-            if (request.getQuantityPerPackage() == null
-                    || request.getQuantityPerPackage()
-                    .compareTo(BigDecimal.ZERO) <= 0) {
+            if (request.getQuantityPerPackage() == null || request.getQuantityPerPackage().compareTo(BigDecimal.ZERO) <= 0) {
 
-                throw new RuntimeException(
-                        "Cantitatea dintr-un ambalaj "
-                                + "trebuie sa fie mai mare decat zero."
-                );
+                throw new RuntimeException("Cantitatea dintr-un ambalaj " + "trebuie sa fie mai mare decat zero.");
             }
         }
     }

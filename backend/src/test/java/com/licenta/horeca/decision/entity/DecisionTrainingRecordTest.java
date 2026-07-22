@@ -13,53 +13,33 @@ class DecisionTrainingRecordTest {
 
     @Test
     void prePersistShouldSetCreatedAtWhenItIsNull() {
-        DecisionTrainingRecord record =
-                new DecisionTrainingRecord();
+        DecisionTrainingRecord record = new DecisionTrainingRecord();
 
         assertNull(record.getCreatedAt());
 
-        LocalDateTime before =
-                LocalDateTime.now();
+        LocalDateTime before = LocalDateTime.now();
 
         record.prePersist();
 
-        LocalDateTime after =
-                LocalDateTime.now();
+        LocalDateTime after = LocalDateTime.now();
 
         assertNotNull(record.getCreatedAt());
 
-        assertFalse(
-                record.getCreatedAt()
-                        .isBefore(before)
-        );
+        assertFalse(record.getCreatedAt().isBefore(before));
 
-        assertFalse(
-                record.getCreatedAt()
-                        .isAfter(after)
-        );
+        assertFalse(record.getCreatedAt().isAfter(after));
     }
 
     @Test
     void prePersistShouldPreserveExistingCreatedAt() {
-        DecisionTrainingRecord record =
-                new DecisionTrainingRecord();
+        DecisionTrainingRecord record = new DecisionTrainingRecord();
 
-        LocalDateTime existingCreatedAt =
-                LocalDateTime.of(
-                        2026,
-                        7,
-                        10,
-                        12,
-                        30
-                );
+        LocalDateTime existingCreatedAt = LocalDateTime.of(2026, 7, 10, 12, 30);
 
         record.setCreatedAt(existingCreatedAt);
 
         record.prePersist();
 
-        assertEquals(
-                existingCreatedAt,
-                record.getCreatedAt()
-        );
+        assertEquals(existingCreatedAt, record.getCreatedAt());
     }
 }

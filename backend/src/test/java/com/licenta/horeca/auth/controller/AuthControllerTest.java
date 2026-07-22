@@ -25,23 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 class AuthControllerTest {
 
-    private static final String LOGIN_ENDPOINT =
-            "/api/auth/login";
+    private static final String LOGIN_ENDPOINT = "/api/auth/login";
 
-    private static final String MANAGER_NAME =
-            "Manager Test";
+    private static final String MANAGER_NAME = "Manager Test";
 
-    private static final String MANAGER_EMAIL =
-            "manager@test.com";
+    private static final String MANAGER_EMAIL = "manager@test.com";
 
-    private static final String MANAGER_SECRET =
-            "1234";
+    private static final String MANAGER_SECRET = "1234";
 
-    private static final String MANAGER_ROLE =
-            "MANAGER";
+    private static final String MANAGER_ROLE = "MANAGER";
 
-    private static final String JWT_TEST_TOKEN =
-            "jwt-test-token";
+    private static final String JWT_TEST_TOKEN = "jwt-test-token";
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,48 +58,10 @@ class AuthControllerTest {
         request.setEmail(MANAGER_EMAIL);
         request.setPassword(MANAGER_SECRET);
 
-        LoginResponse response =
-                new LoginResponse(
-                        1L,
-                        MANAGER_NAME,
-                        MANAGER_EMAIL,
-                        MANAGER_ROLE,
-                        JWT_TEST_TOKEN
-                );
+        LoginResponse response = new LoginResponse(1L, MANAGER_NAME, MANAGER_EMAIL, MANAGER_ROLE, JWT_TEST_TOKEN);
 
-        when(authService.login(any(LoginRequest.class)))
-                .thenReturn(response);
+        when(authService.login(any(LoginRequest.class))).thenReturn(response);
 
-        mockMvc
-                .perform(
-                        post(LOGIN_ENDPOINT)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        objectMapper.writeValueAsString(
-                                                request
-                                        )
-                                )
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.userId")
-                                .value(1)
-                )
-                .andExpect(
-                        jsonPath("$.fullName")
-                                .value(MANAGER_NAME)
-                )
-                .andExpect(
-                        jsonPath("$.email")
-                                .value(MANAGER_EMAIL)
-                )
-                .andExpect(
-                        jsonPath("$.role")
-                                .value(MANAGER_ROLE)
-                )
-                .andExpect(
-                        jsonPath("$.token")
-                                .value(JWT_TEST_TOKEN)
-                );
+        mockMvc.perform(post(LOGIN_ENDPOINT).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andExpect(jsonPath("$.userId").value(1)).andExpect(jsonPath("$.fullName").value(MANAGER_NAME)).andExpect(jsonPath("$.email").value(MANAGER_EMAIL)).andExpect(jsonPath("$.role").value(MANAGER_ROLE)).andExpect(jsonPath("$.token").value(JWT_TEST_TOKEN));
     }
 }

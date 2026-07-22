@@ -17,36 +17,24 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class TableSessionController {
 
-    private final TableSessionService
-            tableSessionService;
+    private final TableSessionService tableSessionService;
 
-    public TableSessionController(
-            TableSessionService tableSessionService
-    ) {
-        this.tableSessionService =
-                tableSessionService;
+    public TableSessionController(TableSessionService tableSessionService) {
+        this.tableSessionService = tableSessionService;
     }
 
     @GetMapping("/active")
-    public List<TableSession>
-    getActiveSessions() {
-        return tableSessionService
-                .getActiveSessions();
+    public List<TableSession> getActiveSessions() {
+        return tableSessionService.getActiveSessions();
     }
 
     @PostMapping("/table/{tableId}")
-    public TableSession createSessionForTable(
-            @PathVariable Long tableId
-    ) {
-        return tableSessionService
-                .createSessionForTable(tableId);
+    public TableSession createSessionForTable(@PathVariable Long tableId) {
+        return tableSessionService.createSessionForTable(tableId);
     }
 
     @PutMapping("/{sessionId}/close")
-    public TableSession closeSession(
-            @PathVariable Long sessionId
-    ) {
-        return tableSessionService
-                .closeSession(sessionId);
+    public TableSession closeSession(@PathVariable Long sessionId) {
+        return tableSessionService.closeSession(sessionId);
     }
 }

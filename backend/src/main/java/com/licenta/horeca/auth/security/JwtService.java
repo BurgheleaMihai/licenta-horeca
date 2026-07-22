@@ -17,71 +17,39 @@ public class JwtService {
     private final String secret;
     private final long expirationMs;
 
-    public JwtService(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiration-ms}") long expirationMs
-    ) {
+    public JwtService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration-ms}") long expirationMs) {
         this.secret = secret;
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(
-            UserDetails userDetails
-    ) {
+    public String generateToken(UserDetails userDetails) {
         Date issuedAt = new Date();
 
-        Date expiration =
-                new Date(
-                        issuedAt.getTime() + expirationMs
-                );
+        Date expiration = new Date(issuedAt.getTime() + expirationMs);
 
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(issuedAt)
-                .expiration(expiration)
-                .signWith(getSigningKey())
-                .compact();
+        return Jwts.builder().subject(userDetails.getUsername()).issuedAt(issuedAt).expiration(expiration).signWith(getSigningKey()).compact();
     }
 
-    public String extractUsername(
-            String token
-    ) {
-        return extractAllClaims(token)
-                .getSubject();
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
     }
 
-    public boolean isTokenValid(
-            String token,
-            UserDetails userDetails
-    ) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);
 
-        return username.equals(
-                userDetails.getUsername()
-        ) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(
-            String token
-    ) {
-        return extractAllClaims(token)
-                .getExpiration()
-                .before(new Date());
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    private Claims extractAllClaims(
-            String token
-    ) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes =
-                Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
 
         return Keys.hmacShaKeyFor(keyBytes);
     }

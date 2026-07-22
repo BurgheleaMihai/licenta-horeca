@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderRepository
-        extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
     /*
      * Încarcă toate datele necesare afișării unei comenzi înainte
@@ -20,15 +19,7 @@ public interface OrderRepository
      * configurație previne LazyInitializationException pentru items.
      */
     @Override
-    @EntityGraph(
-            attributePaths = {
-                    "items",
-                    "items.product",
-                    "items.product.category",
-                    "tableSession",
-                    "tableSession.restaurantTable"
-            }
-    )
+    @EntityGraph(attributePaths = {"items", "items.product", "items.product.category", "tableSession", "tableSession.restaurantTable"})
     List<Order> findAll();
 
     /*
@@ -37,63 +28,22 @@ public interface OrderRepository
      * cu trecerea comenzii în starea IN_PREPARARE.
      */
     @Override
-    @EntityGraph(
-            attributePaths = {
-                    "items",
-                    "items.product",
-                    "items.product.category",
-                    "tableSession",
-                    "tableSession.restaurantTable"
-            }
-    )
+    @EntityGraph(attributePaths = {"items", "items.product", "items.product.category", "tableSession", "tableSession.restaurantTable"})
     Optional<Order> findById(Long orderId);
 
-    List<Order> findByStatus(
-            OrderStatus status
-    );
+    List<Order> findByStatus(OrderStatus status);
 
-    List<Order> findByStatusIn(
-            List<OrderStatus> statuses
-    );
+    List<Order> findByStatusIn(List<OrderStatus> statuses);
 
-    @EntityGraph(
-            attributePaths = {
-                    "items",
-                    "items.product",
-                    "items.product.category",
-                    "tableSession",
-                    "tableSession.restaurantTable"
-            }
-    )
-    List<Order> findByStatusOrderByCreatedAtAsc(
-            OrderStatus status
-    );
+    @EntityGraph(attributePaths = {"items", "items.product", "items.product.category", "tableSession", "tableSession.restaurantTable"})
+    List<Order> findByStatusOrderByCreatedAtAsc(OrderStatus status);
 
-    @EntityGraph(
-            attributePaths = {
-                    "items",
-                    "items.product",
-                    "items.product.category",
-                    "tableSession",
-                    "tableSession.restaurantTable"
-            }
-    )
-    List<Order> findByStatusInOrderByCreatedAtAsc(
-            List<OrderStatus> statuses
-    );
+    @EntityGraph(attributePaths = {"items", "items.product", "items.product.category", "tableSession", "tableSession.restaurantTable"})
+    List<Order> findByStatusInOrderByCreatedAtAsc(List<OrderStatus> statuses);
 
-    long countByStatusIn(
-            List<OrderStatus> statuses
-    );
+    long countByStatusIn(List<OrderStatus> statuses);
 
-    long countByCreatedAtAfter(
-            LocalDateTime limit
-    );
+    long countByCreatedAtAfter(LocalDateTime limit);
 
-    List<Order>
-    findByStatusAndCompletedAtGreaterThanEqualAndCompletedAtLessThanOrderByCompletedAtAsc(
-            OrderStatus status,
-            LocalDateTime start,
-            LocalDateTime end
-    );
+    List<Order> findByStatusAndCompletedAtGreaterThanEqualAndCompletedAtLessThanOrderByCompletedAtAsc(OrderStatus status, LocalDateTime start, LocalDateTime end);
 }

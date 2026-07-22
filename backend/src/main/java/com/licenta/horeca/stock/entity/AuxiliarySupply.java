@@ -143,14 +143,12 @@ public class AuxiliarySupply {
         this.variantName = variantName;
     }
 
-    public void setSpecificationValue(
-            BigDecimal specificationValue) {
+    public void setSpecificationValue(BigDecimal specificationValue) {
 
         this.specificationValue = specificationValue;
     }
 
-    public void setSpecificationUnit(
-            MeasurementUnit specificationUnit) {
+    public void setSpecificationUnit(MeasurementUnit specificationUnit) {
 
         this.specificationUnit = specificationUnit;
     }
@@ -175,8 +173,7 @@ public class AuxiliarySupply {
         this.minimumQuantity = minimumQuantity;
     }
 
-    public void setAvailableInWarehouse(
-            boolean availableInWarehouse) {
+    public void setAvailableInWarehouse(boolean availableInWarehouse) {
 
         this.availableInWarehouse = availableInWarehouse;
     }

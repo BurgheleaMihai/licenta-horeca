@@ -13,18 +13,11 @@ public class ActiveStaffSummaryResponse {
     public ActiveStaffSummaryResponse() {
     }
 
-    public ActiveStaffSummaryResponse(
-            long waiters,
-            long kitchenEmployees,
-            long barEmployees
-    ) {
+    public ActiveStaffSummaryResponse(long waiters, long kitchenEmployees, long barEmployees) {
         this.waiters = waiters;
         this.kitchenEmployees = kitchenEmployees;
         this.barEmployees = barEmployees;
-        this.totalOperationalEmployees =
-                waiters
-                        + kitchenEmployees
-                        + barEmployees;
+        this.totalOperationalEmployees = waiters + kitchenEmployees + barEmployees;
     }
 
     public long getWaiters() {
@@ -39,9 +32,7 @@ public class ActiveStaffSummaryResponse {
         return kitchenEmployees;
     }
 
-    public void setKitchenEmployees(
-            long kitchenEmployees
-    ) {
+    public void setKitchenEmployees(long kitchenEmployees) {
         this.kitchenEmployees = kitchenEmployees;
     }
 
@@ -57,10 +48,7 @@ public class ActiveStaffSummaryResponse {
         return totalOperationalEmployees;
     }
 
-    public void setTotalOperationalEmployees(
-            long totalOperationalEmployees
-    ) {
-        this.totalOperationalEmployees =
-                totalOperationalEmployees;
+    public void setTotalOperationalEmployees(long totalOperationalEmployees) {
+        this.totalOperationalEmployees = totalOperationalEmployees;
     }
 }

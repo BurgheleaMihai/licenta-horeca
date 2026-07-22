@@ -29,76 +29,32 @@ class EmployeeShiftTest {
 
     @BeforeEach
     void setUp() {
-        Role employeeRole =
-                new Role(RoleType.KITCHEN);
+        Role employeeRole = new Role(RoleType.KITCHEN);
 
-        Role managerRole =
-                new Role(RoleType.MANAGER);
+        Role managerRole = new Role(RoleType.MANAGER);
 
-        employee =
-                new User(
-                        "Angajat Test",
-                        "employee@test.com",
-                        "encoded-password",
-                        employeeRole
-                );
+        employee = new User("Angajat Test", "employee@test.com", "encoded-password", employeeRole);
 
-        manager =
-                new User(
-                        "Manager Test",
-                        "manager@test.com",
-                        "encoded-password",
-                        managerRole
-                );
+        manager = new User("Manager Test", "manager@test.com", "encoded-password", managerRole);
 
-        plannedStartAt =
-                LocalDateTime.of(
-                        2026,
-                        7,
-                        20,
-                        8,
-                        0
-                );
+        plannedStartAt = LocalDateTime.of(2026, 7, 20, 8, 0);
 
-        plannedEndAt =
-                LocalDateTime.of(
-                        2026,
-                        7,
-                        20,
-                        16,
-                        0
-                );
+        plannedEndAt = LocalDateTime.of(2026, 7, 20, 16, 0);
     }
 
     @Test
     void constructorShouldCreatePlannedShift() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        assertSame(
-                employee,
-                shift.getEmployee()
-        );
+        assertSame(employee, shift.getEmployee());
 
-        assertEquals(
-                RoleType.KITCHEN,
-                shift.getShiftRole()
-        );
+        assertEquals(RoleType.KITCHEN, shift.getShiftRole());
 
-        assertEquals(
-                plannedStartAt,
-                shift.getPlannedStartAt()
-        );
+        assertEquals(plannedStartAt, shift.getPlannedStartAt());
 
-        assertEquals(
-                plannedEndAt,
-                shift.getPlannedEndAt()
-        );
+        assertEquals(plannedEndAt, shift.getPlannedEndAt());
 
-        assertSame(
-                manager,
-                shift.getCreatedBy()
-        );
+        assertSame(manager, shift.getCreatedBy());
 
         assertTrue(shift.isPlanned());
         assertFalse(shift.isActive());
@@ -114,349 +70,180 @@ class EmployeeShiftTest {
 
     @Test
     void constructorShouldRejectMissingEmployee() {
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> new EmployeeShift(
-                                null,
-                                RoleType.KITCHEN,
-                                plannedStartAt,
-                                plannedEndAt,
-                                manager
-                        )
-                );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new EmployeeShift(null, RoleType.KITCHEN, plannedStartAt, plannedEndAt, manager));
 
-        assertEquals(
-                "Angajatul este obligatoriu.",
-                exception.getMessage()
-        );
+        assertEquals("Angajatul este obligatoriu.", exception.getMessage());
     }
 
     @Test
     void constructorShouldRejectInvalidInterval() {
-        LocalDateTime invalidEndAt =
-                plannedStartAt.minusHours(1);
+        LocalDateTime invalidEndAt = plannedStartAt.minusHours(1);
 
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> new EmployeeShift(
-                                employee,
-                                RoleType.KITCHEN,
-                                plannedStartAt,
-                                invalidEndAt,
-                                manager
-                        )
-                );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new EmployeeShift(employee, RoleType.KITCHEN, plannedStartAt, invalidEndAt, manager));
 
-        assertEquals(
-                "Ora de final trebuie sa fie ulterioara orei de inceput.",
-                exception.getMessage()
-        );
+        assertEquals("Ora de final trebuie sa fie ulterioara orei de inceput.", exception.getMessage());
     }
 
     @Test
     void startShouldActivatePlannedShift() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime actualStartAt =
-                plannedStartAt.minusMinutes(10);
+        LocalDateTime actualStartAt = plannedStartAt.minusMinutes(10);
 
-        shift.start(
-                actualStartAt,
-                ShiftStartSource.SCHEDULED_LOGIN,
-                employee
-        );
+        shift.start(actualStartAt, ShiftStartSource.SCHEDULED_LOGIN, employee);
 
         assertFalse(shift.isPlanned());
         assertTrue(shift.isActive());
         assertFalse(shift.isClosed());
 
-        assertEquals(
-                actualStartAt,
-                shift.getStartedAt()
-        );
+        assertEquals(actualStartAt, shift.getStartedAt());
 
-        assertEquals(
-                ShiftStartSource.SCHEDULED_LOGIN,
-                shift.getStartSource()
-        );
+        assertEquals(ShiftStartSource.SCHEDULED_LOGIN, shift.getStartSource());
 
-        assertSame(
-                employee,
-                shift.getStartedBy()
-        );
+        assertSame(employee, shift.getStartedBy());
     }
 
     @Test
     void startShouldRejectAlreadyStartedShift() {
-        EmployeeShift shift =
-                createActiveShift();
+        EmployeeShift shift = createActiveShift();
 
-        IllegalStateException exception =
-                assertThrows(
-                        IllegalStateException.class,
-                        () -> shift.start(
-                                plannedStartAt,
-                                ShiftStartSource.SCHEDULED_LOGIN,
-                                employee
-                        )
-                );
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> shift.start(plannedStartAt, ShiftStartSource.SCHEDULED_LOGIN, employee));
 
-        assertEquals(
-                "Tura nu mai poate fi pornita.",
-                exception.getMessage()
-        );
+        assertEquals("Tura nu mai poate fi pornita.", exception.getMessage());
     }
 
     @Test
     void closeShouldFinishActiveShift() {
-        EmployeeShift shift =
-                createActiveShift();
+        EmployeeShift shift = createActiveShift();
 
-        LocalDateTime actualEndAt =
-                plannedEndAt.minusMinutes(15);
+        LocalDateTime actualEndAt = plannedEndAt.minusMinutes(15);
 
-        shift.close(
-                actualEndAt,
-                manager,
-                ShiftEndReason.MANUAL_MANAGER
-        );
+        shift.close(actualEndAt, manager, ShiftEndReason.MANUAL_MANAGER);
 
         assertFalse(shift.isPlanned());
         assertFalse(shift.isActive());
         assertTrue(shift.isClosed());
 
-        assertEquals(
-                actualEndAt,
-                shift.getEndedAt()
-        );
+        assertEquals(actualEndAt, shift.getEndedAt());
 
-        assertEquals(
-                ShiftEndReason.MANUAL_MANAGER,
-                shift.getEndReason()
-        );
+        assertEquals(ShiftEndReason.MANUAL_MANAGER, shift.getEndReason());
 
-        assertSame(
-                manager,
-                shift.getEndedBy()
-        );
+        assertSame(manager, shift.getEndedBy());
     }
 
     @Test
     void closeShouldRejectPlannedShift() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        IllegalStateException exception =
-                assertThrows(
-                        IllegalStateException.class,
-                        () -> shift.close(
-                                plannedEndAt,
-                                manager,
-                                ShiftEndReason.MANUAL_MANAGER
-                        )
-                );
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> shift.close(plannedEndAt, manager, ShiftEndReason.MANUAL_MANAGER));
 
-        assertEquals(
-                "Tura nu este activa.",
-                exception.getMessage()
-        );
+        assertEquals("Tura nu este activa.", exception.getMessage());
     }
 
     @Test
     void closeShouldRejectEndBeforeStart() {
-        EmployeeShift shift =
-                createActiveShift();
+        EmployeeShift shift = createActiveShift();
 
-        LocalDateTime invalidEndAt =
-                plannedStartAt.minusMinutes(1);
+        LocalDateTime invalidEndAt = plannedStartAt.minusMinutes(1);
 
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> shift.close(
-                                invalidEndAt,
-                                manager,
-                                ShiftEndReason.MANUAL_MANAGER
-                        )
-                );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> shift.close(invalidEndAt, manager, ShiftEndReason.MANUAL_MANAGER));
 
-        assertEquals(
-                "Momentul inchiderii turei este invalid.",
-                exception.getMessage()
-        );
+        assertEquals("Momentul inchiderii turei este invalid.", exception.getMessage());
     }
 
     @Test
     void rescheduleShouldChangePlannedInterval() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime newStartAt =
-                plannedStartAt.plusHours(2);
+        LocalDateTime newStartAt = plannedStartAt.plusHours(2);
 
-        LocalDateTime newEndAt =
-                plannedEndAt.plusHours(2);
+        LocalDateTime newEndAt = plannedEndAt.plusHours(2);
 
-        shift.reschedule(
-                newStartAt,
-                newEndAt
-        );
+        shift.reschedule(newStartAt, newEndAt);
 
-        assertEquals(
-                newStartAt,
-                shift.getPlannedStartAt()
-        );
+        assertEquals(newStartAt, shift.getPlannedStartAt());
 
-        assertEquals(
-                newEndAt,
-                shift.getPlannedEndAt()
-        );
+        assertEquals(newEndAt, shift.getPlannedEndAt());
 
         assertTrue(shift.isPlanned());
     }
 
     @Test
     void rescheduleShouldRejectActiveShift() {
-        EmployeeShift shift =
-                createActiveShift();
+        EmployeeShift shift = createActiveShift();
 
-        IllegalStateException exception =
-                assertThrows(
-                        IllegalStateException.class,
-                        () -> shift.reschedule(
-                                plannedStartAt.plusHours(1),
-                                plannedEndAt.plusHours(1)
-                        )
-                );
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> shift.reschedule(plannedStartAt.plusHours(1), plannedEndAt.plusHours(1)));
 
-        assertEquals(
-                "Doar o tura planificata poate fi modificata.",
-                exception.getMessage()
-        );
+        assertEquals("Doar o tura planificata poate fi modificata.", exception.getMessage());
     }
 
     @Test
     void cancelShouldKeepShiftInHistory() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime cancelledAt =
-                plannedStartAt.minusHours(1);
+        LocalDateTime cancelledAt = plannedStartAt.minusHours(1);
 
-        shift.cancel(
-                cancelledAt,
-                manager
-        );
+        shift.cancel(cancelledAt, manager);
 
         assertFalse(shift.isPlanned());
         assertFalse(shift.isActive());
         assertTrue(shift.isClosed());
 
-        assertEquals(
-                cancelledAt,
-                shift.getEndedAt()
-        );
+        assertEquals(cancelledAt, shift.getEndedAt());
 
-        assertEquals(
-                ShiftEndReason.CANCELLED,
-                shift.getEndReason()
-        );
+        assertEquals(ShiftEndReason.CANCELLED, shift.getEndReason());
 
-        assertSame(
-                manager,
-                shift.getEndedBy()
-        );
+        assertSame(manager, shift.getEndedBy());
     }
 
     @Test
     void cancelShouldSupportAccountDeactivation() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime cancelledAt =
-                plannedStartAt.minusHours(1);
+        LocalDateTime cancelledAt = plannedStartAt.minusHours(1);
 
-        shift.cancel(
-                cancelledAt,
-                null,
-                ShiftEndReason.ACCOUNT_DEACTIVATED
-        );
+        shift.cancel(cancelledAt, null, ShiftEndReason.ACCOUNT_DEACTIVATED);
 
         assertTrue(shift.isClosed());
 
-        assertEquals(
-                ShiftEndReason.ACCOUNT_DEACTIVATED,
-                shift.getEndReason()
-        );
+        assertEquals(ShiftEndReason.ACCOUNT_DEACTIVATED, shift.getEndReason());
 
-        assertEquals(
-                cancelledAt,
-                shift.getEndedAt()
-        );
+        assertEquals(cancelledAt, shift.getEndedAt());
 
         assertNull(shift.getEndedBy());
     }
 
     @Test
     void cancelShouldSupportRoleChange() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime cancelledAt =
-                plannedStartAt.minusHours(1);
+        LocalDateTime cancelledAt = plannedStartAt.minusHours(1);
 
-        shift.cancel(
-                cancelledAt,
-                null,
-                ShiftEndReason.ROLE_CHANGED
-        );
+        shift.cancel(cancelledAt, null, ShiftEndReason.ROLE_CHANGED);
 
         assertTrue(shift.isClosed());
 
-        assertEquals(
-                ShiftEndReason.ROLE_CHANGED,
-                shift.getEndReason()
-        );
+        assertEquals(ShiftEndReason.ROLE_CHANGED, shift.getEndReason());
 
-        assertEquals(
-                cancelledAt,
-                shift.getEndedAt()
-        );
+        assertEquals(cancelledAt, shift.getEndedAt());
 
         assertNull(shift.getEndedBy());
     }
 
     @Test
     void manualCancellationShouldRequireUser() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> shift.cancel(
-                                plannedStartAt.minusHours(1),
-                                null,
-                                ShiftEndReason.CANCELLED
-                        )
-                );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> shift.cancel(plannedStartAt.minusHours(1), null, ShiftEndReason.CANCELLED));
 
-        assertEquals(
-                "Utilizatorul care anuleaza tura este obligatoriu.",
-                exception.getMessage()
-        );
+        assertEquals("Utilizatorul care anuleaza tura este obligatoriu.", exception.getMessage());
     }
 
     @Test
     void markMissedShouldFinishUnstartedShiftAtPlannedEnd() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime processedAt =
-                plannedEndAt.plusMinutes(5);
+        LocalDateTime processedAt = plannedEndAt.plusMinutes(5);
 
         shift.markMissed(processedAt);
 
@@ -466,60 +253,32 @@ class EmployeeShiftTest {
 
         assertNull(shift.getStartedAt());
 
-        assertEquals(
-                plannedEndAt,
-                shift.getEndedAt()
-        );
+        assertEquals(plannedEndAt, shift.getEndedAt());
 
-        assertEquals(
-                ShiftEndReason.MISSED,
-                shift.getEndReason()
-        );
+        assertEquals(ShiftEndReason.MISSED, shift.getEndReason());
 
         assertNull(shift.getEndedBy());
     }
 
     @Test
     void markMissedShouldRejectProcessingBeforePlannedEnd() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        LocalDateTime processedAt =
-                plannedEndAt.minusMinutes(1);
+        LocalDateTime processedAt = plannedEndAt.minusMinutes(1);
 
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> shift.markMissed(
-                                processedAt
-                        )
-                );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> shift.markMissed(processedAt));
 
-        assertEquals(
-                "Tura nu poate fi marcata ca absenta inainte de finalul planificat.",
-                exception.getMessage()
-        );
+        assertEquals("Tura nu poate fi marcata ca absenta inainte de finalul planificat.", exception.getMessage());
     }
 
     private EmployeeShift createPlannedShift() {
-        return new EmployeeShift(
-                employee,
-                RoleType.KITCHEN,
-                plannedStartAt,
-                plannedEndAt,
-                manager
-        );
+        return new EmployeeShift(employee, RoleType.KITCHEN, plannedStartAt, plannedEndAt, manager);
     }
 
     private EmployeeShift createActiveShift() {
-        EmployeeShift shift =
-                createPlannedShift();
+        EmployeeShift shift = createPlannedShift();
 
-        shift.start(
-                plannedStartAt,
-                ShiftStartSource.SCHEDULED_LOGIN,
-                employee
-        );
+        shift.start(plannedStartAt, ShiftStartSource.SCHEDULED_LOGIN, employee);
 
         return shift;
     }

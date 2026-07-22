@@ -79,14 +79,12 @@ public class AuxiliarySupplyRequest {
         this.variantName = variantName;
     }
 
-    public void setSpecificationValue(
-            BigDecimal specificationValue) {
+    public void setSpecificationValue(BigDecimal specificationValue) {
 
         this.specificationValue = specificationValue;
     }
 
-    public void setSpecificationUnit(
-            MeasurementUnit specificationUnit) {
+    public void setSpecificationUnit(MeasurementUnit specificationUnit) {
 
         this.specificationUnit = specificationUnit;
     }
@@ -103,14 +101,12 @@ public class AuxiliarySupplyRequest {
         this.baseUnit = baseUnit;
     }
 
-    public void setCurrentQuantity(
-            BigDecimal currentQuantity) {
+    public void setCurrentQuantity(BigDecimal currentQuantity) {
 
         this.currentQuantity = currentQuantity;
     }
 
-    public void setMinimumQuantity(
-            BigDecimal minimumQuantity) {
+    public void setMinimumQuantity(BigDecimal minimumQuantity) {
 
         this.minimumQuantity = minimumQuantity;
     }

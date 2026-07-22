@@ -28,11 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 class FeedbackControllerTest {
 
-    private static final String FEEDBACK_COMMENT =
-            "Foarte bine.";
+    private static final String FEEDBACK_COMMENT = "Foarte bine.";
 
-    private static final String GOOD_SERVICE_COMMENT =
-            "Servire buna.";
+    private static final String GOOD_SERVICE_COMMENT = "Servire buna.";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,49 +48,20 @@ class FeedbackControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Test
-    void createFeedbackShouldReturnSavedFeedback()
-            throws Exception {
+    void createFeedbackShouldReturnSavedFeedback() throws Exception {
 
         Feedback feedback = new Feedback();
         feedback.setRating(5);
         feedback.setComment(FEEDBACK_COMMENT);
 
-        when(
-                feedbackService.saveFeedback(
-                        any(Feedback.class)
-                )
-        ).thenReturn(feedback);
+        when(feedbackService.saveFeedback(any(Feedback.class))).thenReturn(feedback);
 
-        mockMvc
-                .perform(
-                        post("/api/feedback")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper.writeValueAsString(
-                                                feedback
-                                        )
-                                )
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.rating")
-                                .value(5)
-                )
-                .andExpect(
-                        jsonPath("$.comment")
-                                .value(FEEDBACK_COMMENT)
-                );
+        mockMvc.perform(post("/api/feedback").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(feedback))).andExpect(status().isOk()).andExpect(jsonPath("$.rating").value(5)).andExpect(jsonPath("$.comment").value(FEEDBACK_COMMENT));
     }
 
     @Test
-    @WithMockUser(
-            username = "manager@test.com",
-            roles = "MANAGER"
-    )
-    void getAllFeedbackShouldReturnFeedbackList()
-            throws Exception {
+    @WithMockUser(username = "manager@test.com", roles = "MANAGER")
+    void getAllFeedbackShouldReturnFeedbackList() throws Exception {
 
         Feedback feedback1 = new Feedback();
         feedback1.setRating(5);
@@ -102,30 +71,8 @@ class FeedbackControllerTest {
         feedback2.setRating(4);
         feedback2.setComment(GOOD_SERVICE_COMMENT);
 
-        when(feedbackService.getAllFeedback())
-                .thenReturn(
-                        List.of(
-                                feedback1,
-                                feedback2
-                        )
-                );
+        when(feedbackService.getAllFeedback()).thenReturn(List.of(feedback1, feedback2));
 
-        mockMvc
-                .perform(
-                        get("/api/feedback")
-                )
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.length()")
-                                .value(2)
-                )
-                .andExpect(
-                        jsonPath("$[0].rating")
-                                .value(5)
-                )
-                .andExpect(
-                        jsonPath("$[1].comment")
-                                .value(GOOD_SERVICE_COMMENT)
-                );
+        mockMvc.perform(get("/api/feedback")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2)).andExpect(jsonPath("$[0].rating").value(5)).andExpect(jsonPath("$[1].comment").value(GOOD_SERVICE_COMMENT));
     }
 }
