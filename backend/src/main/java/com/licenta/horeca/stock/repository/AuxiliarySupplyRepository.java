@@ -1,9 +1,10 @@
 package com.licenta.horeca.stock.repository;
 
 import com.licenta.horeca.stock.entity.AuxiliarySupply;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface AuxiliarySupplyRepository
         extends JpaRepository<AuxiliarySupply, Long> {

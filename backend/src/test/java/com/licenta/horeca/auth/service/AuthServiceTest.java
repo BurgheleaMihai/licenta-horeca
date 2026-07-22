@@ -3,11 +3,11 @@ package com.licenta.horeca.auth.service;
 import com.licenta.horeca.auth.dto.LoginRequest;
 import com.licenta.horeca.auth.dto.LoginResponse;
 import com.licenta.horeca.auth.security.JwtService;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import com.licenta.horeca.user.entity.Role;
 import com.licenta.horeca.user.entity.User;
 import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.user.repository.UserRepository;
-import com.licenta.horeca.employee.service.EmployeeShiftService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

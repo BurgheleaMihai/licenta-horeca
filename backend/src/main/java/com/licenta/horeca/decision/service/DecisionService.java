@@ -2,19 +2,16 @@ package com.licenta.horeca.decision.service;
 
 import com.licenta.horeca.decision.dto.DecisionRequest;
 import com.licenta.horeca.decision.dto.DecisionResponse;
-import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
 import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import com.licenta.horeca.order.entity.Order;
 import com.licenta.horeca.order.entity.OrderItem;
-import com.licenta.horeca.employee.service.EmployeeShiftService;
-import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.order.service.OrderService;
-import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
+import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DecisionService {

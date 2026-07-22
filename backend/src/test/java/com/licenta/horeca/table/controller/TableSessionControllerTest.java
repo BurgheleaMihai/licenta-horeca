@@ -1,5 +1,24 @@
 package com.licenta.horeca.table.controller;
 
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
+import com.licenta.horeca.auth.security.SecurityConfig;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.entity.TableSession;
+import com.licenta.horeca.table.service.TableSessionService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -10,24 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.table.entity.RestaurantTable;
-import com.licenta.horeca.table.entity.TableSession;
-import com.licenta.horeca.auth.security.CustomUserDetailsService;
-import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.table.service.TableSessionService;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TableSessionController.class)
 @Import(SecurityConfig.class)

@@ -1,5 +1,25 @@
 package com.licenta.horeca.employee.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
+import com.licenta.horeca.auth.security.SecurityConfig;
+import com.licenta.horeca.employee.dto.user.CreateUserRequest;
+import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
+import com.licenta.horeca.employee.dto.user.UserResponse;
+import com.licenta.horeca.employee.service.EmployeeManagementService;
+import com.licenta.horeca.user.enums.RoleType;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,25 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.employee.dto.user.CreateUserRequest;
-import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
-import com.licenta.horeca.employee.dto.user.UserResponse;
-import com.licenta.horeca.user.enums.RoleType;
-import com.licenta.horeca.auth.security.CustomUserDetailsService;
-import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.employee.service.EmployeeManagementService;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(EmployeeManagementController.class)
 @Import(SecurityConfig.class)

@@ -1,5 +1,29 @@
 package com.licenta.horeca.employee.service;
 
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
+import com.licenta.horeca.employee.entity.EmployeeShift;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
+import com.licenta.horeca.employee.repository.EmployeeShiftRepository;
+import com.licenta.horeca.exception.BusinessException;
+import com.licenta.horeca.user.entity.Role;
+import com.licenta.horeca.user.entity.User;
+import com.licenta.horeca.user.enums.RoleType;
+import com.licenta.horeca.user.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,30 +36,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-
-import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
-import com.licenta.horeca.employee.entity.EmployeeShift;
-import com.licenta.horeca.user.entity.Role;
-import com.licenta.horeca.user.entity.User;
-import com.licenta.horeca.user.enums.RoleType;
-import com.licenta.horeca.employee.enums.ShiftEndReason;
-import com.licenta.horeca.employee.enums.ShiftStartSource;
-import com.licenta.horeca.exception.BusinessException;
-import com.licenta.horeca.employee.repository.EmployeeShiftRepository;
-import com.licenta.horeca.user.repository.UserRepository;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeShiftServiceTest {

@@ -1,22 +1,23 @@
 package com.licenta.horeca.order.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import com.licenta.horeca.exception.BusinessException;
+import com.licenta.horeca.feedback.service.FeedbackService;
 import com.licenta.horeca.order.dto.OrderStatisticsResponse;
 import com.licenta.horeca.order.entity.Order;
 import com.licenta.horeca.order.entity.OrderItem;
-import com.licenta.horeca.product.entity.Product;
-import com.licenta.horeca.table.entity.RestaurantTable;
-import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
-import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.order.repository.OrderItemRepository;
 import com.licenta.horeca.order.repository.OrderRepository;
+import com.licenta.horeca.product.entity.Product;
 import com.licenta.horeca.product.repository.ProductRepository;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import com.licenta.horeca.feedback.service.FeedbackService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,11 +25,20 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {

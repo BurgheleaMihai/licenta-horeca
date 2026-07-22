@@ -3,7 +3,11 @@ package com.licenta.horeca.auth.controller;
 import com.licenta.horeca.auth.dto.LoginRequest;
 import com.licenta.horeca.auth.dto.LoginResponse;
 import com.licenta.horeca.auth.service.AuthService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")

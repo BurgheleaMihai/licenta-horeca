@@ -3,19 +3,18 @@ package com.licenta.horeca.employee.service;
 import com.licenta.horeca.employee.dto.user.CreateUserRequest;
 import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
 import com.licenta.horeca.employee.dto.user.UserResponse;
+import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.user.entity.Role;
 import com.licenta.horeca.user.entity.User;
 import com.licenta.horeca.user.enums.RoleType;
-import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.user.repository.RoleRepository;
 import com.licenta.horeca.user.repository.UserRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeManagementService {

@@ -3,6 +3,7 @@ package com.licenta.horeca.table.service;
 import com.licenta.horeca.table.entity.RestaurantTable;
 import com.licenta.horeca.table.repository.RestaurantTableRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

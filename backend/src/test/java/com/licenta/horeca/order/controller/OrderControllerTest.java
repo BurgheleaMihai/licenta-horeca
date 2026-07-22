@@ -1,11 +1,35 @@
 package com.licenta.horeca.order.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
+import com.licenta.horeca.auth.security.SecurityConfig;
+import com.licenta.horeca.order.dto.OrderStatisticsResponse;
+import com.licenta.horeca.order.entity.Order;
+import com.licenta.horeca.order.entity.OrderItem;
+import com.licenta.horeca.order.enums.OrderStatus;
+import com.licenta.horeca.order.service.OrderService;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,32 +39,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.order.dto.OrderStatisticsResponse;
-import com.licenta.horeca.order.entity.Order;
-import com.licenta.horeca.order.entity.OrderItem;
-import com.licenta.horeca.order.enums.OrderStatus;
-import com.licenta.horeca.order.service.OrderService;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import com.licenta.horeca.auth.security.SecurityConfig;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
-import com.licenta.horeca.auth.security.CustomUserDetailsService;
-import com.licenta.horeca.auth.security.JwtService;
 
 @WebMvcTest(OrderController.class)
 @Import(SecurityConfig.class)

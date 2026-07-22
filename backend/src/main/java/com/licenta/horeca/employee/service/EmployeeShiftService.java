@@ -3,13 +3,16 @@ package com.licenta.horeca.employee.service;
 import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
 import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
 import com.licenta.horeca.employee.entity.EmployeeShift;
-import com.licenta.horeca.user.entity.User;
-import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.employee.enums.ShiftEndReason;
 import com.licenta.horeca.employee.enums.ShiftStartSource;
-import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.employee.repository.EmployeeShiftRepository;
+import com.licenta.horeca.exception.BusinessException;
+import com.licenta.horeca.user.entity.User;
+import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,10 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmployeeShiftService {

@@ -1,28 +1,19 @@
 package com.licenta.horeca.decision.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import com.licenta.horeca.decision.dto.DecisionRequest;
 import com.licenta.horeca.decision.dto.DecisionResponse;
-import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.product.entity.Category;
 import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import com.licenta.horeca.order.entity.Order;
 import com.licenta.horeca.order.entity.OrderItem;
+import com.licenta.horeca.order.enums.OrderStatus;
+import com.licenta.horeca.order.service.OrderService;
+import com.licenta.horeca.product.entity.Category;
 import com.licenta.horeca.product.entity.Product;
 import com.licenta.horeca.table.entity.TableSession;
-import com.licenta.horeca.order.enums.OrderStatus;
-import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import com.licenta.horeca.employee.service.EmployeeShiftService;
-import com.licenta.horeca.order.service.OrderService;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +30,24 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DecisionServiceTest {

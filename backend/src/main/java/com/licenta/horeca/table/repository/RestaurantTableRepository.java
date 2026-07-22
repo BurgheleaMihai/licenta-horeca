@@ -1,9 +1,10 @@
 package com.licenta.horeca.table.repository;
 
 import com.licenta.horeca.table.entity.RestaurantTable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RestaurantTableRepository
         extends JpaRepository<RestaurantTable, Long> {

@@ -2,17 +2,17 @@ package com.licenta.horeca.table.service;
 
 import com.licenta.horeca.table.entity.RestaurantTable;
 import com.licenta.horeca.table.entity.TableSession;
-import com.licenta.horeca.traffic.enums.TrafficEventType;
 import com.licenta.horeca.table.repository.RestaurantTableRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.licenta.horeca.traffic.enums.TrafficEventType;
 import com.licenta.horeca.traffic.service.TrafficEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TableSessionService {

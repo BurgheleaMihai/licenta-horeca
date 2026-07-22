@@ -3,14 +3,21 @@ package com.licenta.horeca.employee.controller;
 import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
 import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
 import com.licenta.horeca.employee.dto.shift.StartEmployeeShiftRequest;
+import com.licenta.horeca.employee.dto.shift.UpdatePlannedShiftRequest;
 import com.licenta.horeca.employee.service.EmployeeShiftService;
 import jakarta.validation.Valid;
-import java.security.Principal;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.licenta.horeca.employee.dto.shift.UpdatePlannedShiftRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee-shifts")

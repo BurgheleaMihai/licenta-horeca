@@ -2,6 +2,7 @@ package com.licenta.horeca.stock.dto;
 
 import com.licenta.horeca.stock.enums.MeasurementUnit;
 import com.licenta.horeca.stock.enums.StockPackageType;
+
 import java.math.BigDecimal;
 
 public class StockEntryRequest {

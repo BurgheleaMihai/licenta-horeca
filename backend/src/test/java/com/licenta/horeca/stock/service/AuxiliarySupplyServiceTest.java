@@ -1,5 +1,23 @@
 package com.licenta.horeca.stock.service;
 
+import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.StockCategory;
+import com.licenta.horeca.stock.enums.StockType;
+import com.licenta.horeca.stock.repository.AuxiliarySupplyRepository;
+import com.licenta.horeca.stock.repository.StockEntryRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,24 +28,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
-import com.licenta.horeca.stock.entity.AuxiliarySupply;
-import com.licenta.horeca.stock.enums.MeasurementUnit;
-import com.licenta.horeca.stock.enums.StockCategory;
-import com.licenta.horeca.stock.enums.StockType;
-import com.licenta.horeca.stock.repository.AuxiliarySupplyRepository;
-import com.licenta.horeca.stock.repository.StockEntryRepository;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class AuxiliarySupplyServiceTest {

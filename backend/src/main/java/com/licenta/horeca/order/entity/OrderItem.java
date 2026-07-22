@@ -3,7 +3,16 @@ package com.licenta.horeca.order.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.product.entity.Product;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.math.BigDecimal;
 
 @Entity
