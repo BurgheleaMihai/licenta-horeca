@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.stock.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,14 +11,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.licenta.horeca.dto.AuxiliarySupplyRequest;
-import com.licenta.horeca.entity.AuxiliarySupply;
-import com.licenta.horeca.enums.MeasurementUnit;
-import com.licenta.horeca.enums.StockCategory;
-import com.licenta.horeca.enums.StockType;
-import com.licenta.horeca.repository.AuxiliarySupplyRepository;
-import com.licenta.horeca.repository.StockEntryRepository;
-import com.licenta.horeca.service.AuxiliarySupplyService;
+import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.StockCategory;
+import com.licenta.horeca.stock.enums.StockType;
+import com.licenta.horeca.stock.repository.AuxiliarySupplyRepository;
+import com.licenta.horeca.stock.repository.StockEntryRepository;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;

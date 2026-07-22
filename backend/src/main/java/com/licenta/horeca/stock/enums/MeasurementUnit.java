@@ -1,4 +1,4 @@
-package com.licenta.horeca.enums;
+package com.licenta.horeca.stock.enums;
 
 public enum MeasurementUnit {
 

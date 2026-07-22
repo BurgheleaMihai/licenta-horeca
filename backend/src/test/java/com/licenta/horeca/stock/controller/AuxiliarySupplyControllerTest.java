@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.stock.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -16,17 +16,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.controller.AuxiliarySupplyController;
-import com.licenta.horeca.dto.AuxiliarySupplyRequest;
-import com.licenta.horeca.dto.StockEntryRequest;
-import com.licenta.horeca.entity.AuxiliarySupply;
-import com.licenta.horeca.entity.StockEntry;
-import com.licenta.horeca.enums.MeasurementUnit;
-import com.licenta.horeca.enums.StockCategory;
+import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
+import com.licenta.horeca.stock.dto.StockEntryRequest;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.entity.StockEntry;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.StockCategory;
 import com.licenta.horeca.enums.StockPackageType;
-import com.licenta.horeca.enums.StockType;
-import com.licenta.horeca.service.AuxiliarySupplyService;
-import com.licenta.horeca.service.StockEntryService;
+import com.licenta.horeca.stock.enums.StockType;
+import com.licenta.horeca.stock.service.AuxiliarySupplyService;
+import com.licenta.horeca.stock.service.StockEntryService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

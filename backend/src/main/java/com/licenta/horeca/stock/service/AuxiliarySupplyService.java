@@ -1,12 +1,12 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.stock.service;
 
-import com.licenta.horeca.dto.AuxiliarySupplyRequest;
-import com.licenta.horeca.entity.AuxiliarySupply;
-import com.licenta.horeca.enums.MeasurementUnit;
-import com.licenta.horeca.enums.StockCategory;
-import com.licenta.horeca.enums.StockType;
-import com.licenta.horeca.repository.AuxiliarySupplyRepository;
-import com.licenta.horeca.repository.StockEntryRepository;
+import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.StockCategory;
+import com.licenta.horeca.stock.enums.StockType;
+import com.licenta.horeca.stock.repository.AuxiliarySupplyRepository;
+import com.licenta.horeca.stock.repository.StockEntryRepository;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

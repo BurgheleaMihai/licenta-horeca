@@ -1,6 +1,6 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.stock.entity;
 
-import com.licenta.horeca.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
 import com.licenta.horeca.enums.StockPackageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

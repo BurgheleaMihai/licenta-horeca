@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.stock.repository;
 
-import com.licenta.horeca.entity.StockEntry;
+import com.licenta.horeca.stock.entity.StockEntry;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

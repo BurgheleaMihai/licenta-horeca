@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.stock.repository;
 
-import com.licenta.horeca.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,9 +16,9 @@ public interface AuxiliarySupplyRepository
             FROM AuxiliarySupply supply
             ORDER BY
                 CASE supply.stockType
-                    WHEN com.licenta.horeca.enums.StockType.AUXILIARY THEN 1
-                    WHEN com.licenta.horeca.enums.StockType.WAREHOUSE THEN 2
-                    WHEN com.licenta.horeca.enums.StockType.FRUIT_AND_VEGETABLE THEN 3
+                    WHEN com.licenta.horeca.stock.enums.StockType.AUXILIARY THEN 1
+                    WHEN com.licenta.horeca.stockenums.StockType.WAREHOUSE THEN 2
+                    WHEN com.licenta.horeca.stock.enums.StockType.FRUIT_AND_VEGETABLE THEN 3
                     ELSE 4
                 END,
                 LOWER(supply.name),
@@ -32,9 +32,9 @@ public interface AuxiliarySupplyRepository
             WHERE supply.active = true
             ORDER BY
                 CASE supply.stockType
-                    WHEN com.licenta.horeca.enums.StockType.AUXILIARY THEN 1
-                    WHEN com.licenta.horeca.enums.StockType.WAREHOUSE THEN 2
-                    WHEN com.licenta.horeca.enums.StockType.FRUIT_AND_VEGETABLE THEN 3
+                    WHEN com.licenta.horeca.stock.enums.StockType.AUXILIARY THEN 1
+                    WHEN com.licenta.horeca.stock.enums.StockType.WAREHOUSE THEN 2
+                    WHEN com.licenta.horeca.stock.enums.StockType.FRUIT_AND_VEGETABLE THEN 3
                     ELSE 4
                 END,
                 LOWER(supply.name),

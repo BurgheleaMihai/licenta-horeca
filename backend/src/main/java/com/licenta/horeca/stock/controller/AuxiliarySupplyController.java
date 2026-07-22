@@ -1,11 +1,11 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.stock.controller;
 
-import com.licenta.horeca.dto.AuxiliarySupplyRequest;
-import com.licenta.horeca.dto.StockEntryRequest;
-import com.licenta.horeca.entity.AuxiliarySupply;
-import com.licenta.horeca.entity.StockEntry;
-import com.licenta.horeca.service.AuxiliarySupplyService;
-import com.licenta.horeca.service.StockEntryService;
+import com.licenta.horeca.stock.dto.AuxiliarySupplyRequest;
+import com.licenta.horeca.stock.dto.StockEntryRequest;
+import com.licenta.horeca.stock.entity.AuxiliarySupply;
+import com.licenta.horeca.stock.entity.StockEntry;
+import com.licenta.horeca.stock.service.AuxiliarySupplyService;
+import com.licenta.horeca.stock.service.StockEntryService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;

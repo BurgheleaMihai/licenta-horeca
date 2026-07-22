@@ -1,6 +1,6 @@
-package com.licenta.horeca.dto;
+package com.licenta.horeca.stock.dto;
 
-import com.licenta.horeca.enums.MeasurementUnit;
+import com.licenta.horeca.stock.enums.MeasurementUnit;
 import com.licenta.horeca.enums.StockPackageType;
 import java.math.BigDecimal;
 
