@@ -1,15 +1,16 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.decision.service;
 
-import com.licenta.horeca.dto.DecisionRequest;
-import com.licenta.horeca.dto.DecisionResponse;
+import com.licenta.horeca.decision.dto.DecisionRequest;
+import com.licenta.horeca.decision.dto.DecisionResponse;
 import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
 import com.licenta.horeca.order.entity.Order;
 import com.licenta.horeca.order.entity.OrderItem;
+import com.licenta.horeca.service.EmployeeShiftService;
 import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.order.service.OrderService;
-import com.licenta.horeca.repository.DecisionTrainingRecordRepository;
+import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
 import java.time.Duration;
 import java.time.LocalDateTime;

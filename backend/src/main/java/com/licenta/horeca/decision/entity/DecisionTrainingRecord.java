@@ -1,4 +1,4 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.decision.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

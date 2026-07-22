@@ -1,8 +1,7 @@
-package com.licenta.horeca;
+package com.licenta.horeca.decision.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.licenta.horeca.entity.DecisionTrainingRecord;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 

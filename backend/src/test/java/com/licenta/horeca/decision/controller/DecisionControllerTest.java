@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.decision.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,12 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.controller.DecisionController;
-import com.licenta.horeca.dto.DecisionLabelRequest;
-import com.licenta.horeca.dto.DecisionResponse;
-import com.licenta.horeca.entity.DecisionTrainingRecord;
-import com.licenta.horeca.service.DecisionService;
-import com.licenta.horeca.service.DecisionTrainingRecordService;
+import com.licenta.horeca.decision.dto.DecisionLabelRequest;
+import com.licenta.horeca.decision.dto.DecisionResponse;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.service.DecisionService;
+import com.licenta.horeca.decision.service.DecisionTrainingRecordService;
 
 import java.time.LocalDateTime;
 

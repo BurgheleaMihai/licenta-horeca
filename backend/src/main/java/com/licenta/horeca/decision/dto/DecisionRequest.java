@@ -1,4 +1,4 @@
-package com.licenta.horeca.dto;
+package com.licenta.horeca.decision.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

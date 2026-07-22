@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.decision.repository;
 
-import com.licenta.horeca.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,8 +1,8 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.decision.service;
 
-import com.licenta.horeca.dto.DecisionLabelRequest;
-import com.licenta.horeca.entity.DecisionTrainingRecord;
-import com.licenta.horeca.repository.DecisionTrainingRecordRepository;
+import com.licenta.horeca.decision.dto.DecisionLabelRequest;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

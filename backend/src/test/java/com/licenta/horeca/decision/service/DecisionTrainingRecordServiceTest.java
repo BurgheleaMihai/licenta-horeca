@@ -1,13 +1,13 @@
-package com.licenta.horeca;
+package com.licenta.horeca.decision.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.licenta.horeca.dto.DecisionLabelRequest;
-import com.licenta.horeca.entity.DecisionTrainingRecord;
-import com.licenta.horeca.repository.DecisionTrainingRecordRepository;
-import com.licenta.horeca.service.DecisionTrainingRecordService;
+import com.licenta.horeca.decision.dto.DecisionLabelRequest;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

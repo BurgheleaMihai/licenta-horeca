@@ -1,10 +1,10 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.decision.controller;
 
-import com.licenta.horeca.dto.DecisionLabelRequest;
-import com.licenta.horeca.dto.DecisionResponse;
-import com.licenta.horeca.entity.DecisionTrainingRecord;
-import com.licenta.horeca.service.DecisionService;
-import com.licenta.horeca.service.DecisionTrainingRecordService;
+import com.licenta.horeca.decision.dto.DecisionLabelRequest;
+import com.licenta.horeca.decision.dto.DecisionResponse;
+import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
+import com.licenta.horeca.decision.service.DecisionService;
+import com.licenta.horeca.decision.service.DecisionTrainingRecordService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
