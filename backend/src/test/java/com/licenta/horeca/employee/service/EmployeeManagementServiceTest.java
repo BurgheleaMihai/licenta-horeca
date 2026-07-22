@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.employee.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,17 +10,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.licenta.horeca.dto.user.CreateUserRequest;
-import com.licenta.horeca.dto.user.UpdateUserRequest;
-import com.licenta.horeca.dto.user.UserResponse;
+import com.licenta.horeca.employee.dto.user.CreateUserRequest;
+import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
+import com.licenta.horeca.employee.dto.user.UserResponse;
 import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
 import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.repository.RoleRepository;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.service.EmployeeManagementService;
-import com.licenta.horeca.service.EmployeeShiftService;
+
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

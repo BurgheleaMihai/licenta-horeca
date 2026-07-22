@@ -7,7 +7,7 @@ import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.service.EmployeeShiftService;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

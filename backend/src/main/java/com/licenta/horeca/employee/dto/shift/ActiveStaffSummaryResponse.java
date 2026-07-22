@@ -1,4 +1,4 @@
-package com.licenta.horeca.dto.shift;
+package com.licenta.horeca.employee.dto.shift;
 
 public class ActiveStaffSummaryResponse {
 

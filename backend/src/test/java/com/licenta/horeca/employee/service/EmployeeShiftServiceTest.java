@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.employee.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,18 +13,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.dto.shift.EmployeeShiftResponse;
-import com.licenta.horeca.entity.EmployeeShift;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
+import com.licenta.horeca.employee.entity.EmployeeShift;
 import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
-import com.licenta.horeca.enums.ShiftEndReason;
-import com.licenta.horeca.enums.ShiftStartSource;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
 import com.licenta.horeca.exception.BusinessException;
-import com.licenta.horeca.repository.EmployeeShiftRepository;
+import com.licenta.horeca.employee.repository.EmployeeShiftRepository;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.service.EmployeeShiftService;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;

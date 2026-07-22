@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.employee.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,12 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.licenta.horeca.entity.EmployeeShift;
 import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
-import com.licenta.horeca.enums.ShiftEndReason;
-import com.licenta.horeca.enums.ShiftStartSource;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

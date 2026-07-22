@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.employee.repository;
 
-import com.licenta.horeca.entity.EmployeeShift;
+import com.licenta.horeca.employee.entity.EmployeeShift;
 import com.licenta.horeca.enums.RoleType;
 import jakarta.persistence.LockModeType;
 

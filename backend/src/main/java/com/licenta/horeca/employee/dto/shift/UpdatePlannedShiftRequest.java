@@ -1,13 +1,10 @@
-package com.licenta.horeca.dto.shift;
+package com.licenta.horeca.employee.dto.shift;
 
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public class CreatePlannedShiftRequest {
-
-    @NotNull(message = "Angajatul este obligatoriu.")
-    private Long employeeId;
+public class UpdatePlannedShiftRequest {
 
     @NotNull(message = "Ora de inceput este obligatorie.")
     private LocalDateTime plannedStartAt;
@@ -15,15 +12,7 @@ public class CreatePlannedShiftRequest {
     @NotNull(message = "Ora de final este obligatorie.")
     private LocalDateTime plannedEndAt;
 
-    public CreatePlannedShiftRequest() {
-    }
-
-    public Long getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public UpdatePlannedShiftRequest() {
     }
 
     public LocalDateTime getPlannedStartAt() {

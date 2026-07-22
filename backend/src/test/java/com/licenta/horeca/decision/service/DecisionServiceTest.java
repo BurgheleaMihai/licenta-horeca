@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.licenta.horeca.decision.dto.DecisionRequest;
 import com.licenta.horeca.decision.dto.DecisionResponse;
-import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
 import com.licenta.horeca.product.entity.Category;
 import com.licenta.horeca.decision.entity.DecisionTrainingRecord;
 import com.licenta.horeca.order.entity.Order;
@@ -16,7 +16,7 @@ import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.decision.repository.DecisionTrainingRecordRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import com.licenta.horeca.service.EmployeeShiftService;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import com.licenta.horeca.order.service.OrderService;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;

@@ -1,6 +1,6 @@
-package com.licenta.horeca.scheduler;
+package com.licenta.horeca.employee.scheduler;
 
-import com.licenta.horeca.service.EmployeeShiftService;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

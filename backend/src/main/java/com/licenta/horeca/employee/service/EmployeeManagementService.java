@@ -1,8 +1,8 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.employee.service;
 
-import com.licenta.horeca.dto.user.CreateUserRequest;
-import com.licenta.horeca.dto.user.UpdateUserRequest;
-import com.licenta.horeca.dto.user.UserResponse;
+import com.licenta.horeca.employee.dto.user.CreateUserRequest;
+import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
+import com.licenta.horeca.employee.dto.user.UserResponse;
 import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;

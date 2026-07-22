@@ -1,9 +1,9 @@
-package com.licenta.horeca.dto.shift;
+package com.licenta.horeca.employee.dto.shift;
 
 import com.licenta.horeca.enums.RoleType;
 import java.time.LocalDateTime;
-import com.licenta.horeca.enums.ShiftEndReason;
-import com.licenta.horeca.enums.ShiftStartSource;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
 
 public class EmployeeShiftResponse {
 

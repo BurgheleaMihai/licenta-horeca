@@ -1,16 +1,16 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.employee.controller;
 
-import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.dto.shift.EmployeeShiftResponse;
-import com.licenta.horeca.dto.shift.StartEmployeeShiftRequest;
-import com.licenta.horeca.service.EmployeeShiftService;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
+import com.licenta.horeca.employee.dto.shift.StartEmployeeShiftRequest;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.licenta.horeca.dto.shift.UpdatePlannedShiftRequest;
+import com.licenta.horeca.employee.dto.shift.UpdatePlannedShiftRequest;
 
 @RestController
 @RequestMapping("/api/employee-shifts")

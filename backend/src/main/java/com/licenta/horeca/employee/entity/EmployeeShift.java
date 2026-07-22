@@ -1,8 +1,9 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.employee.entity;
 
+import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
-import com.licenta.horeca.enums.ShiftEndReason;
-import com.licenta.horeca.enums.ShiftStartSource;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

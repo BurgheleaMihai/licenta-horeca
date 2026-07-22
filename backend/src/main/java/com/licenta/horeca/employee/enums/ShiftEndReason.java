@@ -1,4 +1,4 @@
-package com.licenta.horeca.enums;
+package com.licenta.horeca.employee.enums;
 
 public enum ShiftEndReason {
     MANUAL_MANAGER,

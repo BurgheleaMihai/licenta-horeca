@@ -1,14 +1,14 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.employee.service;
 
-import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
-import com.licenta.horeca.dto.shift.EmployeeShiftResponse;
-import com.licenta.horeca.entity.EmployeeShift;
+import com.licenta.horeca.employee.dto.shift.ActiveStaffSummaryResponse;
+import com.licenta.horeca.employee.dto.shift.EmployeeShiftResponse;
+import com.licenta.horeca.employee.entity.EmployeeShift;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
-import com.licenta.horeca.enums.ShiftEndReason;
-import com.licenta.horeca.enums.ShiftStartSource;
+import com.licenta.horeca.employee.enums.ShiftEndReason;
+import com.licenta.horeca.employee.enums.ShiftStartSource;
 import com.licenta.horeca.exception.BusinessException;
-import com.licenta.horeca.repository.EmployeeShiftRepository;
+import com.licenta.horeca.employee.repository.EmployeeShiftRepository;
 import com.licenta.horeca.repository.UserRepository;
 
 import java.time.Duration;

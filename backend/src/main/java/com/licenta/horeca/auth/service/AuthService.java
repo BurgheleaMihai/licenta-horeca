@@ -6,7 +6,7 @@ import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.service.EmployeeShiftService;
+import com.licenta.horeca.employee.service.EmployeeShiftService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
