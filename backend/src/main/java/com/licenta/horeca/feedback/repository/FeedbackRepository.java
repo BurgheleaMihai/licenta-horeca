@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.feedback.repository;
 
-import com.licenta.horeca.entity.Feedback;
+import com.licenta.horeca.feedback.entity.Feedback;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

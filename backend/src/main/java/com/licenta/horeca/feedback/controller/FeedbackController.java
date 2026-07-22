@@ -1,7 +1,7 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.feedback.controller;
 
-import com.licenta.horeca.entity.Feedback;
-import com.licenta.horeca.service.FeedbackService;
+import com.licenta.horeca.feedback.entity.Feedback;
+import com.licenta.horeca.feedback.service.FeedbackService;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 

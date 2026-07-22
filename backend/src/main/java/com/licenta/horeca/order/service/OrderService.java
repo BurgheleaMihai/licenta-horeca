@@ -11,7 +11,7 @@ import com.licenta.horeca.order.repository.OrderItemRepository;
 import com.licenta.horeca.order.repository.OrderRepository;
 import com.licenta.horeca.product.repository.ProductRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import com.licenta.horeca.service.FeedbackService;
+import com.licenta.horeca.feedback.service.FeedbackService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

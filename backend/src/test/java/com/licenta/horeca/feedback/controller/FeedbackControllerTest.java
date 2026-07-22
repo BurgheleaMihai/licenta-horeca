@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.feedback.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -9,11 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.controller.FeedbackController;
-import com.licenta.horeca.entity.Feedback;
+import com.licenta.horeca.feedback.entity.Feedback;
 import com.licenta.horeca.auth.security.CustomUserDetailsService;
 import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.service.FeedbackService;
+import com.licenta.horeca.feedback.service.FeedbackService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

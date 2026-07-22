@@ -1,7 +1,7 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.feedback.service;
 
-import com.licenta.horeca.entity.Feedback;
-import com.licenta.horeca.repository.FeedbackRepository;
+import com.licenta.horeca.feedback.entity.Feedback;
+import com.licenta.horeca.feedback.repository.FeedbackRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
