@@ -1,4 +1,4 @@
-package com.licenta.horeca.enums;
+package com.licenta.horeca.traffic.enums;
 
 public enum TrafficEventType {
     ENTRY,

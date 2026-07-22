@@ -1,8 +1,8 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.traffic.service;
 
-import com.licenta.horeca.entity.TrafficEvent;
-import com.licenta.horeca.enums.TrafficEventType;
-import com.licenta.horeca.repository.TrafficEventRepository;
+import com.licenta.horeca.traffic.entity.TrafficEvent;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
+import com.licenta.horeca.traffic.repository.TrafficEventRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

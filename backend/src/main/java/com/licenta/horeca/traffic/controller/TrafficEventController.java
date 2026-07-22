@@ -1,8 +1,8 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.traffic.controller;
 
-import com.licenta.horeca.entity.TrafficEvent;
-import com.licenta.horeca.enums.TrafficEventType;
-import com.licenta.horeca.service.TrafficEventService;
+import com.licenta.horeca.traffic.entity.TrafficEvent;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
+import com.licenta.horeca.traffic.service.TrafficEventService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;

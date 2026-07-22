@@ -6,10 +6,10 @@ import static org.mockito.Mockito.*;
 
 import com.licenta.horeca.table.entity.RestaurantTable;
 import com.licenta.horeca.table.entity.TableSession;
-import com.licenta.horeca.enums.TrafficEventType;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
 import com.licenta.horeca.table.repository.RestaurantTableRepository;
 import com.licenta.horeca.table.repository.TableSessionRepository;
-import com.licenta.horeca.service.TrafficEventService;
+import com.licenta.horeca.traffic.service.TrafficEventService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

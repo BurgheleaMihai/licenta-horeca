@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.traffic.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -7,12 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.controller.TrafficEventController;
-import com.licenta.horeca.entity.TrafficEvent;
-import com.licenta.horeca.enums.TrafficEventType;
+import com.licenta.horeca.traffic.entity.TrafficEvent;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
 import com.licenta.horeca.auth.security.CustomUserDetailsService;
 import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.service.TrafficEventService;
+import com.licenta.horeca.traffic.service.TrafficEventService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

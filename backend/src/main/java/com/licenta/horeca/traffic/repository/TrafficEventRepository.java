@@ -1,7 +1,7 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.traffic.repository;
 
-import com.licenta.horeca.entity.TrafficEvent;
-import com.licenta.horeca.enums.TrafficEventType;
+import com.licenta.horeca.traffic.entity.TrafficEvent;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
 import java.time.LocalDateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.traffic.entity;
 
-import com.licenta.horeca.enums.TrafficEventType;
+import com.licenta.horeca.traffic.enums.TrafficEventType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
