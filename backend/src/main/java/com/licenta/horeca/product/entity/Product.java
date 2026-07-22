@@ -1,4 +1,4 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.product.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

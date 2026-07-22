@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.product.repository;
 
-import com.licenta.horeca.entity.Category;
+import com.licenta.horeca.product.entity.Category;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.product.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -6,12 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.controller.ProductController;
-import com.licenta.horeca.entity.Category;
-import com.licenta.horeca.entity.Product;
+import com.licenta.horeca.product.entity.Category;
+import com.licenta.horeca.product.entity.Product;
 import com.licenta.horeca.auth.security.CustomUserDetailsService;
 import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.service.ProductService;
+import com.licenta.horeca.product.service.ProductService;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;

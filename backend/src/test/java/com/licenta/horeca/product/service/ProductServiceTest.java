@@ -1,12 +1,12 @@
-package com.licenta.horeca;
+package com.licenta.horeca.product.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import com.licenta.horeca.entity.Product;
-import com.licenta.horeca.repository.ProductRepository;
-import com.licenta.horeca.service.ProductService;
+import com.licenta.horeca.product.entity.Product;
+import com.licenta.horeca.product.repository.ProductRepository;
+
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.product.controller;
 
-import com.licenta.horeca.entity.Product;
-import com.licenta.horeca.service.ProductService;
+import com.licenta.horeca.product.entity.Product;
+import com.licenta.horeca.product.service.ProductService;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
