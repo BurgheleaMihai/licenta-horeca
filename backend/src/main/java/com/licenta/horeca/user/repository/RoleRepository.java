@@ -1,7 +1,7 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.user.repository;
 
-import com.licenta.horeca.entity.Role;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.entity.Role;
+import com.licenta.horeca.user.enums.RoleType;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

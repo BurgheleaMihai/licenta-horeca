@@ -1,4 +1,4 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.user.entity;
 
 import jakarta.persistence.*;
 

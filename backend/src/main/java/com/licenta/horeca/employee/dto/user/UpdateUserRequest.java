@@ -1,6 +1,6 @@
 package com.licenta.horeca.employee.dto.user;
 
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.enums.RoleType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,7 +1,7 @@
 package com.licenta.horeca.auth.security;
 
-import com.licenta.horeca.entity.User;
-import com.licenta.horeca.repository.UserRepository;
+import com.licenta.horeca.user.entity.User;
+import com.licenta.horeca.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,6 +1,6 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.user.repository;
 
-import com.licenta.horeca.entity.User;
+import com.licenta.horeca.user.entity.User;
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

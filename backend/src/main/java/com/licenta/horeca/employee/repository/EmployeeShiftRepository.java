@@ -1,7 +1,7 @@
 package com.licenta.horeca.employee.repository;
 
 import com.licenta.horeca.employee.entity.EmployeeShift;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.enums.RoleType;
 import jakarta.persistence.LockModeType;
 
 import java.time.LocalDateTime;

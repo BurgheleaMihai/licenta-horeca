@@ -15,7 +15,7 @@ import com.licenta.horeca.auth.security.SecurityConfig;
 import com.licenta.horeca.employee.dto.user.CreateUserRequest;
 import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
 import com.licenta.horeca.employee.dto.user.UserResponse;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.auth.security.CustomUserDetailsService;
 import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.employee.service.EmployeeManagementService;

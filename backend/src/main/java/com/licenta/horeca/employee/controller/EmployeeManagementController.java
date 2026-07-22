@@ -3,7 +3,7 @@ package com.licenta.horeca.employee.controller;
 import com.licenta.horeca.employee.dto.user.CreateUserRequest;
 import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
 import com.licenta.horeca.employee.dto.user.UserResponse;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.employee.service.EmployeeManagementService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

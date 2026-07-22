@@ -4,7 +4,7 @@ import com.licenta.horeca.stock.dto.StockEntryRequest;
 import com.licenta.horeca.stock.entity.AuxiliarySupply;
 import com.licenta.horeca.stock.entity.StockEntry;
 import com.licenta.horeca.stock.enums.MeasurementUnit;
-import com.licenta.horeca.enums.StockPackageType;
+import com.licenta.horeca.stock.enums.StockPackageType;
 import com.licenta.horeca.stock.repository.AuxiliarySupplyRepository;
 import com.licenta.horeca.stock.repository.StockEntryRepository;
 import jakarta.transaction.Transactional;

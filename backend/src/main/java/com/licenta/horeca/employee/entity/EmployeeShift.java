@@ -1,7 +1,7 @@
 package com.licenta.horeca.employee.entity;
 
-import com.licenta.horeca.entity.User;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.entity.User;
+import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.employee.enums.ShiftEndReason;
 import com.licenta.horeca.employee.enums.ShiftStartSource;
 import jakarta.persistence.*;

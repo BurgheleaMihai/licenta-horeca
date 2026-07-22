@@ -1,6 +1,6 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.user.entity;
 
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.enums.RoleType;
 import jakarta.persistence.*;
 
 @Entity

@@ -22,7 +22,7 @@ import com.licenta.horeca.stock.entity.AuxiliarySupply;
 import com.licenta.horeca.stock.entity.StockEntry;
 import com.licenta.horeca.stock.enums.MeasurementUnit;
 import com.licenta.horeca.stock.enums.StockCategory;
-import com.licenta.horeca.enums.StockPackageType;
+import com.licenta.horeca.stock.enums.StockPackageType;
 import com.licenta.horeca.stock.enums.StockType;
 import com.licenta.horeca.stock.service.AuxiliarySupplyService;
 import com.licenta.horeca.stock.service.StockEntryService;

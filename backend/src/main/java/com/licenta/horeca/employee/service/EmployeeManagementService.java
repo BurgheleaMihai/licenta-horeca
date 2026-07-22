@@ -3,12 +3,12 @@ package com.licenta.horeca.employee.service;
 import com.licenta.horeca.employee.dto.user.CreateUserRequest;
 import com.licenta.horeca.employee.dto.user.UpdateUserRequest;
 import com.licenta.horeca.employee.dto.user.UserResponse;
-import com.licenta.horeca.entity.Role;
-import com.licenta.horeca.entity.User;
-import com.licenta.horeca.enums.RoleType;
+import com.licenta.horeca.user.entity.Role;
+import com.licenta.horeca.user.entity.User;
+import com.licenta.horeca.user.enums.RoleType;
 import com.licenta.horeca.exception.BusinessException;
-import com.licenta.horeca.repository.RoleRepository;
-import com.licenta.horeca.repository.UserRepository;
+import com.licenta.horeca.user.repository.RoleRepository;
+import com.licenta.horeca.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
