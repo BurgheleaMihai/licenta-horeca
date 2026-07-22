@@ -1,4 +1,4 @@
-package com.licenta.horeca.enums;
+package com.licenta.horeca.order.enums;
 
 public enum OrderStatus {
     NOUA,

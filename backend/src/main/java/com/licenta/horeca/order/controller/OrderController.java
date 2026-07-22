@@ -1,10 +1,10 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.order.controller;
 
-import com.licenta.horeca.dto.OrderStatisticsResponse;
-import com.licenta.horeca.entity.Order;
-import com.licenta.horeca.entity.OrderItem;
-import com.licenta.horeca.enums.OrderStatus;
-import com.licenta.horeca.service.OrderService;
+import com.licenta.horeca.order.dto.OrderStatisticsResponse;
+import com.licenta.horeca.order.entity.Order;
+import com.licenta.horeca.order.entity.OrderItem;
+import com.licenta.horeca.order.enums.OrderStatus;
+import com.licenta.horeca.order.service.OrderService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 

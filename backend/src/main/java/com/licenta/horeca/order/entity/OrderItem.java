@@ -1,7 +1,7 @@
-package com.licenta.horeca.entity;
+package com.licenta.horeca.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.product.entity.Product;
 import jakarta.persistence.*;
 import java.math.BigDecimal;

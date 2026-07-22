@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.order.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,12 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.controller.OrderController;
-import com.licenta.horeca.dto.OrderStatisticsResponse;
-import com.licenta.horeca.entity.Order;
-import com.licenta.horeca.entity.OrderItem;
-import com.licenta.horeca.enums.OrderStatus;
-import com.licenta.horeca.service.OrderService;
+import com.licenta.horeca.order.dto.OrderStatisticsResponse;
+import com.licenta.horeca.order.entity.Order;
+import com.licenta.horeca.order.entity.OrderItem;
+import com.licenta.horeca.order.enums.OrderStatus;
+import com.licenta.horeca.order.service.OrderService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

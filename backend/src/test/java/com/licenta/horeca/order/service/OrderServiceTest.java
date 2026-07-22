@@ -1,23 +1,23 @@
-package com.licenta.horeca;
+package com.licenta.horeca.order.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.licenta.horeca.dto.OrderStatisticsResponse;
-import com.licenta.horeca.entity.Order;
-import com.licenta.horeca.entity.OrderItem;
+import com.licenta.horeca.order.dto.OrderStatisticsResponse;
+import com.licenta.horeca.order.entity.Order;
+import com.licenta.horeca.order.entity.OrderItem;
 import com.licenta.horeca.product.entity.Product;
 import com.licenta.horeca.entity.RestaurantTable;
 import com.licenta.horeca.entity.TableSession;
-import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.exception.BusinessException;
-import com.licenta.horeca.repository.OrderItemRepository;
-import com.licenta.horeca.repository.OrderRepository;
+import com.licenta.horeca.order.repository.OrderItemRepository;
+import com.licenta.horeca.order.repository.OrderRepository;
 import com.licenta.horeca.product.repository.ProductRepository;
 import com.licenta.horeca.repository.TableSessionRepository;
 import com.licenta.horeca.service.FeedbackService;
-import com.licenta.horeca.service.OrderService;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

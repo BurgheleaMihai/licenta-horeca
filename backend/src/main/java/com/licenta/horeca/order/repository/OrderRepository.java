@@ -1,7 +1,7 @@
-package com.licenta.horeca.repository;
+package com.licenta.horeca.order.repository;
 
-import com.licenta.horeca.entity.Order;
-import com.licenta.horeca.enums.OrderStatus;
+import com.licenta.horeca.order.entity.Order;
+import com.licenta.horeca.order.enums.OrderStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
