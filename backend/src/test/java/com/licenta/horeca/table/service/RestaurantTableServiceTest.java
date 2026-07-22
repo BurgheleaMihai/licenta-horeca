@@ -1,11 +1,11 @@
-package com.licenta.horeca;
+package com.licenta.horeca.table.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.licenta.horeca.entity.RestaurantTable;
-import com.licenta.horeca.repository.RestaurantTableRepository;
-import com.licenta.horeca.service.RestaurantTableService;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.repository.RestaurantTableRepository;
+
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.licenta.horeca.order.entity;
 
-import com.licenta.horeca.entity.TableSession;
+import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
 import jakarta.persistence.*;
 

@@ -1,4 +1,4 @@
-package com.licenta.horeca;
+package com.licenta.horeca.table.controller;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -12,12 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.licenta.horeca.auth.security.SecurityConfig;
-import com.licenta.horeca.controller.TableSessionController;
-import com.licenta.horeca.entity.RestaurantTable;
-import com.licenta.horeca.entity.TableSession;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.auth.security.CustomUserDetailsService;
 import com.licenta.horeca.auth.security.JwtService;
-import com.licenta.horeca.service.TableSessionService;
+import com.licenta.horeca.table.service.TableSessionService;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;

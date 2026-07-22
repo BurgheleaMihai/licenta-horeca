@@ -1,7 +1,7 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.table.controller;
 
-import com.licenta.horeca.entity.RestaurantTable;
-import com.licenta.horeca.service.RestaurantTableService;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.service.RestaurantTableService;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 

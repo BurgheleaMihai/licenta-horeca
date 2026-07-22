@@ -1,7 +1,7 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.table.controller;
 
-import com.licenta.horeca.entity.TableSession;
-import com.licenta.horeca.service.TableSessionService;
+import com.licenta.horeca.table.entity.TableSession;
+import com.licenta.horeca.table.service.TableSessionService;
 import java.util.List;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

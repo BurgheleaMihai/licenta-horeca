@@ -8,14 +8,14 @@ import com.licenta.horeca.order.dto.OrderStatisticsResponse;
 import com.licenta.horeca.order.entity.Order;
 import com.licenta.horeca.order.entity.OrderItem;
 import com.licenta.horeca.product.entity.Product;
-import com.licenta.horeca.entity.RestaurantTable;
-import com.licenta.horeca.entity.TableSession;
+import com.licenta.horeca.table.entity.RestaurantTable;
+import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.order.enums.OrderStatus;
 import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.order.repository.OrderItemRepository;
 import com.licenta.horeca.order.repository.OrderRepository;
 import com.licenta.horeca.product.repository.ProductRepository;
-import com.licenta.horeca.repository.TableSessionRepository;
+import com.licenta.horeca.table.repository.TableSessionRepository;
 import com.licenta.horeca.service.FeedbackService;
 
 import java.math.BigDecimal;
