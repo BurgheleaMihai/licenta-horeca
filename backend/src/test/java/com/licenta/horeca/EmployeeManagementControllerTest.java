@@ -11,14 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licenta.horeca.config.SecurityConfig;
+import com.licenta.horeca.auth.security.SecurityConfig;
 import com.licenta.horeca.controller.EmployeeManagementController;
 import com.licenta.horeca.dto.user.CreateUserRequest;
 import com.licenta.horeca.dto.user.UpdateUserRequest;
 import com.licenta.horeca.dto.user.UserResponse;
 import com.licenta.horeca.enums.RoleType;
-import com.licenta.horeca.security.CustomUserDetailsService;
-import com.licenta.horeca.security.JwtService;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.service.EmployeeManagementService;
 import java.util.List;
 import org.junit.jupiter.api.Test;

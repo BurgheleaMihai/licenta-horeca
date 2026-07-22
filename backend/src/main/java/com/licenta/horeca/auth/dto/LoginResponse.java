@@ -1,4 +1,4 @@
-package com.licenta.horeca.dto;
+package com.licenta.horeca.auth.dto;
 
 public class LoginResponse {
     private Long userId;

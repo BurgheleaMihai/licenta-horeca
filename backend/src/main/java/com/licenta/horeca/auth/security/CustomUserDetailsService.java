@@ -1,4 +1,4 @@
-package com.licenta.horeca.security;
+package com.licenta.horeca.auth.security;
 
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.repository.UserRepository;

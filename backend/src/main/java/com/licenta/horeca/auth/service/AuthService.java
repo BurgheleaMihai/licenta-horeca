@@ -1,11 +1,12 @@
-package com.licenta.horeca.service;
+package com.licenta.horeca.auth.service;
 
-import com.licenta.horeca.dto.LoginRequest;
-import com.licenta.horeca.dto.LoginResponse;
+import com.licenta.horeca.auth.dto.LoginRequest;
+import com.licenta.horeca.auth.dto.LoginResponse;
+import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.exception.BusinessException;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.security.JwtService;
+import com.licenta.horeca.service.EmployeeShiftService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

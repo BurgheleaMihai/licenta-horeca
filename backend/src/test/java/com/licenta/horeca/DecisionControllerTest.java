@@ -34,11 +34,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-import com.licenta.horeca.config.SecurityConfig;
+import com.licenta.horeca.auth.security.SecurityConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
-import com.licenta.horeca.security.CustomUserDetailsService;
-import com.licenta.horeca.security.JwtService;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
 
 @WebMvcTest(DecisionController.class)
 @Import(SecurityConfig.class)

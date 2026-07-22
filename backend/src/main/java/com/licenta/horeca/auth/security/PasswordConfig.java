@@ -1,4 +1,4 @@
-package com.licenta.horeca.config;
+package com.licenta.horeca.auth.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

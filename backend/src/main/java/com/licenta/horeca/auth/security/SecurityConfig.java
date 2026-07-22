@@ -1,6 +1,5 @@
-package com.licenta.horeca.config;
+package com.licenta.horeca.auth.security;
 
-import com.licenta.horeca.security.JwtAuthenticationFilter;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

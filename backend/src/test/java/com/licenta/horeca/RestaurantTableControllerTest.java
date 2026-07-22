@@ -5,11 +5,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.licenta.horeca.config.SecurityConfig;
+import com.licenta.horeca.auth.security.SecurityConfig;
 import com.licenta.horeca.controller.RestaurantTableController;
 import com.licenta.horeca.entity.RestaurantTable;
-import com.licenta.horeca.security.CustomUserDetailsService;
-import com.licenta.horeca.security.JwtService;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.service.RestaurantTableService;
 import java.util.List;
 import org.junit.jupiter.api.Test;

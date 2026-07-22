@@ -1,8 +1,8 @@
-package com.licenta.horeca.controller;
+package com.licenta.horeca.auth.controller;
 
-import com.licenta.horeca.dto.LoginRequest;
-import com.licenta.horeca.dto.LoginResponse;
-import com.licenta.horeca.service.AuthService;
+import com.licenta.horeca.auth.dto.LoginRequest;
+import com.licenta.horeca.auth.dto.LoginResponse;
+import com.licenta.horeca.auth.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

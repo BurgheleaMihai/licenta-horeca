@@ -1,22 +1,13 @@
-package com.licenta.horeca;
+package com.licenta.horeca.auth.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
-import com.licenta.horeca.dto.LoginRequest;
-import com.licenta.horeca.dto.LoginResponse;
+import com.licenta.horeca.auth.dto.LoginRequest;
+import com.licenta.horeca.auth.dto.LoginResponse;
+import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.entity.Role;
 import com.licenta.horeca.entity.User;
 import com.licenta.horeca.enums.RoleType;
 import com.licenta.horeca.repository.UserRepository;
-import com.licenta.horeca.security.JwtService;
-import com.licenta.horeca.service.AuthService;
 import com.licenta.horeca.service.EmployeeShiftService;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +16,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

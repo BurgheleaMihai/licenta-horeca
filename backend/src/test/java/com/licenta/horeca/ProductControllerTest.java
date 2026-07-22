@@ -5,12 +5,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.licenta.horeca.config.SecurityConfig;
+import com.licenta.horeca.auth.security.SecurityConfig;
 import com.licenta.horeca.controller.ProductController;
 import com.licenta.horeca.entity.Category;
 import com.licenta.horeca.entity.Product;
-import com.licenta.horeca.security.CustomUserDetailsService;
-import com.licenta.horeca.security.JwtService;
+import com.licenta.horeca.auth.security.CustomUserDetailsService;
+import com.licenta.horeca.auth.security.JwtService;
 import com.licenta.horeca.service.ProductService;
 import java.math.BigDecimal;
 import java.util.List;
