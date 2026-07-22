@@ -122,8 +122,8 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
 
 
 def calculate_metrics(
-        expected_values: pd.DataFrame | np.ndarray,
-        predictions: np.ndarray,
+    expected_values: pd.DataFrame | np.ndarray,
+    predictions: np.ndarray,
 ) -> Metrics:
     """Calculeaza metricile generale si metricile fiecarui rol."""
 
@@ -226,7 +226,7 @@ def calculate_metrics(
                 np.all(
                     rounded_errors == 0,
                     axis=1,
-                    )
+                )
             )
         ),
         "underestimateCellRate": float(np.mean(rounded_errors < 0)),
@@ -237,8 +237,8 @@ def calculate_metrics(
 
 
 def calculate_generalization(
-        train_metrics: Mapping[str, Any],
-        evaluation_metrics: Mapping[str, Any],
+    train_metrics: Mapping[str, Any],
+    evaluation_metrics: Mapping[str, Any],
 ) -> JsonObject:
     """Calculeaza degradarea R2 dintre train si setul de evaluare."""
 
@@ -277,11 +277,11 @@ def calculate_generalization(
 
 
 def evaluate_model(
-        model: RoleSpecificStaffRegressor,
-        train_features: pd.DataFrame,
-        train_targets: pd.DataFrame,
-        evaluation_features: pd.DataFrame,
-        evaluation_targets: pd.DataFrame,
+    model: RoleSpecificStaffRegressor,
+    train_features: pd.DataFrame,
+    train_targets: pd.DataFrame,
+    evaluation_features: pd.DataFrame,
+    evaluation_targets: pd.DataFrame,
 ) -> EvaluationResult:
     """Evalueaza acelasi model pe train si pe un set separat."""
 
@@ -314,7 +314,7 @@ def evaluate_model(
 
 
 def check_acceptance(
-        test_evaluation: Mapping[str, Any],
+    test_evaluation: Mapping[str, Any],
 ) -> dict[str, bool]:
     """Verifica daca modelul nou poate inlocui modelul existent."""
 
@@ -330,11 +330,11 @@ def check_acceptance(
     checks = {
         "overallMaePassed": (float(metrics["overallMae"]) <= MAX_ALLOWED_OVERALL_MAE),
         "withinOneRatePassed": (
-                float(metrics["roundedWithinOneCellRate"]) >= MIN_REQUIRED_WITHIN_ONE_RATE
+            float(metrics["roundedWithinOneCellRate"]) >= MIN_REQUIRED_WITHIN_ONE_RATE
         ),
         "generalizationPassed": (
-                float(generalization["maximumRelativeR2Degradation"])
-                <= MAX_ALLOWED_R2_DEGRADATION
+            float(generalization["maximumRelativeR2Degradation"])
+            <= MAX_ALLOWED_R2_DEGRADATION
         ),
     }
     checks["accepted"] = all(checks.values())
@@ -348,7 +348,7 @@ def check_acceptance(
 
 
 def backup_current_artifacts(
-        timestamp: str,
+    timestamp: str,
 ) -> Path | None:
     """Copiaza artefactele existente inaintea inlocuirii lor."""
 
@@ -375,13 +375,13 @@ def backup_current_artifacts(
         shutil.copy2(
             file_path,
             backup_directory / file_path.name,
-            )
+        )
 
     return backup_directory
 
 
 def save_model_atomically(
-        model: RoleSpecificStaffRegressor,
+    model: RoleSpecificStaffRegressor,
 ) -> None:
     """
     Salveaza modelul intr-un fisier temporar si il valideaza inainte de replace.
@@ -421,8 +421,8 @@ def save_model_atomically(
 
 
 def format_evaluation(
-        title: str,
-        evaluation: Mapping[str, Any],
+    title: str,
+    evaluation: Mapping[str, Any],
 ) -> str:
     """Formateaza metricile si generalizarea pentru raportul text."""
 
@@ -443,17 +443,12 @@ def format_evaluation(
         generalization["perTarget"],
     )
 
-    exact_rate_line = (
-        f"Exact dupa rotunjire: "
-        f"{metrics['roundedExactCellRate']:.2%}"
-    )
+    exact_rate_line = f"Exact dupa rotunjire: {metrics['roundedExactCellRate']:.2%}"
     within_one_line = (
-        f"In limita +/-1 angajat: "
-        f"{metrics['roundedWithinOneCellRate']:.2%}"
+        f"In limita +/-1 angajat: {metrics['roundedWithinOneCellRate']:.2%}"
     )
     degradation_line = (
-        f"Degradare R2 maxima: "
-        f"{generalization['maximumRelativeR2Degradation']:.2%}"
+        f"Degradare R2 maxima: {generalization['maximumRelativeR2Degradation']:.2%}"
     )
 
     lines = [
@@ -467,15 +462,14 @@ def format_evaluation(
         degradation_line,
         "",
         "Metrici pe rol:",
-        ]
+    ]
 
     for target_column in TARGET_COLUMNS:
         target_metrics = metrics_per_target[target_column]
         target_generalization = generalization_per_target[target_column]
 
         role_degradation_line = (
-            f"  Degradare R2: "
-            f"{target_generalization['relativeDegradation']:.2%}"
+            f"  Degradare R2: {target_generalization['relativeDegradation']:.2%}"
         )
 
         lines.extend(

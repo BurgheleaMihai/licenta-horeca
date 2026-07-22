@@ -120,29 +120,25 @@ CROSS_VALIDATION_FOLDS = 5
 # Validarea datasetului
 # ---------------------------------------------------------------------------
 
+
 def validate_dataset(dataframe: pd.DataFrame) -> None:
     """Verifica structura, tipurile si distributia claselor."""
 
     required_columns = [*FEATURE_COLUMNS, TARGET_COLUMN]
 
     missing_columns = [
-        column
-        for column in required_columns
-        if column not in dataframe.columns
+        column for column in required_columns if column not in dataframe.columns
     ]
     if missing_columns:
         raise ValueError(
-            "Datasetul nu contine coloanele obligatorii: "
-            f"{missing_columns}"
+            f"Datasetul nu contine coloanele obligatorii: {missing_columns}"
         )
 
     if dataframe.empty:
         raise ValueError("Datasetul este gol.")
 
     columns_with_missing_values = [
-        column
-        for column in required_columns
-        if bool(dataframe[column].isnull().any())
+        column for column in required_columns if bool(dataframe[column].isnull().any())
     ]
     if columns_with_missing_values:
         raise ValueError(
@@ -162,27 +158,17 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
         )
 
     target = cast(pd.Series, dataframe[TARGET_COLUMN])
-    invalid_labels = sorted(
-        set(target.astype(str)) - set(CLASS_LABELS)
-    )
+    invalid_labels = sorted(set(target.astype(str)) - set(CLASS_LABELS))
     if invalid_labels:
-        raise ValueError(
-            "Datasetul contine etichete neacceptate: "
-            f"{invalid_labels}"
-        )
+        raise ValueError(f"Datasetul contine etichete neacceptate: {invalid_labels}")
 
     class_counts = target.value_counts()
 
     missing_classes = [
-        label
-        for label in CLASS_LABELS
-        if label not in class_counts.index
+        label for label in CLASS_LABELS if label not in class_counts.index
     ]
     if missing_classes:
-        raise ValueError(
-            "Datasetul nu contine toate clasele: "
-            f"{missing_classes}"
-        )
+        raise ValueError(f"Datasetul nu contine toate clasele: {missing_classes}")
 
     too_small_classes = {
         label: int(class_counts[label])
@@ -199,6 +185,7 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
 # ---------------------------------------------------------------------------
 # Modelele candidate
 # ---------------------------------------------------------------------------
+
 
 def build_candidate_models() -> CandidateModels:
     """Construieste cele trei clasificatoare comparate la antrenare."""
@@ -245,9 +232,10 @@ def clone_classifier(model: ClassifierModel) -> ClassifierModel:
 # Probabilitati si calibrare
 # ---------------------------------------------------------------------------
 
+
 def align_probabilities(
-        model: ClassifierModel,
-        features: pd.DataFrame,
+    model: ClassifierModel,
+    features: pd.DataFrame,
 ) -> np.ndarray:
     """Reordoneaza probabilitatile dupa PROBABILITY_LABELS."""
 
@@ -255,15 +243,10 @@ def align_probabilities(
         model.predict_proba(features),
         dtype=float,
     )
-    model_classes = [
-        str(label)
-        for label in np.asarray(model.classes_, dtype=object)
-    ]
+    model_classes = [str(label) for label in np.asarray(model.classes_, dtype=object)]
 
     if raw_probabilities.ndim != 2:
-        raise ValueError(
-            "Modelul trebuie sa returneze o matrice de probabilitati."
-        )
+        raise ValueError("Modelul trebuie sa returneze o matrice de probabilitati.")
 
     aligned_probabilities = np.zeros(
         (len(features), len(PROBABILITY_LABELS)),
@@ -272,24 +255,22 @@ def align_probabilities(
 
     for target_index, label in enumerate(PROBABILITY_LABELS):
         if label not in model_classes:
-            raise ValueError(
-                f"Modelul nu contine clasa obligatorie: {label}"
-            )
+            raise ValueError(f"Modelul nu contine clasa obligatorie: {label}")
 
         source_index = model_classes.index(label)
         aligned_probabilities[:, target_index] = raw_probabilities[
-                                                 :,
-                                                 source_index,
-                                                 ]
+            :,
+            source_index,
+        ]
 
     return aligned_probabilities
 
 
 def calculate_expected_calibration_error(
-        expected_values: pd.Series | Sequence[str],
-        predictions: Sequence[str] | np.ndarray,
-        probabilities: np.ndarray,
-        number_of_bins: int = CALIBRATION_BINS,
+    expected_values: pd.Series | Sequence[str],
+    predictions: Sequence[str] | np.ndarray,
+    probabilities: np.ndarray,
+    number_of_bins: int = CALIBRATION_BINS,
 ) -> tuple[float, list[JsonObject]]:
     """Calculeaza Expected Calibration Error si detaliile intervalelor."""
 
@@ -314,7 +295,7 @@ def calculate_expected_calibration_error(
         0.0,
         1.0,
         number_of_bins + 1,
-        )
+    )
     calibration_error = 0.0
     bin_details: list[JsonObject] = []
 
@@ -324,32 +305,24 @@ def calculate_expected_calibration_error(
 
         if bin_index == 0:
             in_bin = np.asarray(
-                (confidences >= lower_bound)
-                & (confidences <= upper_bound),
+                (confidences >= lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
         else:
             in_bin = np.asarray(
-                (confidences > lower_bound)
-                & (confidences <= upper_bound),
+                (confidences > lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
 
         count = int(np.count_nonzero(in_bin))
         if count == 0:
             continue
 
-        bin_accuracy = float(
-            np.mean(correctness[in_bin])
-        )
-        bin_confidence = float(
-            np.mean(confidences[in_bin])
-        )
+        bin_accuracy = float(np.mean(correctness[in_bin]))
+        bin_confidence = float(np.mean(confidences[in_bin]))
         weight = count / len(confidences)
 
-        calibration_error += weight * abs(
-            bin_accuracy - bin_confidence
-        )
+        calibration_error += weight * abs(bin_accuracy - bin_confidence)
 
         bin_details.append(
             {
@@ -365,15 +338,12 @@ def calculate_expected_calibration_error(
 
 
 def calculate_multiclass_brier_score(
-        expected_values: pd.Series | Sequence[str],
-        probabilities: np.ndarray,
+    expected_values: pd.Series | Sequence[str],
+    probabilities: np.ndarray,
 ) -> float:
     """Calculeaza scorul Brier pentru clasificarea cu trei clase."""
 
-    label_to_index = {
-        label: index
-        for index, label in enumerate(PROBABILITY_LABELS)
-    }
+    label_to_index = {label: index for index, label in enumerate(PROBABILITY_LABELS)}
 
     one_hot_expected = np.zeros_like(
         probabilities,
@@ -384,34 +354,27 @@ def calculate_multiclass_brier_score(
         normalized_label = str(label)
 
         if normalized_label not in label_to_index:
-            raise ValueError(
-                f"Eticheta necunoscuta: {normalized_label}"
-            )
+            raise ValueError(f"Eticheta necunoscuta: {normalized_label}")
 
         one_hot_expected[
             row_index,
             label_to_index[normalized_label],
         ] = 1.0
 
-    squared_errors = np.square(
-        probabilities - one_hot_expected
-    )
+    squared_errors = np.square(probabilities - one_hot_expected)
 
-    return float(
-        np.mean(
-            np.sum(squared_errors, axis=1)
-        )
-    )
+    return float(np.mean(np.sum(squared_errors, axis=1)))
 
 
 # ---------------------------------------------------------------------------
 # Metricile clasificatorului
 # ---------------------------------------------------------------------------
 
+
 def calculate_metrics(
-        model: ClassifierModel,
-        features: pd.DataFrame,
-        expected_values: pd.Series,
+    model: ClassifierModel,
+    features: pd.DataFrame,
+    expected_values: pd.Series,
 ) -> Metrics:
     """Calculeaza toate metricile folosite pentru evaluarea traficului."""
 
@@ -466,38 +429,24 @@ def calculate_metrics(
         normalize="true",
     )
 
-    label_positions = {
-        label: index
-        for index, label in enumerate(CLASS_LABELS)
-    }
+    label_positions = {label: index for index, label in enumerate(CLASS_LABELS)}
     expected_positions = np.asarray(
-        [
-            label_positions[str(label)]
-            for label in expected_values
-        ],
+        [label_positions[str(label)] for label in expected_values],
         dtype=int,
     )
     predicted_positions = np.asarray(
-        [
-            label_positions[str(label)]
-            for label in predictions
-        ],
+        [label_positions[str(label)] for label in predictions],
         dtype=int,
     )
     severe_error_mask = np.asarray(
-        np.abs(
-            expected_positions - predicted_positions
-        )
-        == 2,
+        np.abs(expected_positions - predicted_positions) == 2,
         dtype=bool,
-        )
+    )
 
-    expected_calibration_error, calibration_bins = (
-        calculate_expected_calibration_error(
-            expected_values,
-            predictions,
-            probabilities,
-        )
+    expected_calibration_error, calibration_bins = calculate_expected_calibration_error(
+        expected_values,
+        predictions,
+        probabilities,
     )
 
     metrics: Metrics = {
@@ -559,12 +508,8 @@ def calculate_metrics(
         "confusionMatrix": matrix.tolist(),
         "normalizedConfusionMatrix": normalized_matrix.tolist(),
         "severeErrors": {
-            "count": int(
-                np.count_nonzero(severe_error_mask)
-            ),
-            "rate": float(
-                np.mean(severe_error_mask)
-            ),
+            "count": int(np.count_nonzero(severe_error_mask)),
+            "rate": float(np.mean(severe_error_mask)),
         },
         "logLoss": float(
             log_loss(
@@ -597,14 +542,8 @@ def calculate_metrics(
                 probabilities,
             )
         ),
-        "expectedCalibrationError": (
-            expected_calibration_error
-        ),
-        "averageConfidence": float(
-            np.mean(
-                probabilities.max(axis=1)
-            )
-        ),
+        "expectedCalibrationError": (expected_calibration_error),
+        "averageConfidence": float(np.mean(probabilities.max(axis=1))),
         "calibrationBins": calibration_bins,
     }
 
@@ -615,61 +554,43 @@ def calculate_metrics(
 # Formatarea rapoartelor
 # ---------------------------------------------------------------------------
 
+
 def format_confusion_matrix(
-        matrix: Sequence[Sequence[Any]],
+    matrix: Sequence[Sequence[Any]],
 ) -> str:
     """Formateaza matricea de confuzie ca tabel text."""
 
-    header = "real\\prezis" + "".join(
-        f"{label:>12}"
-        for label in CLASS_LABELS
-    )
+    header = "real\\prezis" + "".join(f"{label:>12}" for label in CLASS_LABELS)
     rows = [header]
 
     for label, values in zip(
-            CLASS_LABELS,
-            matrix,
-            strict=True,
+        CLASS_LABELS,
+        matrix,
+        strict=True,
     ):
-        row = f"{label:<12}" + "".join(
-            f"{value:>12}"
-            for value in values
-        )
+        row = f"{label:<12}" + "".join(f"{value:>12}" for value in values)
         rows.append(row)
 
     return "\n".join(rows)
 
 
 def format_metrics(
-        model_name: str,
-        metrics: Mapping[str, Any],
+    model_name: str,
+    metrics: Mapping[str, Any],
 ) -> str:
     """Formateaza metricile unui model pentru raportul text."""
 
-    balanced_accuracy_line = (
-        f"Balanced accuracy: "
-        f"{metrics['balancedAccuracy']:.4f}"
-    )
+    balanced_accuracy_line = f"Balanced accuracy: {metrics['balancedAccuracy']:.4f}"
     mcc_line = (
         "Matthews Correlation Coefficient: "
         f"{metrics['matthewsCorrelationCoefficient']:.4f}"
     )
-    weighted_auc_line = (
-        f"ROC-AUC weighted OVR: "
-        f"{metrics['rocAucWeightedOvr']:.4f}"
-    )
-    brier_line = (
-        f"Multiclass Brier score: "
-        f"{metrics['multiclassBrierScore']:.4f}"
-    )
+    weighted_auc_line = f"ROC-AUC weighted OVR: {metrics['rocAucWeightedOvr']:.4f}"
+    brier_line = f"Multiclass Brier score: {metrics['multiclassBrierScore']:.4f}"
     calibration_line = (
-        f"Expected Calibration Error: "
-        f"{metrics['expectedCalibrationError']:.4f}"
+        f"Expected Calibration Error: {metrics['expectedCalibrationError']:.4f}"
     )
-    confidence_line = (
-        f"Incredere medie: "
-        f"{metrics['averageConfidence']:.4f}"
-    )
+    confidence_line = f"Incredere medie: {metrics['averageConfidence']:.4f}"
 
     lines = [
         f"Model: {model_name}",
@@ -733,9 +654,7 @@ def format_metrics(
         [
             "",
             "Matrice de confuzie:",
-            format_confusion_matrix(
-                confusion_matrix_values
-            ),
+            format_confusion_matrix(confusion_matrix_values),
         ]
     )
 
@@ -746,10 +665,11 @@ def format_metrics(
 # Cross-validation si importanta caracteristicilor
 # ---------------------------------------------------------------------------
 
+
 def calculate_cross_validation_metrics(
-        model: ClassifierModel,
-        features: pd.DataFrame,
-        target: pd.Series,
+    model: ClassifierModel,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> CrossValidationMetrics:
     """Calculeaza mediile train/validation si gap-ul de generalizare."""
 
@@ -787,36 +707,23 @@ def calculate_cross_validation_metrics(
             dtype=float,
         )
 
-        validation_mean = float(
-            np.mean(test_values)
-        )
-        train_mean = float(
-            np.mean(train_values)
-        )
+        validation_mean = float(np.mean(test_values))
+        train_mean = float(np.mean(train_values))
 
         result[metric_name] = {
             "validationMean": validation_mean,
-            "validationStd": float(
-                np.std(test_values)
-            ),
+            "validationStd": float(np.std(test_values)),
             "trainMean": train_mean,
-            "trainStd": float(
-                np.std(train_values)
-            ),
-            "generalizationGap": (
-                    train_mean - validation_mean
-            ),
-            "foldValues": [
-                float(value)
-                for value in test_values
-            ],
+            "trainStd": float(np.std(train_values)),
+            "generalizationGap": (train_mean - validation_mean),
+            "foldValues": [float(value) for value in test_values],
         }
 
     return result
 
 
 def extract_native_feature_importance(
-        model: ClassifierModel,
+    model: ClassifierModel,
 ) -> list[JsonObject]:
     """Extrage feature importance nativa, daca modelul o expune."""
 
@@ -856,9 +763,9 @@ def extract_native_feature_importance(
 
 
 def extract_permutation_importance(
-        model: ClassifierModel,
-        features_test: pd.DataFrame,
-        target_test: pd.Series,
+    model: ClassifierModel,
+    features_test: pd.DataFrame,
+    target_test: pd.Series,
 ) -> list[JsonObject]:
     """Calculeaza permutation importance folosind Macro F1."""
 
@@ -905,6 +812,7 @@ def extract_permutation_importance(
 # ---------------------------------------------------------------------------
 # Antrenarea modelului
 # ---------------------------------------------------------------------------
+
 
 def train_traffic_model() -> None:
     """Antreneaza, selecteaza, evalueaza si salveaza modelul de trafic."""
@@ -992,12 +900,10 @@ def train_traffic_model() -> None:
             target_train,
         )
 
-        validation_results[model_name] = (
-            calculate_metrics(
-                model,
-                features_validation,
-                target_validation,
-            )
+        validation_results[model_name] = calculate_metrics(
+            model,
+            features_validation,
+            target_validation,
         )
 
     features_train_final = pd.concat(
@@ -1022,41 +928,32 @@ def train_traffic_model() -> None:
         CrossValidationMetrics,
     ] = {}
     best_model_name: str | None = None
-    best_selection_key: tuple[
-                            float,
-                            float,
-                            float,
-                            float,
-                        ] | None = None
+    best_selection_key: (
+        tuple[
+            float,
+            float,
+            float,
+            float,
+        ]
+        | None
+    ) = None
 
     for model_name, model in build_candidate_models().items():
-        cross_validation_metrics = (
-            calculate_cross_validation_metrics(
-                model,
-                features_train_final,
-                target_train_final,
-            )
+        cross_validation_metrics = calculate_cross_validation_metrics(
+            model,
+            features_train_final,
+            target_train_final,
         )
-        candidate_cross_validation[
-            model_name
-        ] = cross_validation_metrics
+        candidate_cross_validation[model_name] = cross_validation_metrics
 
         macro_f1 = cross_validation_metrics["macroF1"]
-        balanced_accuracy = cross_validation_metrics[
-            "balancedAccuracy"
-        ]
-        validation_metrics = validation_results[
-            model_name
-        ]
+        balanced_accuracy = cross_validation_metrics["balancedAccuracy"]
+        validation_metrics = validation_results[model_name]
 
         selection_key = (
             float(macro_f1["validationMean"]),
-            float(
-                balanced_accuracy["validationMean"]
-            ),
-            -float(
-                macro_f1["generalizationGap"]
-            ),
+            float(balanced_accuracy["validationMean"]),
+            -float(macro_f1["generalizationGap"]),
             -float(
                 validation_metrics.get(
                     "logLoss",
@@ -1065,21 +962,14 @@ def train_traffic_model() -> None:
             ),
         )
 
-        if (
-                best_selection_key is None
-                or selection_key > best_selection_key
-        ):
+        if best_selection_key is None or selection_key > best_selection_key:
             best_selection_key = selection_key
             best_model_name = model_name
 
     if best_model_name is None:
-        raise RuntimeError(
-            "Nu a putut fi selectat un model de trafic."
-        )
+        raise RuntimeError("Nu a putut fi selectat un model de trafic.")
 
-    best_model = build_candidate_models()[
-        best_model_name
-    ]
+    best_model = build_candidate_models()[best_model_name]
     best_model.fit(
         features_train_final,
         target_train_final,
@@ -1090,23 +980,13 @@ def train_traffic_model() -> None:
         features_test,
         target_test,
     )
-    selected_cross_validation_metrics = (
-        candidate_cross_validation[
-            best_model_name
-        ]
-    )
+    selected_cross_validation_metrics = candidate_cross_validation[best_model_name]
 
-    native_feature_importance = (
-        extract_native_feature_importance(
-            best_model
-        )
-    )
-    permutation_feature_importance = (
-        extract_permutation_importance(
-            best_model,
-            features_test,
-            target_test,
-        )
+    native_feature_importance = extract_native_feature_importance(best_model)
+    permutation_feature_importance = extract_permutation_importance(
+        best_model,
+        features_test,
+        target_test,
     )
 
     MODEL_FILE.parent.mkdir(
@@ -1123,16 +1003,11 @@ def train_traffic_model() -> None:
         MODEL_FILE,
     )
 
-    trained_at = datetime.now(
-        timezone.utc
-    ).isoformat()
+    trained_at = datetime.now(timezone.utc).isoformat()
 
     class_counts = target.value_counts()
     class_distribution = {
-        label: int(
-            class_counts.get(label, 0)
-        )
-        for label in CLASS_LABELS
+        label: int(class_counts.get(label, 0)) for label in CLASS_LABELS
     }
 
     metadata: JsonObject = {
@@ -1145,15 +1020,9 @@ def train_traffic_model() -> None:
         "classLabels": CLASS_LABELS,
         "classDistribution": class_distribution,
         "split": {
-            "trainRows": int(
-                len(features_train)
-            ),
-            "validationRows": int(
-                len(features_validation)
-            ),
-            "testRows": int(
-                len(features_test)
-            ),
+            "trainRows": int(len(features_train)),
+            "validationRows": int(len(features_validation)),
+            "testRows": int(len(features_test)),
         },
         "selectionCriterion": [
             "crossValidationMacroF1Mean",
@@ -1161,23 +1030,13 @@ def train_traffic_model() -> None:
             "lowerCrossValidationGeneralizationGap",
             "validationLogLoss",
         ],
-        "baselineValidationMetrics": (
-            baseline_metrics
-        ),
+        "baselineValidationMetrics": (baseline_metrics),
         "validationResults": validation_results,
         "testMetrics": test_metrics,
-        "candidateCrossValidation": (
-            candidate_cross_validation
-        ),
-        "selectedModelCrossValidation": (
-            selected_cross_validation_metrics
-        ),
-        "nativeFeatureImportance": (
-            native_feature_importance
-        ),
-        "permutationFeatureImportance": (
-            permutation_feature_importance
-        ),
+        "candidateCrossValidation": (candidate_cross_validation),
+        "selectedModelCrossValidation": (selected_cross_validation_metrics),
+        "nativeFeatureImportance": (native_feature_importance),
+        "permutationFeatureImportance": (permutation_feature_importance),
     }
 
     METADATA_FILE.write_text(
@@ -1194,8 +1053,7 @@ def train_traffic_model() -> None:
             model_name,
             metrics,
         )
-        for model_name, metrics
-        in validation_results.items()
+        for model_name, metrics in validation_results.items()
     )
 
     cross_validation_lines = [
@@ -1206,23 +1064,16 @@ def train_traffic_model() -> None:
             f"train={values['trainMean']:.4f}, "
             f"gap={values['generalizationGap']:.4f}"
         )
-        for metric_name, values
-        in selected_cross_validation_metrics.items()
+        for metric_name, values in selected_cross_validation_metrics.items()
     ]
 
     native_importance_lines = [
-        (
-            f"- {entry['feature']}: "
-            f"{entry['importance']:.4f}"
-        )
+        (f"- {entry['feature']}: {entry['importance']:.4f}")
         for entry in native_feature_importance
     ]
     if not native_importance_lines:
         native_importance_lines = [
-            (
-                "- Modelul selectat nu expune "
-                "feature_importances_."
-            )
+            ("- Modelul selectat nu expune feature_importances_.")
         ]
 
     permutation_importance_lines = [
@@ -1319,34 +1170,13 @@ Interpretare:
     print(f"Model salvat in: {MODEL_FILE}")
     print(f"Metadata salvata in: {METADATA_FILE}")
     print(f"Raport salvat in: {REPORT_FILE}")
-    print(
-        "Accuracy finala: "
-        f"{test_metrics['accuracy']:.4f}"
-    )
-    print(
-        "Balanced accuracy finala: "
-        f"{test_metrics['balancedAccuracy']:.4f}"
-    )
-    print(
-        "Macro F1 final: "
-        f"{test_metrics['macroF1']:.4f}"
-    )
-    print(
-        "MCC final: "
-        f"{test_metrics['matthewsCorrelationCoefficient']:.4f}"
-    )
-    print(
-        "ROC-AUC macro final: "
-        f"{test_metrics['rocAucMacroOvr']:.4f}"
-    )
-    print(
-        "Log loss final: "
-        f"{test_metrics['logLoss']:.4f}"
-    )
-    print(
-        "ECE final: "
-        f"{test_metrics['expectedCalibrationError']:.4f}"
-    )
+    print(f"Accuracy finala: {test_metrics['accuracy']:.4f}")
+    print(f"Balanced accuracy finala: {test_metrics['balancedAccuracy']:.4f}")
+    print(f"Macro F1 final: {test_metrics['macroF1']:.4f}")
+    print(f"MCC final: {test_metrics['matthewsCorrelationCoefficient']:.4f}")
+    print(f"ROC-AUC macro final: {test_metrics['rocAucMacroOvr']:.4f}")
+    print(f"Log loss final: {test_metrics['logLoss']:.4f}")
+    print(f"ECE final: {test_metrics['expectedCalibrationError']:.4f}")
 
 
 def main() -> None:

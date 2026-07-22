@@ -33,5 +33,7 @@ export const getAllOrders = () => {
 };
 
 export const updateOrderStatus = (orderId, status) => {
-  return apiClient.patch( `${ORDERS_URL}/${orderId}/status?status=${encodeURIComponent(status)}` );
+  return apiClient.patch(
+    `${ORDERS_URL}/${orderId}/status?status=${encodeURIComponent(status)}`,
+  );
 };

@@ -10,12 +10,9 @@ import { getTrafficSummary } from "../api/trafficApi";
 const getCurrentDateValue = () => {
   const currentDate = new Date();
 
-  const timezoneOffset =
-    currentDate.getTimezoneOffset() * 60 * 1000;
+  const timezoneOffset = currentDate.getTimezoneOffset() * 60 * 1000;
 
-  return new Date(
-    currentDate.getTime() - timezoneOffset
-  )
+  return new Date(currentDate.getTime() - timezoneOffset)
     .toISOString()
     .split("T")[0];
 };
@@ -34,14 +31,11 @@ function ManagerPage() {
     averageRating: 0,
   });
 
-  const [selectedDate, setSelectedDate] =
-    useState(initialDate);
+  const [selectedDate, setSelectedDate] = useState(initialDate);
 
-  const [startTime, setStartTime] =
-    useState("00:00");
+  const [startTime, setStartTime] = useState("00:00");
 
-  const [endTime, setEndTime] =
-    useState("23:59");
+  const [endTime, setEndTime] = useState("23:59");
 
   const [appliedFilters, setAppliedFilters] = useState({
     date: initialDate,
@@ -49,8 +43,7 @@ function ManagerPage() {
     endTime: "23:59",
   });
 
-  const [statisticsLoading, setStatisticsLoading] =
-    useState(false);
+  const [statisticsLoading, setStatisticsLoading] = useState(false);
 
   const [trafficSummary, setTrafficSummary] = useState({
     entries: 0,
@@ -73,18 +66,10 @@ function ManagerPage() {
     globalThis.location.href = "/manager-supplies";
   };
 
-  const loadStatistics = (
-    date,
-    intervalStart,
-    intervalEnd
-  ) => {
+  const loadStatistics = (date, intervalStart, intervalEnd) => {
     setStatisticsLoading(true);
 
-    return getOrderStatistics(
-      date,
-      intervalStart,
-      intervalEnd
-    )
+    return getOrderStatistics(date, intervalStart, intervalEnd)
       .then((response) => {
         setTodayStatistics(response.data);
 
@@ -95,14 +80,11 @@ function ManagerPage() {
         });
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea statisticilor:",
-          error
-        );
+        console.error("Eroare la incarcarea statisticilor:", error);
 
         setErrorMessage(
           error.response?.data?.message ||
-            "Statisticile nu au putut fi incarcate."
+            "Statisticile nu au putut fi incarcate.",
         );
       })
       .finally(() => {
@@ -113,25 +95,16 @@ function ManagerPage() {
   const loadManagerData = () => {
     setErrorMessage("");
 
-    loadStatistics(
-      initialDate,
-      "00:00",
-      "23:59"
-    );
+    loadStatistics(initialDate, "00:00", "23:59");
 
     getActiveOrders()
       .then((response) => {
         setActiveOrders(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea comenzilor active:",
-          error
-        );
+        console.error("Eroare la incarcarea comenzilor active:", error);
 
-        setErrorMessage(
-          "Comenzile active nu au putut fi incarcate."
-        );
+        setErrorMessage("Comenzile active nu au putut fi incarcate.");
       });
 
     getAllOrders()
@@ -139,14 +112,9 @@ function ManagerPage() {
         setAllOrders(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea comenzilor:",
-          error
-        );
+        console.error("Eroare la incarcarea comenzilor:", error);
 
-        setErrorMessage(
-          "Toate comenzile nu au putut fi incarcate."
-        );
+        setErrorMessage("Toate comenzile nu au putut fi incarcate.");
       });
 
     getAllFeedback()
@@ -154,14 +122,9 @@ function ManagerPage() {
         setFeedbackList(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea feedback-ului:",
-          error
-        );
+        console.error("Eroare la incarcarea feedback-ului:", error);
 
-        setErrorMessage(
-          "Feedback-ul nu a putut fi incarcat."
-        );
+        setErrorMessage("Feedback-ul nu a putut fi incarcat.");
       });
 
     getTrafficSummary()
@@ -169,14 +132,9 @@ function ManagerPage() {
         setTrafficSummary(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea datelor senzorilor:",
-          error
-        );
+        console.error("Eroare la incarcarea datelor senzorilor:", error);
 
-        setErrorMessage(
-          "Datele senzorilor nu au putut fi incarcate."
-        );
+        setErrorMessage("Datele senzorilor nu au putut fi incarcate.");
       });
   };
 
@@ -186,26 +144,18 @@ function ManagerPage() {
     setErrorMessage("");
 
     if (!selectedDate || !startTime || !endTime) {
-      setErrorMessage(
-        "Completeaza data si intervalul orar."
-      );
+      setErrorMessage("Completeaza data si intervalul orar.");
 
       return;
     }
 
     if (endTime < startTime) {
-      setErrorMessage(
-        "Ora de sfarsit trebuie sa fie dupa ora de inceput."
-      );
+      setErrorMessage("Ora de sfarsit trebuie sa fie dupa ora de inceput.");
 
       return;
     }
 
-    loadStatistics(
-      selectedDate,
-      startTime,
-      endTime
-    );
+    loadStatistics(selectedDate, startTime, endTime);
   };
 
   const handleResetStatistics = () => {
@@ -216,44 +166,36 @@ function ManagerPage() {
     setEndTime("23:59");
     setErrorMessage("");
 
-    loadStatistics(
-      currentDate,
-      "00:00",
-      "23:59"
-    );
+    loadStatistics(currentDate, "00:00", "23:59");
   };
 
   const allServedOrders = allOrders.filter(
-    (order) => order.status === "SERVITA"
+    (order) => order.status === "SERVITA",
   );
 
   const newOrdersCount = activeOrders.filter(
-    (order) => order.status === "NOUA"
+    (order) => order.status === "NOUA",
   ).length;
 
-  const inPreparationOrdersCount =
-    activeOrders.filter(
-      (order) => order.status === "IN_PREPARARE"
-    ).length;
+  const inPreparationOrdersCount = activeOrders.filter(
+    (order) => order.status === "IN_PREPARARE",
+  ).length;
 
   const readyOrdersCount = activeOrders.filter(
-    (order) => order.status === "GATA"
+    (order) => order.status === "GATA",
   ).length;
 
   const productSales = {};
 
   allServedOrders.forEach((order) => {
     order.items?.forEach((item) => {
-      const productName =
-        item.product?.name || "Produs necunoscut";
+      const productName = item.product?.name || "Produs necunoscut";
 
       if (!productSales[productName]) {
         productSales[productName] = 0;
       }
 
-      productSales[productName] += Number(
-        item.quantity
-      );
+      productSales[productName] += Number(item.quantity);
     });
   });
 
@@ -264,8 +206,7 @@ function ManagerPage() {
     }))
     .sort(
       (firstProduct, secondProduct) =>
-        secondProduct.quantity -
-        firstProduct.quantity
+        secondProduct.quantity - firstProduct.quantity,
     );
 
   return (
@@ -293,9 +234,7 @@ function ManagerPage() {
       </header>
 
       {errorMessage && (
-        <p className="error-message manager-page-message">
-          {errorMessage}
-        </p>
+        <p className="error-message manager-page-message">{errorMessage}</p>
       )}
 
       <section className="manager-section">
@@ -306,9 +245,7 @@ function ManagerPage() {
           onSubmit={handleStatisticsSubmit}
         >
           <div className="filter-group">
-            <label htmlFor="statistics-date">
-              Data
-            </label>
+            <label htmlFor="statistics-date">Data</label>
 
             <input
               id="statistics-date"
@@ -321,9 +258,7 @@ function ManagerPage() {
           </div>
 
           <div className="filter-group">
-            <label htmlFor="statistics-start-time">
-              Ora de inceput
-            </label>
+            <label htmlFor="statistics-start-time">Ora de inceput</label>
 
             <input
               id="statistics-start-time"
@@ -336,9 +271,7 @@ function ManagerPage() {
           </div>
 
           <div className="filter-group">
-            <label htmlFor="statistics-end-time">
-              Ora de sfarsit
-            </label>
+            <label htmlFor="statistics-end-time">Ora de sfarsit</label>
 
             <input
               id="statistics-end-time"
@@ -351,13 +284,8 @@ function ManagerPage() {
           </div>
 
           <div className="manager-filter-actions">
-            <button
-              type="submit"
-              disabled={statisticsLoading}
-            >
-              {statisticsLoading
-                ? "Se incarca..."
-                : "Aplica filtrul"}
+            <button type="submit" disabled={statisticsLoading}>
+              {statisticsLoading ? "Se incarca..." : "Aplica filtrul"}
             </button>
 
             <button
@@ -372,18 +300,15 @@ function ManagerPage() {
         </form>
 
         <p className="manager-filter-summary">
-          Data: <strong>{appliedFilters.date}</strong>,
-          interval:{" "}
+          Data: <strong>{appliedFilters.date}</strong>, interval:{" "}
           <strong>
-            {appliedFilters.startTime} -{" "}
-            {appliedFilters.endTime}
+            {appliedFilters.startTime} - {appliedFilters.endTime}
           </strong>
         </p>
 
         <p className="manager-filter-note">
-          Comenzile active reprezinta situatia curenta.
-          Comenzile servite, vanzarile si ratingul sunt
-          calculate pentru intervalul selectat.
+          Comenzile active reprezinta situatia curenta. Comenzile servite,
+          vanzarile si ratingul sunt calculate pentru intervalul selectat.
         </p>
 
         <div className="manager-grid">
@@ -402,23 +327,13 @@ function ManagerPage() {
           <div className="manager-card">
             <h3>Vanzari</h3>
 
-            <p>
-              {Number(
-                todayStatistics.sales ?? 0
-              ).toFixed(2)}{" "}
-              lei
-            </p>
+            <p>{Number(todayStatistics.sales ?? 0).toFixed(2)} lei</p>
           </div>
 
           <div className="manager-card">
             <h3>Rating mediu</h3>
 
-            <p>
-              {Number(
-                todayStatistics.averageRating ?? 0
-              ).toFixed(2)}{" "}
-              / 5
-            </p>
+            <p>{Number(todayStatistics.averageRating ?? 0).toFixed(2)} / 5</p>
           </div>
         </div>
       </section>
@@ -440,9 +355,7 @@ function ManagerPage() {
           <div className="manager-card">
             <h3>Ocupare estimata</h3>
 
-            <p>
-              {trafficSummary.estimatedOccupancy} mese
-            </p>
+            <p>{trafficSummary.estimatedOccupancy} mese</p>
           </div>
         </div>
       </section>
@@ -472,27 +385,19 @@ function ManagerPage() {
         <h2>Recomandari pentru stocul de produse</h2>
 
         {productSalesList.length === 0 ? (
-          <p>
-            Nu exista suficiente date pentru recomandari.
-          </p>
+          <p>Nu exista suficiente date pentru recomandari.</p>
         ) : (
           <div className="manager-grid">
-            {productSalesList
-              .slice(0, 3)
-              .map((product) => (
-                <div
-                  key={product.name}
-                  className="manager-card"
-                >
-                  <h3>{product.name}</h3>
+            {productSalesList.slice(0, 3).map((product) => (
+              <div key={product.name} className="manager-card">
+                <h3>{product.name}</h3>
 
-                  <p>
-                    Produsul a fost vandut de{" "}
-                    <strong>{product.quantity}</strong>{" "}
-                    ori.
-                  </p>
-                </div>
-              ))}
+                <p>
+                  Produsul a fost vandut de <strong>{product.quantity}</strong>{" "}
+                  ori.
+                </p>
+              </div>
+            ))}
           </div>
         )}
       </section>
@@ -505,23 +410,17 @@ function ManagerPage() {
         ) : (
           <div className="manager-grid">
             {activeOrders.map((order) => (
-              <div
-                key={order.id}
-                className="manager-card"
-              >
+              <div key={order.id} className="manager-card">
                 <h3>Comanda #{order.id}</h3>
 
                 <p>Status: {order.status}</p>
 
-                <p>
-                  Total:{" "}
-                  {Number(order.totalPrice).toFixed(2)} lei
-                </p>
+                <p>Total: {Number(order.totalPrice).toFixed(2)} lei</p>
 
                 <p>
                   Masa:{" "}
-                  {order.tableSession?.restaurantTable
-                    ?.tableNumber || "necunoscuta"}
+                  {order.tableSession?.restaurantTable?.tableNumber ||
+                    "necunoscuta"}
                 </p>
               </div>
             ))}
@@ -537,16 +436,10 @@ function ManagerPage() {
         ) : (
           <div className="manager-grid">
             {feedbackList.map((feedback) => (
-              <div
-                key={feedback.id}
-                className="manager-card"
-              >
+              <div key={feedback.id} className="manager-card">
                 <p>Rating: {feedback.rating} / 5</p>
 
-                <p>
-                  Comentariu:{" "}
-                  {feedback.comment || "Fara comentariu"}
-                </p>
+                <p>Comentariu: {feedback.comment || "Fara comentariu"}</p>
               </div>
             ))}
           </div>

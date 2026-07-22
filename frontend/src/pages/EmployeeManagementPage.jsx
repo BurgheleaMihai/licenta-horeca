@@ -100,32 +100,21 @@ function EmployeeManagementPage() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusChangingId, setStatusChangingId] =
-    useState(null);
+  const [statusChangingId, setStatusChangingId] = useState(null);
 
-  const [errorMessage, setErrorMessage] =
-    useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const [selectedRole, setSelectedRole] =
-    useState("");
-  const [selectedEmployeeId, setSelectedEmployeeId] =
-    useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
 
-  const [showEmployeeForm, setShowEmployeeForm] =
-    useState(false);
-  const [editingEmployeeId, setEditingEmployeeId] =
-    useState(null);
+  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [editingEmployeeId, setEditingEmployeeId] = useState(null);
 
-  const [fullName, setFullName] =
-    useState("");
-  const [email, setEmail] =
-    useState("");
-  const [password, setPassword] =
-    useState("");
-  const [role, setRole] =
-    useState("WAITER");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("WAITER");
 
   const handleBack = () => {
     globalThis.location.href = "/admin";
@@ -146,21 +135,14 @@ function EmployeeManagementPage() {
 
     getEmployees()
       .then((employeeList) => {
-        setEmployees(
-          Array.isArray(employeeList)
-            ? employeeList
-            : []
-        );
+        setEmployees(Array.isArray(employeeList) ? employeeList : []);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea angajatilor:",
-          error
-        );
+        console.error("Eroare la incarcarea angajatilor:", error);
 
         setErrorMessage(
           error.response?.data?.message ||
-            "Angajatii nu au putut fi incarcati."
+            "Angajatii nu au putut fi incarcati.",
         );
       })
       .finally(() => {
@@ -204,26 +186,17 @@ function EmployeeManagementPage() {
     const normalizedEmail = email.trim();
 
     if (!normalizedFullName) {
-      setErrorMessage(
-        "Numele angajatului este obligatoriu."
-      );
+      setErrorMessage("Numele angajatului este obligatoriu.");
       return;
     }
 
     if (!normalizedEmail) {
-      setErrorMessage(
-        "Emailul angajatului este obligatoriu."
-      );
+      setErrorMessage("Emailul angajatului este obligatoriu.");
       return;
     }
 
-    if (
-      editingEmployeeId === null &&
-      password.length < 8
-    ) {
-      setErrorMessage(
-        "Parola trebuie sa aiba cel putin 8 caractere."
-      );
+    if (editingEmployeeId === null && password.length < 8) {
+      setErrorMessage("Parola trebuie sa aiba cel putin 8 caractere.");
       return;
     }
 
@@ -237,40 +210,33 @@ function EmployeeManagementPage() {
             password,
             role,
           })
-        : updateEmployee(
-            editingEmployeeId,
-            {
-              fullName: normalizedFullName,
-              email: normalizedEmail,
-              role,
-            }
-          );
+        : updateEmployee(editingEmployeeId, {
+            fullName: normalizedFullName,
+            email: normalizedEmail,
+            role,
+          });
 
     request
       .then(() => {
         setSuccessMessage(
           editingEmployeeId === null
             ? "Angajatul a fost adaugat cu succes."
-            : "Datele angajatului au fost actualizate."
+            : "Datele angajatului au fost actualizate.",
         );
 
         resetForm();
         loadEmployees();
       })
       .catch((error) => {
-        console.error(
-          "Eroare la salvarea angajatului:",
-          error
-        );
+        console.error("Eroare la salvarea angajatului:", error);
 
-        const backendMessage =
-          error.response?.data?.message;
+        const backendMessage = error.response?.data?.message;
 
         setErrorMessage(
           backendMessage ||
             (editingEmployeeId === null
               ? "Angajatul nu a putut fi creat."
-              : "Angajatul nu a putut fi actualizat.")
+              : "Angajatul nu a putut fi actualizat."),
         );
       })
       .finally(() => {
@@ -284,7 +250,7 @@ function EmployeeManagementPage() {
     const confirmed = globalThis.confirm(
       newStatus
         ? `Activezi angajatul ${employee.fullName}?`
-        : `Dezactivezi angajatul ${employee.fullName}?`
+        : `Dezactivezi angajatul ${employee.fullName}?`,
     );
 
     if (!confirmed) {
@@ -295,28 +261,22 @@ function EmployeeManagementPage() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    changeEmployeeStatus(
-      employee.id,
-      newStatus
-    )
+    changeEmployeeStatus(employee.id, newStatus)
       .then(() => {
         setSuccessMessage(
           newStatus
             ? "Angajatul a fost activat."
-            : "Angajatul a fost dezactivat."
+            : "Angajatul a fost dezactivat.",
         );
 
         loadEmployees();
       })
       .catch((error) => {
-        console.error(
-          "Eroare la schimbarea statusului:",
-          error
-        );
+        console.error("Eroare la schimbarea statusului:", error);
 
         setErrorMessage(
           error.response?.data?.message ||
-            "Statusul angajatului nu a putut fi modificat."
+            "Statusul angajatului nu a putut fi modificat.",
         );
       })
       .finally(() => {
@@ -329,10 +289,7 @@ function EmployeeManagementPage() {
       return [];
     }
 
-    return employees.filter(
-      (employee) =>
-        employee.role === selectedRole
-    );
+    return employees.filter((employee) => employee.role === selectedRole);
   }, [employees, selectedRole]);
 
   const filteredEmployees = useMemo(() => {
@@ -345,16 +302,9 @@ function EmployeeManagementPage() {
     }
 
     return employeesForSelectedRole.filter(
-      (employee) =>
-        String(employee.id) ===
-        selectedEmployeeId
+      (employee) => String(employee.id) === selectedEmployeeId,
     );
-  }, [
-    employees,
-    selectedRole,
-    selectedEmployeeId,
-    employeesForSelectedRole,
-  ]);
+  }, [employees, selectedRole, selectedEmployeeId, employeesForSelectedRole]);
 
   return (
     <div className="admin-page">
@@ -368,9 +318,7 @@ function EmployeeManagementPage() {
             onClick={loadEmployees}
             disabled={loading}
           >
-            {loading
-              ? "Se actualizeaza..."
-              : "Actualizeaza"}
+            {loading ? "Se actualizeaza..." : "Actualizeaza"}
           </button>
 
           <button
@@ -381,149 +329,92 @@ function EmployeeManagementPage() {
             Adauga angajat
           </button>
 
-          <button
-            type="button"
-            className="logout-button"
-            onClick={handleBack}
-          >
+          <button type="button" className="logout-button" onClick={handleBack}>
             Inapoi
           </button>
         </div>
       </header>
 
-      {errorMessage && (
-        <p className="error-message">
-          {errorMessage}
-        </p>
-      )}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      {successMessage && (
-        <p className="feedback-message">
-          {successMessage}
-        </p>
-      )}
+      {successMessage && <p className="feedback-message">{successMessage}</p>}
 
       {showEmployeeForm && (
         <section className="admin-section">
           <h2>
-            {editingEmployeeId === null
-              ? "Adauga angajat"
-              : "Editeaza angajat"}
+            {editingEmployeeId === null ? "Adauga angajat" : "Editeaza angajat"}
           </h2>
 
-          <form
-            className="decision-label-form"
-            onSubmit={handleEmployeeSubmit}
-          >
+          <form className="decision-label-form" onSubmit={handleEmployeeSubmit}>
             <div className="decision-label-grid">
               <div className="filter-group">
-                <label htmlFor="employee-name">
-                  Nume complet
-                </label>
+                <label htmlFor="employee-name">Nume complet</label>
 
                 <input
                   id="employee-name"
                   type="text"
                   value={fullName}
-                  onChange={(event) =>
-                    setFullName(
-                      event.target.value
-                    )
-                  }
+                  onChange={(event) => setFullName(event.target.value)}
                   required
                 />
               </div>
 
               <div className="filter-group">
-                <label htmlFor="employee-email">
-                  Email
-                </label>
+                <label htmlFor="employee-email">Email</label>
 
                 <input
                   id="employee-email"
                   type="email"
                   value={email}
-                  onChange={(event) =>
-                    setEmail(
-                      event.target.value
-                    )
-                  }
+                  onChange={(event) => setEmail(event.target.value)}
                   required
                 />
               </div>
 
               {editingEmployeeId === null && (
                 <div className="filter-group">
-                  <label htmlFor="employee-password">
-                    Parola
-                  </label>
+                  <label htmlFor="employee-password">Parola</label>
 
                   <input
                     id="employee-password"
                     type="password"
                     minLength="8"
                     value={password}
-                    onChange={(event) =>
-                      setPassword(
-                        event.target.value
-                      )
-                    }
+                    onChange={(event) => setPassword(event.target.value)}
                     required
                   />
                 </div>
               )}
 
               <div className="filter-group">
-                <label htmlFor="employee-role">
-                  Rol
-                </label>
+                <label htmlFor="employee-role">Rol</label>
 
                 <select
                   id="employee-role"
                   value={role}
-                  onChange={(event) =>
-                    setRole(
-                      event.target.value
-                    )
-                  }
+                  onChange={(event) => setRole(event.target.value)}
                 >
-                  <option value="WAITER">
-                    Ospatar
-                  </option>
+                  <option value="WAITER">Ospatar</option>
 
-                  <option value="KITCHEN">
-                    Bucatarie
-                  </option>
+                  <option value="KITCHEN">Bucatarie</option>
 
-                  <option value="BAR">
-                    Bar
-                  </option>
+                  <option value="BAR">Bar</option>
 
-                  <option value="MANAGER">
-                    Manager
-                  </option>
+                  <option value="MANAGER">Manager</option>
 
-                  <option value="ADMIN">
-                    Administrator
-                  </option>
+                  <option value="ADMIN">Administrator</option>
                 </select>
               </div>
             </div>
 
-            <div
-              style={
-                employeeFormActionStyles.container
-              }
-            >
+            <div style={employeeFormActionStyles.container}>
               <button
                 type="submit"
                 disabled={saving}
                 style={{
                   ...employeeFormActionStyles.button,
                   ...employeeFormActionStyles.saveButton,
-                  ...(saving
-                    ? employeeFormActionStyles.disabledButton
-                    : {}),
+                  ...(saving ? employeeFormActionStyles.disabledButton : {}),
                 }}
               >
                 {saving
@@ -540,9 +431,7 @@ function EmployeeManagementPage() {
                 style={{
                   ...employeeFormActionStyles.button,
                   ...employeeFormActionStyles.cancelButton,
-                  ...(saving
-                    ? employeeFormActionStyles.disabledButton
-                    : {}),
+                  ...(saving ? employeeFormActionStyles.disabledButton : {}),
                 }}
               >
                 Anuleaza
@@ -557,59 +446,37 @@ function EmployeeManagementPage() {
 
         <div className="decision-label-grid">
           <div className="filter-group">
-            <label htmlFor="role-filter">
-              Rol
-            </label>
+            <label htmlFor="role-filter">Rol</label>
 
             <select
               id="role-filter"
               value={selectedRole}
               onChange={(event) => {
-                setSelectedRole(
-                  event.target.value
-                );
+                setSelectedRole(event.target.value);
                 setSelectedEmployeeId("");
               }}
             >
-              <option value="">
-                Toti angajatii
-              </option>
+              <option value="">Toti angajatii</option>
 
-              <option value="WAITER">
-                Ospatar
-              </option>
+              <option value="WAITER">Ospatar</option>
 
-              <option value="KITCHEN">
-                Bucatarie
-              </option>
+              <option value="KITCHEN">Bucatarie</option>
 
-              <option value="BAR">
-                Bar
-              </option>
+              <option value="BAR">Bar</option>
 
-              <option value="MANAGER">
-                Manager
-              </option>
+              <option value="MANAGER">Manager</option>
 
-              <option value="ADMIN">
-                Administrator
-              </option>
+              <option value="ADMIN">Administrator</option>
             </select>
           </div>
 
           <div className="filter-group">
-            <label htmlFor="employee-filter">
-              Angajat
-            </label>
+            <label htmlFor="employee-filter">Angajat</label>
 
             <select
               id="employee-filter"
               value={selectedEmployeeId}
-              onChange={(event) =>
-                setSelectedEmployeeId(
-                  event.target.value
-                )
-              }
+              onChange={(event) => setSelectedEmployeeId(event.target.value)}
               disabled={!selectedRole}
             >
               <option value="">
@@ -618,16 +485,11 @@ function EmployeeManagementPage() {
                   : "Selecteaza mai intai rolul"}
               </option>
 
-              {employeesForSelectedRole.map(
-                (employee) => (
-                  <option
-                    key={employee.id}
-                    value={employee.id}
-                  >
-                    {employee.fullName}
-                  </option>
-                )
-              )}
+              {employeesForSelectedRole.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.fullName}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -635,10 +497,7 @@ function EmployeeManagementPage() {
         {loading ? (
           <p>Se incarca angajatii...</p>
         ) : filteredEmployees.length === 0 ? (
-          <p>
-            Nu exista angajati care sa
-            corespunda selectiei.
-          </p>
+          <p>Nu exista angajati care sa corespunda selectiei.</p>
         ) : (
           <div className="table-wrapper">
             <table className="statistics-table">
@@ -653,87 +512,54 @@ function EmployeeManagementPage() {
               </thead>
 
               <tbody>
-                {filteredEmployees.map(
-                  (employee) => (
-                    <tr key={employee.id}>
-                      <td>
-                        {employee.fullName}
-                      </td>
+                {filteredEmployees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.fullName}</td>
 
-                      <td>
-                        {employee.email}
-                      </td>
+                    <td>{employee.email}</td>
 
-                      <td>
-                        {roleLabels[
-                          employee.role
-                        ] || employee.role}
-                      </td>
+                    <td>{roleLabels[employee.role] || employee.role}</td>
 
-                      <td>
-                        {employee.active
-                          ? "Activ"
-                          : "Inactiv"}
-                      </td>
+                    <td>{employee.active ? "Activ" : "Inactiv"}</td>
 
-                      <td
-                        style={{
-                          textAlign: "center",
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        <div
-                          style={
-                            employeeActionStyles.container
-                          }
+                    <td
+                      style={{
+                        textAlign: "center",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      <div style={employeeActionStyles.container}>
+                        <button
+                          type="button"
+                          style={employeeActionStyles.editButton}
+                          onClick={() => handleOpenEditForm(employee)}
                         >
-                          <button
-                            type="button"
-                            style={
-                              employeeActionStyles.editButton
-                            }
-                            onClick={() =>
-                              handleOpenEditForm(
-                                employee
-                              )
-                            }
-                          >
-                            Editare
-                          </button>
+                          Editare
+                        </button>
 
-                          <button
-                            type="button"
-                            style={{
-                              ...(employee.active
-                                ? employeeActionStyles.disableButton
-                                : employeeActionStyles.enableButton),
-                              ...(statusChangingId ===
-                              employee.id
-                                ? employeeActionStyles.disabledButton
-                                : {}),
-                            }}
-                            onClick={() =>
-                              handleChangeStatus(
-                                employee
-                              )
-                            }
-                            disabled={
-                              statusChangingId ===
-                              employee.id
-                            }
-                          >
-                            {statusChangingId ===
-                            employee.id
-                              ? "Se modifica..."
-                              : employee.active
-                                ? "Dezactiveaza"
-                                : "Activeaza"}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                )}
+                        <button
+                          type="button"
+                          style={{
+                            ...(employee.active
+                              ? employeeActionStyles.disableButton
+                              : employeeActionStyles.enableButton),
+                            ...(statusChangingId === employee.id
+                              ? employeeActionStyles.disabledButton
+                              : {}),
+                          }}
+                          onClick={() => handleChangeStatus(employee)}
+                          disabled={statusChangingId === employee.id}
+                        >
+                          {statusChangingId === employee.id
+                            ? "Se modifica..."
+                            : employee.active
+                              ? "Dezactiveaza"
+                              : "Activeaza"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

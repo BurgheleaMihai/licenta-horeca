@@ -308,7 +308,7 @@ def prepare_real_records(dataframe):
         )
 
     required_columns = (
-            BASE_FEATURE_COLUMNS + STAFF_TARGET_COLUMNS + [TRAFFIC_TARGET, DELAY_TARGET]
+        BASE_FEATURE_COLUMNS + STAFF_TARGET_COLUMNS + [TRAFFIC_TARGET, DELAY_TARGET]
     )
 
     missing_columns = [
@@ -387,8 +387,8 @@ def prepare_real_records(dataframe):
     active_source = "stored_active_staff"
 
     for active_column, fallback_column in zip(
-            ACTIVE_STAFF_COLUMNS,
-            STAFF_TARGET_COLUMNS,
+        ACTIVE_STAFF_COLUMNS,
+        STAFF_TARGET_COLUMNS,
     ):
         if active_column not in dataframe.columns:
             dataframe[active_column] = dataframe[fallback_column]
@@ -410,10 +410,10 @@ def prepare_synthetic_records(dataframe):
         return dataframe
 
     required_columns = (
-            BASE_FEATURE_COLUMNS
-            + STAFF_TARGET_COLUMNS
-            + ACTIVE_STAFF_COLUMNS
-            + [TRAFFIC_TARGET, DELAY_TARGET]
+        BASE_FEATURE_COLUMNS
+        + STAFF_TARGET_COLUMNS
+        + ACTIVE_STAFF_COLUMNS
+        + [TRAFFIC_TARGET, DELAY_TARGET]
     )
 
     missing_columns = [
@@ -573,8 +573,8 @@ def build_delay_candidates() -> CandidateModels:
 
 
 def align_probabilities(
-        model: Any,
-        features: pd.DataFrame,
+    model: Any,
+    features: pd.DataFrame,
 ) -> np.ndarray | None:
     """Aliniaza probabilitatile modelului la ordinea claselor proiectului."""
 
@@ -600,10 +600,10 @@ def align_probabilities(
 
 
 def calculate_expected_calibration_error(
-        expected_values: Sequence[Any] | pd.Series,
-        predictions: Sequence[Any] | np.ndarray,
-        probabilities: np.ndarray,
-        number_of_bins: int = CALIBRATION_BINS,
+    expected_values: Sequence[Any] | pd.Series,
+    predictions: Sequence[Any] | np.ndarray,
+    probabilities: np.ndarray,
+    number_of_bins: int = CALIBRATION_BINS,
 ) -> tuple[float, list[JsonObject]]:
     """Calculeaza Expected Calibration Error si detaliile intervalelor."""
 
@@ -627,12 +627,12 @@ def calculate_expected_calibration_error(
             in_bin = np.asarray(
                 (confidences >= lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
         else:
             in_bin = np.asarray(
                 (confidences > lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
 
         count = int(np.count_nonzero(in_bin))
         if count == 0:
@@ -657,8 +657,8 @@ def calculate_expected_calibration_error(
 
 
 def calculate_multiclass_brier_score(
-        expected_values: Sequence[Any] | pd.Series,
-        probabilities: np.ndarray,
+    expected_values: Sequence[Any] | pd.Series,
+    probabilities: np.ndarray,
 ) -> float:
     """Calculeaza scorul Brier pentru clasificarea multiclass."""
 
@@ -676,9 +676,9 @@ def calculate_multiclass_brier_score(
 
 
 def calculate_classifier_metrics(
-        model: Any,
-        features: pd.DataFrame,
-        expected_values: pd.Series,
+    model: Any,
+    features: pd.DataFrame,
+    expected_values: pd.Series,
 ) -> Metrics:
     """Calculeaza metricile complete pentru un clasificator."""
 
@@ -731,7 +731,7 @@ def calculate_classifier_metrics(
     severe_error_mask = np.asarray(
         np.abs(expected_positions - predicted_positions) == 2,
         dtype=bool,
-        )
+    )
 
     metrics: Metrics = {
         "accuracy": float(accuracy_score(expected_values, predictions)),
@@ -848,8 +848,8 @@ def calculate_classifier_metrics(
 
 
 def calculate_regression_metrics(
-        expected_values: pd.DataFrame | np.ndarray,
-        predictions: np.ndarray,
+    expected_values: pd.DataFrame | np.ndarray,
+    predictions: np.ndarray,
 ) -> Metrics:
     """Calculeaza metrici generale si pe fiecare rol."""
 
@@ -935,7 +935,7 @@ def calculate_regression_metrics(
                 np.all(
                     absolute_rounded_errors == 0,
                     axis=1,
-                    )
+                )
             )
         ),
         "underestimateRate": float(np.mean(rounded_errors < 0)),
@@ -947,9 +947,9 @@ def calculate_regression_metrics(
 
 
 def safe_current_classifier_metrics(
-        model: Any | None,
-        features: pd.DataFrame,
-        expected_values: pd.Series,
+    model: Any | None,
+    features: pd.DataFrame,
+    expected_values: pd.Series,
 ) -> tuple[Metrics | None, str | None]:
     """Evalueaza modelul curent fara a opri intreaga reantrenare."""
 
@@ -970,9 +970,9 @@ def safe_current_classifier_metrics(
 
 
 def safe_current_regression_metrics(
-        model: Any | None,
-        features: pd.DataFrame,
-        expected_values: pd.DataFrame,
+    model: Any | None,
+    features: pd.DataFrame,
+    expected_values: pd.DataFrame,
 ) -> tuple[Metrics | None, str | None]:
     """Evalueaza regresorul curent fara a opri intreaga reantrenare."""
 
@@ -996,11 +996,11 @@ def safe_current_regression_metrics(
 
 
 def select_classifier_candidate(
-        candidates: CandidateModels,
-        training_features: pd.DataFrame,
-        training_target: pd.Series,
-        validation_features: pd.DataFrame,
-        validation_target: pd.Series,
+    candidates: CandidateModels,
+    training_features: pd.DataFrame,
+    training_target: pd.Series,
+    validation_features: pd.DataFrame,
+    validation_target: pd.Series,
 ) -> tuple[str, TrainablePredictor, dict[str, Metrics]]:
     """Antreneaza candidatii si selecteaza cel mai bun clasificator."""
 
@@ -1042,11 +1042,11 @@ def select_classifier_candidate(
 
 
 def select_staff_candidate(
-        candidates: CandidateModels,
-        training_features: pd.DataFrame,
-        training_target: pd.DataFrame,
-        validation_features: pd.DataFrame,
-        validation_target: pd.DataFrame,
+    candidates: CandidateModels,
+    training_features: pd.DataFrame,
+    training_target: pd.DataFrame,
+    validation_features: pd.DataFrame,
+    validation_target: pd.DataFrame,
 ) -> tuple[str, TrainablePredictor, dict[str, Metrics]]:
     """Antreneaza si selecteaza modelul de personal."""
 
@@ -1094,9 +1094,9 @@ def select_staff_candidate(
 
 
 def calculate_classifier_cross_validation(
-        model: TrainablePredictor,
-        features: pd.DataFrame,
-        target: pd.Series,
+    model: TrainablePredictor,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> JsonObject:
     """Calculeaza performanta si generalizarea clasificatorului."""
 
@@ -1156,9 +1156,9 @@ def calculate_classifier_cross_validation(
 
 
 def calculate_staff_cross_validation(
-        model: TrainablePredictor,
-        features: pd.DataFrame,
-        target: pd.DataFrame,
+    model: TrainablePredictor,
+    features: pd.DataFrame,
+    target: pd.DataFrame,
 ) -> JsonObject:
     """Calculeaza performanta si generalizarea modelului de personal."""
 
@@ -1225,9 +1225,9 @@ def calculate_staff_cross_validation(
 
 
 def generate_oof_staff_predictions(
-        model: TrainablePredictor,
-        features: pd.DataFrame,
-        target: pd.DataFrame,
+    model: TrainablePredictor,
+    features: pd.DataFrame,
+    target: pd.DataFrame,
 ) -> np.ndarray:
     """Genereaza predictii out-of-fold pentru modelul de personal."""
 
@@ -1271,8 +1271,8 @@ def generate_oof_staff_predictions(
 
 
 def build_delay_features(
-        dataframe: pd.DataFrame,
-        recommended_staff: np.ndarray,
+    dataframe: pd.DataFrame,
+    recommended_staff: np.ndarray,
 ) -> pd.DataFrame:
     """Construieste cele 21 de caracteristici ale modelului de intarziere."""
 
@@ -1300,15 +1300,15 @@ def build_delay_features(
     delay_frame["waiter_deficit"] = np.maximum(
         0,
         recommended[:, 0] - active_waiters,
-        )
+    )
     delay_frame["kitchen_deficit"] = np.maximum(
         0,
         recommended[:, 1] - active_kitchen,
-        )
+    )
     delay_frame["bar_deficit"] = np.maximum(
         0,
         recommended[:, 2] - active_bar,
-        )
+    )
     delay_frame["orders_per_waiter"] = dataframe["active_orders"].to_numpy(
         dtype=float
     ) / np.maximum(active_waiters, 1.0)
@@ -1333,8 +1333,8 @@ def build_delay_features(
 def classifier_is_accepted(candidate_metrics, current_metrics):
     """Verifica daca un clasificator poate inlocui modelul curent."""
     candidate_quality_ok = (
-            candidate_metrics["macroF1"] >= MIN_CLASSIFIER_MACRO_F1
-            and candidate_metrics["balancedAccuracy"] >= MIN_CLASSIFIER_BALANCED_ACCURACY
+        candidate_metrics["macroF1"] >= MIN_CLASSIFIER_MACRO_F1
+        and candidate_metrics["balancedAccuracy"] >= MIN_CLASSIFIER_BALANCED_ACCURACY
     )
 
     if not candidate_quality_ok:
@@ -1344,23 +1344,23 @@ def classifier_is_accepted(candidate_metrics, current_metrics):
         return True
 
     return (
-            candidate_metrics["macroF1"] + CLASSIFIER_F1_TOLERANCE
-            >= current_metrics["macroF1"]
-            and candidate_metrics["balancedAccuracy"]
-            + CLASSIFIER_BALANCED_ACCURACY_TOLERANCE
-            >= current_metrics["balancedAccuracy"]
+        candidate_metrics["macroF1"] + CLASSIFIER_F1_TOLERANCE
+        >= current_metrics["macroF1"]
+        and candidate_metrics["balancedAccuracy"]
+        + CLASSIFIER_BALANCED_ACCURACY_TOLERANCE
+        >= current_metrics["balancedAccuracy"]
     )
 
 
 def regressor_is_accepted(
-        candidate_metrics,
-        current_metrics,
-        cross_validation=None,
+    candidate_metrics,
+    current_metrics,
+    cross_validation=None,
 ):
     """Verifica daca modelul de personal poate fi acceptat."""
     candidate_quality_ok = (
-            candidate_metrics["overallMae"] <= MAX_STAFF_MAE
-            and candidate_metrics["overallR2"] >= MIN_STAFF_R2
+        candidate_metrics["overallMae"] <= MAX_STAFF_MAE
+        and candidate_metrics["overallR2"] >= MIN_STAFF_R2
     )
 
     if not candidate_quality_ok:
@@ -1384,10 +1384,10 @@ def regressor_is_accepted(
         return True
 
     return (
-            candidate_metrics["overallMae"]
-            <= current_metrics["overallMae"] + REGRESSOR_MAE_TOLERANCE
-            and candidate_metrics["overallR2"] + REGRESSOR_R2_TOLERANCE
-            >= current_metrics["overallR2"]
+        candidate_metrics["overallMae"]
+        <= current_metrics["overallMae"] + REGRESSOR_MAE_TOLERANCE
+        and candidate_metrics["overallR2"] + REGRESSOR_R2_TOLERANCE
+        >= current_metrics["overallR2"]
     )
 
 
@@ -1531,18 +1531,18 @@ def format_cross_validation(cross_validation):
 
 
 def create_classifier_report(
-        title,
-        model_name,
-        accepted,
-        candidate_metrics,
-        current_metrics,
-        cross_validation,
-        candidate_results,
-        feature_columns,
-        real_rows,
-        synthetic_rows,
-        current_error=None,
-        extra_notes=None,
+    title,
+    model_name,
+    accepted,
+    candidate_metrics,
+    current_metrics,
+    cross_validation,
+    candidate_results,
+    feature_columns,
+    real_rows,
+    synthetic_rows,
+    current_error=None,
+    extra_notes=None,
 ):
     """Construieste raportul text pentru un clasificator."""
     comparison_sections = []
@@ -1584,15 +1584,15 @@ OBSERVATII
 
 
 def create_staff_report(
-        model_name,
-        accepted,
-        candidate_metrics,
-        current_metrics,
-        cross_validation,
-        candidate_results,
-        real_rows,
-        synthetic_rows,
-        current_error=None,
+    model_name,
+    accepted,
+    candidate_metrics,
+    current_metrics,
+    cross_validation,
+    candidate_results,
+    real_rows,
+    synthetic_rows,
+    current_error=None,
 ):
     """Construieste raportul text pentru modelul de personal."""
     comparison_sections = []

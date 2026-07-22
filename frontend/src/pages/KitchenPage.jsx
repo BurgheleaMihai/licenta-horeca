@@ -20,20 +20,32 @@ function KitchenPage() {
         setOrders(response.data);
       })
       .catch((error) => {
-        console.error("Eroare la incarcarea comenzilor pentru bucatarie:", error);
+        console.error(
+          "Eroare la incarcarea comenzilor pentru bucatarie:",
+          error,
+        );
         setErrorMessage("Comenzile pentru bucatarie nu au putut fi incarcate.");
       });
   };
 
   const getKitchenItems = (order) => {
-    return order.items?.filter((item) => item.product?.category?.name !== "Bauturi" && item.status !== "GATA") || [];
+    return (
+      order.items?.filter(
+        (item) =>
+          item.product?.category?.name !== "Bauturi" && item.status !== "GATA",
+      ) || []
+    );
   };
 
-  const visibleOrders = orders.filter((order) => getKitchenItems(order).length > 0);
+  const visibleOrders = orders.filter(
+    (order) => getKitchenItems(order).length > 0,
+  );
 
   const markKitchenItemsAsReady = (order) => {
     const kitchenItems = getKitchenItems(order);
-    const updateRequests = kitchenItems.map((item) => updateOrderItemStatus(item.id, "GATA"));
+    const updateRequests = kitchenItems.map((item) =>
+      updateOrderItemStatus(item.id, "GATA"),
+    );
 
     Promise.all(updateRequests)
       .then(() => {
@@ -41,7 +53,9 @@ function KitchenPage() {
       })
       .catch((error) => {
         console.error("Eroare la actualizarea produselor de bucatarie:", error);
-        setErrorMessage("Produsele de bucatarie nu au putut fi marcate ca gata.");
+        setErrorMessage(
+          "Produsele de bucatarie nu au putut fi marcate ca gata.",
+        );
       });
   };
 
@@ -80,7 +94,10 @@ function KitchenPage() {
                   ))}
                 </div>
 
-                <button className="kitchen-button" onClick={() => markKitchenItemsAsReady(order)}>
+                <button
+                  className="kitchen-button"
+                  onClick={() => markKitchenItemsAsReady(order)}
+                >
                   Marcheaza preparatele ca gata
                 </button>
               </div>

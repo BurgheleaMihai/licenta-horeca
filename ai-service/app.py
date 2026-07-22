@@ -194,13 +194,14 @@ def _require_models() -> ModelBundle:
 # Validarea si transformarea datelor
 # ---------------------------------------------------------------------------
 
+
 def read_integer(
-        data: Mapping[str, Any],
-        field_name: str,
-        *,
-        minimum: int | None = None,
-        maximum: int | None = None,
-        default_value: int | None = None,
+    data: Mapping[str, Any],
+    field_name: str,
+    *,
+    minimum: int | None = None,
+    maximum: int | None = None,
+    default_value: int | None = None,
 ) -> int:
     """Citeste si valideaza un camp numeric intreg din request."""
 
@@ -218,23 +219,17 @@ def read_integer(
     # Acceptam valori precum 3.0, dar nu valori fractionare precum 3.5.
     if isinstance(value, float):
         if not value.is_integer():
-            raise ValueError(
-                f"Campul {field_name} trebuie sa fie un numar intreg."
-            )
+            raise ValueError(f"Campul {field_name} trebuie sa fie un numar intreg.")
         value = int(value)
 
     if not isinstance(value, int):
         raise ValueError(f"Campul {field_name} trebuie sa fie un numar intreg.")
 
     if minimum is not None and value < minimum:
-        raise ValueError(
-            f"Campul {field_name} trebuie sa fie cel putin {minimum}."
-        )
+        raise ValueError(f"Campul {field_name} trebuie sa fie cel putin {minimum}.")
 
     if maximum is not None and value > maximum:
-        raise ValueError(
-            f"Campul {field_name} trebuie sa fie cel mult {maximum}."
-        )
+        raise ValueError(f"Campul {field_name} trebuie sa fie cel mult {maximum}.")
 
     return value
 
@@ -290,8 +285,8 @@ def read_active_staff(data: Mapping[str, Any]) -> tuple[int, int, int]:
 
 
 def build_dataframe(
-        values: Mapping[str, int | float],
-        columns: Sequence[str],
+    values: Mapping[str, int | float],
+    columns: Sequence[str],
 ) -> pd.DataFrame:
     """Construieste un DataFrame cu ordinea exacta folosita la antrenare."""
 
@@ -307,25 +302,21 @@ def normalize_staff_prediction(raw_prediction: Any) -> tuple[int, int, int]:
 
     values = np.asarray(raw_prediction, dtype=float).reshape(-1)
     if values.size < 3:
-        raise ValueError(
-            "Modelul de personal trebuie sa returneze trei valori."
-        )
+        raise ValueError("Modelul de personal trebuie sa returneze trei valori.")
 
-    recommendations = tuple(
-        max(0, int(round(float(value)))) for value in values[:3]
-    )
+    recommendations = tuple(max(0, int(round(float(value)))) for value in values[:3])
 
     return cast(tuple[int, int, int], recommendations)
 
 
 def build_delay_input(
-        base_input: Mapping[str, int],
-        active_waiters: int,
-        active_kitchen: int,
-        active_bar: int,
-        recommended_waiters: int,
-        recommended_kitchen_staff: int,
-        recommended_bar_staff: int,
+    base_input: Mapping[str, int],
+    active_waiters: int,
+    active_kitchen: int,
+    active_bar: int,
+    recommended_waiters: int,
+    recommended_kitchen_staff: int,
+    recommended_bar_staff: int,
 ) -> tuple[NumericRecord, int, int, int]:
     """Construieste cele 21 de caracteristici ale modelului de intarziere."""
 
@@ -336,13 +327,9 @@ def build_delay_input(
     # Impartirea la minimum 1 evita impartirea la zero cand nu exista personal
     # activ in sectia respectiva.
     orders_per_waiter = base_input["active_orders"] / max(active_waiters, 1)
-    kitchen_items_per_employee = (
-            base_input["kitchen_load"] / max(active_kitchen, 1)
-    )
+    kitchen_items_per_employee = base_input["kitchen_load"] / max(active_kitchen, 1)
     bar_items_per_employee = base_input["bar_load"] / max(active_bar, 1)
-    occupancy_per_waiter = (
-            base_input["occupied_tables"] / max(active_waiters, 1)
-    )
+    occupancy_per_waiter = base_input["occupied_tables"] / max(active_waiters, 1)
 
     delay_values: NumericRecord = {
         **base_input,
@@ -370,6 +357,7 @@ reload_models()
 # Endpointuri HTTP
 # ---------------------------------------------------------------------------
 
+
 @app.get("/health")
 def health() -> Response:
     """Returneaza starea serviciului si structura modelelor active."""
@@ -395,9 +383,7 @@ def predict_all() -> RouteResponse:
 
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
-        return jsonify(
-            {"error": "Request body is missing or invalid"}
-        ), 400
+        return jsonify({"error": "Request body is missing or invalid"}), 400
 
     try:
         base_input = validate_and_build_base_input(payload)
@@ -496,18 +482,14 @@ def retrain() -> RouteResponse:
 
     configured_token = os.getenv("RETRAIN_TOKEN")
     if not configured_token:
-        return jsonify(
-            {"error": "RETRAIN_TOKEN nu este configurat."}
-        ), 503
+        return jsonify({"error": "RETRAIN_TOKEN nu este configurat."}), 503
 
     received_token = request.headers.get("X-Retrain-Token", "")
     if not hmac.compare_digest(received_token, configured_token):
         return jsonify({"error": "Acces neautorizat."}), 401
 
     if not retraining_lock.acquire(blocking=False):
-        return jsonify(
-            {"error": "O reantrenare este deja in curs."}
-        ), 409
+        return jsonify({"error": "O reantrenare este deja in curs."}), 409
 
     app.logger.info("A inceput reantrenarea modelelor.")
 

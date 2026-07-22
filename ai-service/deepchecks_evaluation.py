@@ -1,4 +1,4 @@
-﻿# ruff: noqa: E402
+# ruff: noqa: E402
 from __future__ import annotations
 
 """Validare externa pentru modelele AI ale aplicatiei HoReCa.
@@ -140,7 +140,7 @@ ACTIVE_STAFF_COLUMNS: Final[list[str]] = [
 ]
 
 PRODUCTION_DELAY_FEATURE_COLUMNS: Final[list[str]] = (
-        BASE_FEATURE_COLUMNS + ACTIVE_STAFF_COLUMNS
+    BASE_FEATURE_COLUMNS + ACTIVE_STAFF_COLUMNS
 )
 
 DELAY_FEATURE_COLUMNS: Final[list[str]] = BASE_FEATURE_COLUMNS + [
@@ -188,10 +188,10 @@ class StaffOutputWrapper(RegressorMixin, BaseEstimator):
     """Expune o singura iesire dintr-un model multi-output generic."""
 
     def __init__(
-            self,
-            multi_output_model: Any,
-            output_index: int,
-            output_name: str,
+        self,
+        multi_output_model: Any,
+        output_index: int,
+        output_name: str,
     ) -> None:
         self.multi_output_model = multi_output_model
         self.output_index = output_index
@@ -354,22 +354,18 @@ class ProductionDelayPipeline(ClassifierMixin, BaseEstimator):
         delay_features["waiter_deficit"] = staff_predictions[:, 0] - active_waiters
         delay_features["kitchen_deficit"] = staff_predictions[:, 1] - active_kitchen
         delay_features["bar_deficit"] = staff_predictions[:, 2] - active_bar
-        delay_features["orders_per_waiter"] = (
-                frame["active_orders"].to_numpy(dtype=float)
-                / np.maximum(active_waiters, 1.0)
-        )
-        delay_features["kitchen_items_per_employee"] = (
-                frame["kitchen_load"].to_numpy(dtype=float)
-                / np.maximum(active_kitchen, 1.0)
-        )
-        delay_features["bar_items_per_employee"] = (
-                frame["bar_load"].to_numpy(dtype=float)
-                / np.maximum(active_bar, 1.0)
-        )
-        delay_features["occupancy_per_waiter"] = (
-                frame["occupied_tables"].to_numpy(dtype=float)
-                / np.maximum(active_waiters, 1.0)
-        )
+        delay_features["orders_per_waiter"] = frame["active_orders"].to_numpy(
+            dtype=float
+        ) / np.maximum(active_waiters, 1.0)
+        delay_features["kitchen_items_per_employee"] = frame["kitchen_load"].to_numpy(
+            dtype=float
+        ) / np.maximum(active_kitchen, 1.0)
+        delay_features["bar_items_per_employee"] = frame["bar_load"].to_numpy(
+            dtype=float
+        ) / np.maximum(active_bar, 1.0)
+        delay_features["occupancy_per_waiter"] = frame["occupied_tables"].to_numpy(
+            dtype=float
+        ) / np.maximum(active_waiters, 1.0)
 
         return delay_features.loc[:, DELAY_FEATURE_COLUMNS]
 
@@ -439,8 +435,8 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
 
 
 def split_classification_data(
-        features: pd.DataFrame,
-        target: pd.Series,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     first_split = train_test_split(
         features,
@@ -490,8 +486,8 @@ def split_classification_data(
 
 
 def split_regression_data(
-        features: pd.DataFrame,
-        target: pd.Series,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     first_split = train_test_split(
         features,
@@ -585,9 +581,9 @@ def regression_scorers() -> dict[str, Any]:
 
 
 def build_model_evaluation_suite(
-        scorers: dict[str, Any],
-        sample_count: int,
-        include_unused_features: bool,
+    scorers: dict[str, Any],
+    sample_count: int,
+    include_unused_features: bool,
 ) -> Suite:
     """Construieste explicit suita, fara parametri depreciati.
 
@@ -604,14 +600,16 @@ def build_model_evaluation_suite(
     }
 
     checks: list[Any] = [
-        TrainTestPerformance(**common_options)
-        .add_condition_train_test_relative_degradation_less_than(),
+        TrainTestPerformance(
+            **common_options
+        ).add_condition_train_test_relative_degradation_less_than(),
         RocReport(**common_options).add_condition_auc_greater_than(),
         ConfusionMatrixReport(**common_options),
         PredictionDrift(**common_options).add_condition_drift_score_less_than(),
         SimpleModelComparison(**common_options).add_condition_gain_greater_than(),
-        WeakSegmentsPerformance(**common_options)
-        .add_condition_segments_relative_performance_greater_than(),
+        WeakSegmentsPerformance(
+            **common_options
+        ).add_condition_segments_relative_performance_greater_than(),
         CalibrationScore(**common_options),
         RegressionErrorDistribution(**common_options)
         .add_condition_kurtosis_greater_than()
@@ -620,16 +618,19 @@ def build_model_evaluation_suite(
 
     if include_unused_features:
         checks.append(
-            UnusedFeatures(**common_options)
-            .add_condition_number_of_high_variance_unused_features_less_or_equal()
+            UnusedFeatures(
+                **common_options
+            ).add_condition_number_of_high_variance_unused_features_less_or_equal()
         )
 
     checks.extend(
         [
-            BoostingOverfit(**common_options)
-            .add_condition_test_score_percent_decline_less_than(),
-            ModelInferenceTime(**common_options)
-            .add_condition_inference_time_less_than(),
+            BoostingOverfit(
+                **common_options
+            ).add_condition_test_score_percent_decline_less_than(),
+            ModelInferenceTime(
+                **common_options
+            ).add_condition_inference_time_less_than(),
         ]
     )
 
@@ -637,10 +638,10 @@ def build_model_evaluation_suite(
 
 
 def create_dataset(
-        features: pd.DataFrame,
-        target: pd.Series,
-        label_type: str,
-        dataset_name: str,
+    features: pd.DataFrame,
+    target: pd.Series,
+    label_type: str,
+    dataset_name: str,
 ) -> Dataset:
     return Dataset(
         features,
@@ -671,11 +672,11 @@ def save_suite_result(result: Any, report_name: str) -> dict[str, str]:
 
 
 def run_classification_suite(
-        report_name: str,
-        model: Any,
-        features: pd.DataFrame,
-        target: pd.Series,
-        include_unused_features: bool,
+    report_name: str,
+    model: Any,
+    features: pd.DataFrame,
+    target: pd.Series,
+    include_unused_features: bool,
 ) -> dict[str, str]:
     train_x, test_x, train_y, test_y = split_classification_data(
         features,
@@ -712,11 +713,11 @@ def run_classification_suite(
 
 
 def run_regression_suite(
-        report_name: str,
-        model: Any,
-        features: pd.DataFrame,
-        target: pd.Series,
-        include_unused_features: bool,
+    report_name: str,
+    model: Any,
+    features: pd.DataFrame,
+    target: pd.Series,
+    include_unused_features: bool,
 ) -> dict[str, str]:
     train_x, test_x, train_y, test_y = split_regression_data(features, target)
 
@@ -754,9 +755,9 @@ def run_regression_suite(
 
 
 def get_staff_role_model(
-        staff_model: Any,
-        output_index: int,
-        output_name: str,
+    staff_model: Any,
+    output_index: int,
+    output_name: str,
 ) -> Any:
     """Returneaza regresorul specializat sau un adaptor pentru modele vechi."""
 
@@ -766,8 +767,8 @@ def get_staff_role_model(
     if hasattr(staff_model, "estimators_"):
         estimators: Sequence[Any] = staff_model.estimators_
         if output_index < len(estimators) and hasattr(
-                estimators[output_index],
-                "predict",
+            estimators[output_index],
+            "predict",
         ):
             return estimators[output_index]
 
@@ -775,10 +776,10 @@ def get_staff_role_model(
 
 
 def prepare_staff_evaluation(
-        dataframe: pd.DataFrame,
-        staff_model: Any,
-        output_index: int,
-        target_column: str,
+    dataframe: pd.DataFrame,
+    staff_model: Any,
+    output_index: int,
+    target_column: str,
 ) -> tuple[Any, pd.DataFrame]:
     role_model = get_staff_role_model(
         staff_model,
@@ -787,8 +788,8 @@ def prepare_staff_evaluation(
     )
 
     if hasattr(role_model, "selected_feature_names_") and hasattr(
-            role_model,
-            "model_",
+        role_model,
+        "model_",
     ):
         adapter = SelectedRoleEvaluationAdapter(role_model)
         return adapter, dataframe.loc[:, adapter.selected_features]

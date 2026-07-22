@@ -4,17 +4,15 @@ const apiClient = axios.create();
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token =
-      localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
-      config.headers.Authorization =
-        `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
@@ -24,17 +22,13 @@ apiClient.interceptors.response.use(
       localStorage.removeItem("user");
       localStorage.removeItem("token");
 
-      if (
-        globalThis.location.pathname !==
-        "/login"
-      ) {
-        globalThis.location.href =
-          "/login";
+      if (globalThis.location.pathname !== "/login") {
+        globalThis.location.href = "/login";
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

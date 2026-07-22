@@ -11,7 +11,10 @@ export const getLatestUnlabeledDecisionRecord = () => {
 };
 
 export const labelDecisionRecord = (recordId, labelData) => {
-  return apiClient.put(`${API_URL}/training-records/${recordId}/label`,labelData);
+  return apiClient.put(
+    `${API_URL}/training-records/${recordId}/label`,
+    labelData,
+  );
 };
 
 export const retrainDecisionModels = () => {

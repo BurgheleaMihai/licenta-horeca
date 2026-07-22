@@ -14,11 +14,7 @@ export const getTodayOrderStatistics = () => {
   return apiClient.get(`${API_URL}/statistics/today`);
 };
 
-export const getOrderStatistics = (
-  date,
-  startTime,
-  endTime
-) => {
+export const getOrderStatistics = (date, startTime, endTime) => {
   return apiClient.get(`${API_URL}/statistics`, {
     params: {
       date,
@@ -28,16 +24,10 @@ export const getOrderStatistics = (
   });
 };
 
-export const updateOrderStatus = (
-  orderId,
-  status
-) => {
-  return apiClient.put(
-    `${API_URL}/${orderId}/status`,
-    {
-      status,
-    }
-  );
+export const updateOrderStatus = (orderId, status) => {
+  return apiClient.put(`${API_URL}/${orderId}/status`, {
+    status,
+  });
 };
 
 export const createOrder = (order) => {
@@ -52,14 +42,8 @@ export const getBarOrders = () => {
   return apiClient.get(`${API_URL}/bar`);
 };
 
-export const updateOrderItemStatus = (
-  itemId,
-  status
-) => {
-  return apiClient.put(
-    `${API_URL}/items/${itemId}/status`,
-    {
-      status,
-    }
-  );
+export const updateOrderItemStatus = (itemId, status) => {
+  return apiClient.put(`${API_URL}/items/${itemId}/status`, {
+    status,
+  });
 };

@@ -102,8 +102,8 @@ def read_metadata(metadata_file: Path) -> JsonObject | None:
 
 
 def get_first_value(
-        dictionary: Mapping[str, Any] | None,
-        keys: Sequence[str],
+    dictionary: Mapping[str, Any] | None,
+    keys: Sequence[str],
 ) -> Any | None:
     """Returneaza prima valoare existenta dintre cheile primite."""
 
@@ -118,7 +118,7 @@ def get_first_value(
 
 
 def get_model_metrics(
-        metadata: Mapping[str, Any],
+    metadata: Mapping[str, Any],
 ) -> MetricsMapping | None:
     """
     Extrage metricile finale din structurile metadata folosite in proiect.
@@ -166,9 +166,9 @@ def format_number(value: Any) -> str:
 
 
 def print_model_summary(
-        title: str,
-        metadata_file: Path,
-        metric_definitions: Sequence[MetricDefinition],
+    title: str,
+    metadata_file: Path,
+    metric_definitions: Sequence[MetricDefinition],
 ) -> None:
     """Afiseaza modelul selectat si metricile finale disponibile."""
 
@@ -208,7 +208,7 @@ def print_model_summary(
 
 
 def print_final_summary(
-        durations: Mapping[str, float],
+    durations: Mapping[str, float],
 ) -> None:
     """Afiseaza duratele si metricile celor trei modele."""
 

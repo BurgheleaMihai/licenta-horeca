@@ -80,7 +80,7 @@ RANDOM_STATE = 42
 
 
 def validate_dataset(
-        dataframe,
+    dataframe,
 ):
     required_columns = FEATURE_COLUMNS + [TARGET_COLUMN]
 
@@ -158,8 +158,8 @@ def build_candidate_models():
 
 
 def calculate_metrics(
-        expected_values,
-        predictions,
+    expected_values,
+    predictions,
 ):
     report_dictionary = classification_report(
         expected_values,
@@ -251,15 +251,15 @@ def calculate_metrics(
 
 
 def format_confusion_matrix(
-        matrix,
+    matrix,
 ):
     header = "real\\prezis" + "".join(f"{label:>12}" for label in CLASS_LABELS)
 
     rows = [header]
 
     for label, values in zip(
-            CLASS_LABELS,
-            matrix,
+        CLASS_LABELS,
+        matrix,
     ):
         row = f"{label:<12}" + "".join(f"{value:>12}" for value in values)
 
@@ -269,8 +269,8 @@ def format_confusion_matrix(
 
 
 def format_metrics(
-        model_name,
-        metrics,
+    model_name,
+    metrics,
 ):
     lines = [
         f"Model: {model_name}",
@@ -308,11 +308,11 @@ def format_metrics(
 
 
 def extract_feature_importance(
-        model,
+    model,
 ):
     if not hasattr(
-            model,
-            "feature_importances_",
+        model,
+        "feature_importances_",
     ):
         return []
 
@@ -412,7 +412,7 @@ def train_delay_model():
         # Accuracy este folosita doar la egalitate.
         #
         if current_macro_f1 > best_macro_f1 or (
-                current_macro_f1 == best_macro_f1 and current_accuracy > best_accuracy
+            current_macro_f1 == best_macro_f1 and current_accuracy > best_accuracy
         ):
             best_macro_f1 = current_macro_f1
 

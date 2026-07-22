@@ -26,14 +26,21 @@ function BarPage() {
   };
 
   const getBarItems = (order) => {
-    return order.items?.filter((item) => item.product?.category?.name === "Bauturi" && item.status !== "GATA") || [];
+    return (
+      order.items?.filter(
+        (item) =>
+          item.product?.category?.name === "Bauturi" && item.status !== "GATA",
+      ) || []
+    );
   };
 
   const visibleOrders = orders.filter((order) => getBarItems(order).length > 0);
 
   const markBarItemsAsReady = (order) => {
     const barItems = getBarItems(order);
-    const updateRequests = barItems.map((item) => updateOrderItemStatus(item.id, "GATA"));
+    const updateRequests = barItems.map((item) =>
+      updateOrderItemStatus(item.id, "GATA"),
+    );
 
     Promise.all(updateRequests)
       .then(() => {
@@ -80,7 +87,10 @@ function BarPage() {
                   ))}
                 </div>
 
-                <button className="bar-button" onClick={() => markBarItemsAsReady(order)}>
+                <button
+                  className="bar-button"
+                  onClick={() => markBarItemsAsReady(order)}
+                >
                   Marcheaza bauturile ca gata
                 </button>
               </div>

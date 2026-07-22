@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getTrafficSummary, registerEntry, registerExit } from "../api/trafficApi";
+import {
+  getTrafficSummary,
+  registerEntry,
+  registerExit,
+} from "../api/trafficApi";
 
 function SensorSimulatorPage() {
   const [trafficSummary, setTrafficSummary] = useState({
@@ -38,7 +42,9 @@ function SensorSimulatorPage() {
     <div className="sensor-page">
       <header className="sensor-header">
         <h1>Simulator senzori</h1>
-        <p>Pagina folosita pentru simularea evenimentelor de intrare si iesire.</p>
+        <p>
+          Pagina folosita pentru simularea evenimentelor de intrare si iesire.
+        </p>
       </header>
 
       <section className="sensor-section">

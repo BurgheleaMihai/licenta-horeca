@@ -14,15 +14,8 @@ import SensorSimulatorPage from "./pages/SensorSimulatorPage";
 import WaiterPage from "./pages/WaiterPage";
 import "./App.css";
 
-function renderProtectedPage(
-  user,
-  requiredRole,
-  PageComponent
-) {
-  if (
-    !user
-    || user.role !== requiredRole
-  ) {
+function renderProtectedPage(user, requiredRole, PageComponent) {
+  if (!user || user.role !== requiredRole) {
     return <LoginPage />;
   }
 
@@ -31,17 +24,11 @@ function renderProtectedPage(
 
 function getStoredUser() {
   try {
-    const storedUser =
-      localStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
 
-    return storedUser
-      ? JSON.parse(storedUser)
-      : null;
+    return storedUser ? JSON.parse(storedUser) : null;
   } catch (error) {
-    console.error(
-      "Utilizatorul salvat nu a putut fi citit:",
-      error
-    );
+    console.error("Utilizatorul salvat nu a putut fi citit:", error);
 
     localStorage.removeItem("user");
 
@@ -50,105 +37,66 @@ function getStoredUser() {
 }
 
 function App() {
-  const originalPath =
-    globalThis.location.pathname;
+  const originalPath = globalThis.location.pathname;
 
   const path =
     originalPath.length > 1
-      ? originalPath
-          .replace(/\/+$/, "")
-          .toLowerCase()
+      ? originalPath.replace(/\/+$/, "").toLowerCase()
       : "/";
 
   const user = getStoredUser();
 
   const routes = {
-    "/": (
-      <ClientMenuPage />
-    ),
+    "/": <ClientMenuPage />,
 
-    "/menu-qr": (
-      <MenuQrPage />
-    ),
+    "/menu-qr": <MenuQrPage />,
 
-    "/login": (
-      <LoginPage />
-    ),
+    "/login": <LoginPage />,
 
-    "/waiter": renderProtectedPage(
-      user,
-      "WAITER",
-      WaiterPage
-    ),
+    "/waiter": renderProtectedPage(user, "WAITER", WaiterPage),
 
-    "/kitchen": renderProtectedPage(
-      user,
-      "KITCHEN",
-      KitchenPage
-    ),
+    "/kitchen": renderProtectedPage(user, "KITCHEN", KitchenPage),
 
-    "/bar": renderProtectedPage(
-      user,
-      "BAR",
-      BarPage
-    ),
+    "/bar": renderProtectedPage(user, "BAR", BarPage),
 
-    "/manager": renderProtectedPage(
+    "/manager": renderProtectedPage(user, "MANAGER", ManagerPage),
+
+    "/manager-supplies": renderProtectedPage(
       user,
       "MANAGER",
-      ManagerPage
+      ManagerSuppliesPage,
     ),
 
-    "/manager-supplies":
-      renderProtectedPage(
-        user,
-        "MANAGER",
-        ManagerSuppliesPage
-      ),
+    "/admin": renderProtectedPage(user, "ADMIN", AdminPage),
 
-    "/admin": renderProtectedPage(
+    "/admin/statistics": renderProtectedPage(
       user,
       "ADMIN",
-      AdminPage
+      AdminStatisticsPage,
     ),
 
-    "/admin/statistics":
-      renderProtectedPage(
-        user,
-        "ADMIN",
-        AdminStatisticsPage
-      ),
-
-    "/admin/order-history":
-      renderProtectedPage(
-        user,
-        "ADMIN",
-        AdminOrderHistoryPage
-      ),
-
-    "/admin/stock-configuration":
-      renderProtectedPage(
-        user,
-        "ADMIN",
-        AdminStockConfigurationPage
-      ),
-
-    "/admin/employees":
-      renderProtectedPage(
-        user,
-        "ADMIN",
-        EmployeeManagementPage
-      ),
-
-    "/sensor-simulator": (
-      <SensorSimulatorPage />
+    "/admin/order-history": renderProtectedPage(
+      user,
+      "ADMIN",
+      AdminOrderHistoryPage,
     ),
+
+    "/admin/stock-configuration": renderProtectedPage(
+      user,
+      "ADMIN",
+      AdminStockConfigurationPage,
+    ),
+
+    "/admin/employees": renderProtectedPage(
+      user,
+      "ADMIN",
+      EmployeeManagementPage,
+    ),
+
+    "/sensor-simulator": <SensorSimulatorPage />,
   };
 
-  return (
-    routes[path]
-    || <LoginPage />
-  );
+  return routes[path] || <LoginPage />;
 }
 
 export default App;

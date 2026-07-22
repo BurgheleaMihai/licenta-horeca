@@ -141,6 +141,7 @@ class EvaluationError(Exception):
 # Validarea fisierelor, datasetului si modelelor
 # ---------------------------------------------------------------------------
 
+
 def sha256_file(file_path: Path) -> str:
     """Calculeaza amprenta SHA-256 a unui fisier."""
 
@@ -163,15 +164,11 @@ def validate_files() -> None:
         DELAY_MODEL_FILE,
     ]
     missing_files = [
-        str(file_path)
-        for file_path in required_files
-        if not file_path.exists()
+        str(file_path) for file_path in required_files if not file_path.exists()
     ]
 
     if missing_files:
-        raise EvaluationError(
-            f"Lipsesc fisiere obligatorii: {missing_files}"
-        )
+        raise EvaluationError(f"Lipsesc fisiere obligatorii: {missing_files}")
 
 
 def validate_dataset(dataframe: pd.DataFrame) -> None:
@@ -190,28 +187,22 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
     )
 
     missing_columns = [
-        column
-        for column in required_columns
-        if column not in dataframe.columns
+        column for column in required_columns if column not in dataframe.columns
     ]
     if missing_columns:
         raise EvaluationError(
-            "Datasetul nu contine coloanele obligatorii: "
-            f"{missing_columns}"
+            f"Datasetul nu contine coloanele obligatorii: {missing_columns}"
         )
 
     if dataframe.empty:
         raise EvaluationError("Datasetul este gol.")
 
     missing_value_columns = [
-        column
-        for column in required_columns
-        if dataframe[column].isnull().any()
+        column for column in required_columns if dataframe[column].isnull().any()
     ]
     if missing_value_columns:
         raise EvaluationError(
-            "Datasetul contine valori lipsa in coloanele: "
-            f"{missing_value_columns}"
+            f"Datasetul contine valori lipsa in coloanele: {missing_value_columns}"
         )
 
     for target_column in [TRAFFIC_TARGET_COLUMN, DELAY_TARGET_COLUMN]:
@@ -220,8 +211,7 @@ def validate_dataset(dataframe: pd.DataFrame) -> None:
 
         if invalid_labels:
             raise EvaluationError(
-                f"Coloana {target_column} contine etichete invalide: "
-                f"{invalid_labels}"
+                f"Coloana {target_column} contine etichete invalide: {invalid_labels}"
             )
 
 
@@ -235,9 +225,9 @@ def load_model(model_file: Path) -> Any:
 
 
 def validate_model_feature_count(
-        model: Any,
-        expected_count: int,
-        model_name: str,
+    model: Any,
+    expected_count: int,
+    model_name: str,
 ) -> None:
     """Verifica numarul de caracteristici declarat de model."""
 
@@ -254,9 +244,10 @@ def validate_model_feature_count(
 # Utilitare pentru clasificare
 # ---------------------------------------------------------------------------
 
+
 def align_probabilities(
-        model: Any,
-        features: pd.DataFrame,
+    model: Any,
+    features: pd.DataFrame,
 ) -> np.ndarray | None:
     """
     Reordoneaza probabilitatile modelului dupa ordinea PROBABILITY_LABELS.
@@ -282,24 +273,22 @@ def align_probabilities(
 
     for target_index, label in enumerate(PROBABILITY_LABELS):
         if label not in model_classes:
-            raise EvaluationError(
-                f"Modelul nu contine clasa obligatorie: {label}"
-            )
+            raise EvaluationError(f"Modelul nu contine clasa obligatorie: {label}")
 
         source_index = model_classes.index(label)
         aligned_probabilities[:, target_index] = raw_probabilities[
-                                                 :,
-                                                 source_index,
-                                                 ]
+            :,
+            source_index,
+        ]
 
     return aligned_probabilities
 
 
 def calculate_ece(
-        expected_values: Sequence[Any] | pd.Series,
-        predictions: Sequence[Any] | np.ndarray,
-        probabilities: np.ndarray,
-        number_of_bins: int = CALIBRATION_BINS,
+    expected_values: Sequence[Any] | pd.Series,
+    predictions: Sequence[Any] | np.ndarray,
+    probabilities: np.ndarray,
+    number_of_bins: int = CALIBRATION_BINS,
 ) -> tuple[float, list[JsonObject]]:
     """Calculeaza Expected Calibration Error si detaliile fiecarui interval."""
 
@@ -324,16 +313,14 @@ def calculate_ece(
 
         if bin_index == 0:
             in_bin = np.asarray(
-                (confidences >= lower_bound)
-                & (confidences <= upper_bound),
+                (confidences >= lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
         else:
             in_bin = np.asarray(
-                (confidences > lower_bound)
-                & (confidences <= upper_bound),
+                (confidences > lower_bound) & (confidences <= upper_bound),
                 dtype=bool,
-                )
+            )
 
         count = int(np.count_nonzero(in_bin))
         if count == 0:
@@ -360,8 +347,8 @@ def calculate_ece(
 
 
 def calculate_multiclass_brier(
-        expected_values: Sequence[Any] | pd.Series,
-        probabilities: np.ndarray,
+    expected_values: Sequence[Any] | pd.Series,
+    probabilities: np.ndarray,
 ) -> float:
     """Calculeaza scorul Brier pentru clasificarea multiclass."""
 
@@ -375,8 +362,8 @@ def calculate_multiclass_brier(
 
 
 def calculate_severe_errors(
-        expected_values: Sequence[Any] | pd.Series,
-        predictions: Sequence[Any] | np.ndarray,
+    expected_values: Sequence[Any] | pd.Series,
+    predictions: Sequence[Any] | np.ndarray,
 ) -> JsonObject:
     """Numara confuziile directe SCAZUT <-> RIDICAT."""
 
@@ -384,16 +371,10 @@ def calculate_severe_errors(
     prediction_array = np.asarray(predictions, dtype=object)
 
     severe_mask = np.asarray(
-        (
-                (expected_array == "SCAZUT")
-                & (prediction_array == "RIDICAT")
-        )
-        | (
-                (expected_array == "RIDICAT")
-                & (prediction_array == "SCAZUT")
-        ),
+        ((expected_array == "SCAZUT") & (prediction_array == "RIDICAT"))
+        | ((expected_array == "RIDICAT") & (prediction_array == "SCAZUT")),
         dtype=bool,
-        )
+    )
 
     count = int(np.count_nonzero(severe_mask))
 
@@ -404,9 +385,9 @@ def calculate_severe_errors(
 
 
 def calculate_classifier_metrics(
-        model: Any,
-        features: pd.DataFrame,
-        expected_values: pd.Series,
+    model: Any,
+    features: pd.DataFrame,
+    expected_values: pd.Series,
 ) -> tuple[JsonObject, np.ndarray]:
     """Calculeaza toate metricile folosite pentru un model clasificator."""
 
@@ -558,9 +539,9 @@ def calculate_classifier_metrics(
 
 
 def build_classifier_cv_results(
-        model: Any,
-        features: pd.DataFrame,
-        target: pd.Series,
+    model: Any,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> JsonObject:
     """Ruleaza cross-validation stratificat pentru un clasificator."""
 
@@ -605,9 +586,10 @@ def build_classifier_cv_results(
 # Utilitare pentru regresia multi-output a personalului
 # ---------------------------------------------------------------------------
 
+
 def calculate_staff_metrics(
-        expected_values: pd.DataFrame | np.ndarray,
-        predictions: np.ndarray,
+    expected_values: pd.DataFrame | np.ndarray,
+    predictions: np.ndarray,
 ) -> JsonObject:
     """Calculeaza metrici generale si individuale pentru cele trei roluri."""
 
@@ -631,44 +613,25 @@ def calculate_staff_metrics(
         target_rounded_errors = rounded_errors[:, index]
 
         per_target[target_column] = {
-            "mae": float(
-                mean_absolute_error(target_expected, target_predictions)
-            ),
+            "mae": float(mean_absolute_error(target_expected, target_predictions)),
             "rmse": float(
-                mean_squared_error(target_expected, target_predictions)
-                ** 0.5
+                mean_squared_error(target_expected, target_predictions) ** 0.5
             ),
             "r2": float(r2_score(target_expected, target_predictions)),
             "medianAbsoluteError": float(
                 median_absolute_error(target_expected, target_predictions)
             ),
-            "p90AbsoluteError": float(
-                np.percentile(target_absolute_errors, 90)
-            ),
-            "p95AbsoluteError": float(
-                np.percentile(target_absolute_errors, 95)
-            ),
-            "roundedExactRate": float(
-                np.mean(target_rounded_errors == 0)
-            ),
-            "roundedWithinOneRate": float(
-                np.mean(np.abs(target_rounded_errors) <= 1)
-            ),
-            "underestimateRate": float(
-                np.mean(target_rounded_errors < 0)
-            ),
-            "overestimateRate": float(
-                np.mean(target_rounded_errors > 0)
-            ),
-            "maximumRoundedError": int(
-                np.max(np.abs(target_rounded_errors))
-            ),
+            "p90AbsoluteError": float(np.percentile(target_absolute_errors, 90)),
+            "p95AbsoluteError": float(np.percentile(target_absolute_errors, 95)),
+            "roundedExactRate": float(np.mean(target_rounded_errors == 0)),
+            "roundedWithinOneRate": float(np.mean(np.abs(target_rounded_errors) <= 1)),
+            "underestimateRate": float(np.mean(target_rounded_errors < 0)),
+            "overestimateRate": float(np.mean(target_rounded_errors > 0)),
+            "maximumRoundedError": int(np.max(np.abs(target_rounded_errors))),
         }
 
     return {
-        "overallMae": float(
-            mean_absolute_error(expected_array, prediction_array)
-        ),
+        "overallMae": float(mean_absolute_error(expected_array, prediction_array)),
         "overallRmse": float(
             mean_squared_error(expected_array, prediction_array) ** 0.5
         ),
@@ -683,12 +646,8 @@ def calculate_staff_metrics(
         "p90AbsoluteError": float(np.percentile(absolute_errors, 90)),
         "p95AbsoluteError": float(np.percentile(absolute_errors, 95)),
         "roundedExactCellRate": float(np.mean(rounded_errors == 0)),
-        "roundedWithinOneCellRate": float(
-            np.mean(np.abs(rounded_errors) <= 1)
-        ),
-        "allThreeRoundedExactRate": float(
-            np.mean(np.all(rounded_errors == 0, axis=1))
-        ),
+        "roundedWithinOneCellRate": float(np.mean(np.abs(rounded_errors) <= 1)),
+        "allThreeRoundedExactRate": float(np.mean(np.all(rounded_errors == 0, axis=1))),
         "underestimateCellRate": float(np.mean(rounded_errors < 0)),
         "overestimateCellRate": float(np.mean(rounded_errors > 0)),
         "maximumRoundedError": int(np.max(np.abs(rounded_errors))),
@@ -697,9 +656,9 @@ def calculate_staff_metrics(
 
 
 def build_staff_cv_results(
-        model: Any,
-        features: pd.DataFrame,
-        target: pd.DataFrame,
+    model: Any,
+    features: pd.DataFrame,
+    target: pd.DataFrame,
 ) -> JsonObject:
     """Ruleaza cross-validation pentru modelul multi-output de personal."""
 
@@ -710,12 +669,10 @@ def build_staff_cv_results(
     )
 
     def rmse_metric(
-            expected_values: np.ndarray,
-            predictions: np.ndarray,
+        expected_values: np.ndarray,
+        predictions: np.ndarray,
     ) -> float:
-        return float(
-            mean_squared_error(expected_values, predictions) ** 0.5
-        )
+        return float(mean_squared_error(expected_values, predictions) ** 0.5)
 
     scoring = {
         "mae": make_scorer(
@@ -762,9 +719,10 @@ def build_staff_cv_results(
 # Feature importance
 # ---------------------------------------------------------------------------
 
+
 def _extract_single_estimator_importance(
-        estimator: Any,
-        feature_columns: Sequence[str],
+    estimator: Any,
+    feature_columns: Sequence[str],
 ) -> np.ndarray | None:
     """Extrage si aliniaza importanta unui estimator individual."""
 
@@ -783,14 +741,13 @@ def _extract_single_estimator_importance(
 
         aligned = np.zeros(len(feature_columns), dtype=float)
         feature_index = {
-            feature: index
-            for index, feature in enumerate(feature_columns)
+            feature: index for index, feature in enumerate(feature_columns)
         }
 
         for feature_name, importance in zip(
-                selected_names,
-                importances,
-                strict=True,
+            selected_names,
+            importances,
+            strict=True,
         ):
             index = feature_index.get(feature_name)
             if index is not None:
@@ -805,8 +762,8 @@ def _extract_single_estimator_importance(
 
 
 def extract_feature_importance(
-        model: Any,
-        feature_columns: Sequence[str],
+    model: Any,
+    feature_columns: Sequence[str],
 ) -> list[JsonObject]:
     """Extrage feature importance pentru modele simple sau multi-output."""
 
@@ -826,12 +783,12 @@ def extract_feature_importance(
             importance
             for estimator in estimators
             if (
-                   importance := _extract_single_estimator_importance(
-                       estimator,
-                       feature_columns,
-                   )
-               )
-               is not None
+                importance := _extract_single_estimator_importance(
+                    estimator,
+                    feature_columns,
+                )
+            )
+            is not None
         ]
 
         if not estimator_importances:
@@ -861,9 +818,10 @@ def extract_feature_importance(
 # Impartirea determinista a datasetului
 # ---------------------------------------------------------------------------
 
+
 def split_classifier_data(
-        features: pd.DataFrame,
-        target: pd.Series,
+    features: pd.DataFrame,
+    target: pd.Series,
 ) -> ClassifierSplit:
     """Imparte datele de clasificare in 70% train, 15% validation, 15% test."""
 
@@ -918,8 +876,8 @@ def split_classifier_data(
 
 
 def split_regression_data(
-        features: pd.DataFrame,
-        target: pd.DataFrame,
+    features: pd.DataFrame,
+    target: pd.DataFrame,
 ) -> RegressionSplit:
     """Imparte datele de regresie in 70% train, 15% validation, 15% test."""
 
@@ -975,9 +933,10 @@ def split_regression_data(
 # Evaluarea celor trei modele
 # ---------------------------------------------------------------------------
 
+
 def evaluate_traffic(
-        dataframe: pd.DataFrame,
-        model: Any,
+    dataframe: pd.DataFrame,
+    model: Any,
 ) -> JsonObject:
     """Evalueaza modelul de trafic si modelul Dummy de referinta."""
 
@@ -1027,8 +986,8 @@ def evaluate_traffic(
 
 
 def evaluate_staff(
-        dataframe: pd.DataFrame,
-        model: Any,
+    dataframe: pd.DataFrame,
+    model: Any,
 ) -> JsonObject:
     """Evalueaza modelul de personal si regresorul Dummy de referinta."""
 
@@ -1078,8 +1037,8 @@ def evaluate_staff(
 
 
 def build_production_delay_features(
-        dataframe: pd.DataFrame,
-        staff_model: Any,
+    dataframe: pd.DataFrame,
+    staff_model: Any,
 ) -> tuple[pd.DataFrame, np.ndarray]:
     """
     Recalculeaza feature-urile de intarziere exact ca serviciul Flask.
@@ -1104,37 +1063,31 @@ def build_production_delay_features(
     active_bar = dataframe["active_bar"].to_numpy(dtype=float)
 
     production_features["waiter_deficit"] = (
-            rounded_staff_predictions[:, 0] - active_waiters
+        rounded_staff_predictions[:, 0] - active_waiters
     )
     production_features["kitchen_deficit"] = (
-            rounded_staff_predictions[:, 1] - active_kitchen
+        rounded_staff_predictions[:, 1] - active_kitchen
     )
-    production_features["bar_deficit"] = (
-            rounded_staff_predictions[:, 2] - active_bar
-    )
-    production_features["orders_per_waiter"] = (
-            dataframe["active_orders"].to_numpy(dtype=float)
-            / np.maximum(active_waiters, 1.0)
-    )
-    production_features["kitchen_items_per_employee"] = (
-            dataframe["kitchen_load"].to_numpy(dtype=float)
-            / np.maximum(active_kitchen, 1.0)
-    )
-    production_features["bar_items_per_employee"] = (
-            dataframe["bar_load"].to_numpy(dtype=float)
-            / np.maximum(active_bar, 1.0)
-    )
-    production_features["occupancy_per_waiter"] = (
-            dataframe["occupied_tables"].to_numpy(dtype=float)
-            / np.maximum(active_waiters, 1.0)
-    )
+    production_features["bar_deficit"] = rounded_staff_predictions[:, 2] - active_bar
+    production_features["orders_per_waiter"] = dataframe["active_orders"].to_numpy(
+        dtype=float
+    ) / np.maximum(active_waiters, 1.0)
+    production_features["kitchen_items_per_employee"] = dataframe[
+        "kitchen_load"
+    ].to_numpy(dtype=float) / np.maximum(active_kitchen, 1.0)
+    production_features["bar_items_per_employee"] = dataframe["bar_load"].to_numpy(
+        dtype=float
+    ) / np.maximum(active_bar, 1.0)
+    production_features["occupancy_per_waiter"] = dataframe["occupied_tables"].to_numpy(
+        dtype=float
+    ) / np.maximum(active_waiters, 1.0)
 
     return production_features, rounded_staff_predictions
 
 
 def calculate_skew_details(
-        offline_features: pd.DataFrame,
-        production_features: pd.DataFrame,
+    offline_features: pd.DataFrame,
+    production_features: pd.DataFrame,
 ) -> JsonObject:
     """Compara feature-urile offline cu cele reconstruite ca in productie."""
 
@@ -1167,21 +1120,17 @@ def calculate_skew_details(
                     )
                 )
             ),
-            "meanAbsoluteDifference": float(
-                np.mean(np.abs(differences))
-            ),
-            "maximumAbsoluteDifference": float(
-                np.max(np.abs(differences))
-            ),
+            "meanAbsoluteDifference": float(np.mean(np.abs(differences))),
+            "maximumAbsoluteDifference": float(np.max(np.abs(differences))),
         }
 
     return skew_details
 
 
 def evaluate_delay(
-        dataframe: pd.DataFrame,
-        delay_model: Any,
-        staff_model: Any,
+    dataframe: pd.DataFrame,
+    delay_model: Any,
+    staff_model: Any,
 ) -> JsonObject:
     """Evalueaza modelul de intarziere offline si in simularea de productie."""
 
@@ -1221,20 +1170,16 @@ def evaluate_delay(
         staff_model,
     )
 
-    production_metrics, production_predictions = (
-        calculate_classifier_metrics(
-            delay_model,
-            production_features,
-            target_test,
-        )
+    production_metrics, production_predictions = calculate_classifier_metrics(
+        delay_model,
+        production_features,
+        target_test,
     )
     prediction_changed_rate = float(
         np.mean(offline_predictions != production_predictions)
     )
 
-    staff_expected = production_source[
-        STAFF_TARGET_COLUMNS
-    ].to_numpy(dtype=float)
+    staff_expected = production_source[STAFF_TARGET_COLUMNS].to_numpy(dtype=float)
     staff_prediction_metrics = calculate_staff_metrics(
         staff_expected,
         rounded_staff_predictions,
@@ -1245,9 +1190,7 @@ def evaluate_delay(
         "featureCount": len(DELAY_FEATURE_COLUMNS),
         "testRows": int(len(features_test)),
         "offlineEvaluation": {
-            "description": (
-                "Evaluare cu feature-urile existente in dataset."
-            ),
+            "description": ("Evaluare cu feature-urile existente in dataset."),
             "metrics": offline_metrics,
         },
         "productionLikeEvaluation": {
@@ -1280,13 +1223,11 @@ def evaluate_delay(
 # Calitatea datasetului si verdictele proiectului
 # ---------------------------------------------------------------------------
 
+
 def distribution_as_dictionary(series: pd.Series) -> dict[str, int]:
     """Transforma value_counts intr-un dictionar JSON serializabil."""
 
-    return {
-        str(value): int(count)
-        for value, count in series.value_counts().items()
-    }
+    return {str(value): int(count) for value, count in series.value_counts().items()}
 
 
 def evaluate_dataset_quality(dataframe: pd.DataFrame) -> JsonObject:
@@ -1296,10 +1237,7 @@ def evaluate_dataset_quality(dataframe: pd.DataFrame) -> JsonObject:
         target_column: {
             str(value): int(count)
             for value, count in (
-                dataframe[target_column]
-                .value_counts()
-                .sort_index()
-                .items()
+                dataframe[target_column].value_counts().sort_index().items()
             )
         }
         for target_column in STAFF_TARGET_COLUMNS
@@ -1319,44 +1257,40 @@ def evaluate_dataset_quality(dataframe: pd.DataFrame) -> JsonObject:
         "trafficDistribution": distribution_as_dictionary(
             dataframe[TRAFFIC_TARGET_COLUMN]
         ),
-        "delayDistribution": distribution_as_dictionary(
-            dataframe[DELAY_TARGET_COLUMN]
-        ),
+        "delayDistribution": distribution_as_dictionary(dataframe[DELAY_TARGET_COLUMN]),
         "staffTargetDistribution": staff_distributions,
     }
 
 
 def build_project_verdicts(
-        traffic_results: Mapping[str, Any],
-        staff_results: Mapping[str, Any],
-        delay_results: Mapping[str, Any],
+    traffic_results: Mapping[str, Any],
+    staff_results: Mapping[str, Any],
+    delay_results: Mapping[str, Any],
 ) -> JsonObject:
     """Aplica pragurile interne stabilite pentru proiect."""
 
     traffic_metrics = traffic_results["metrics"]
     staff_metrics = staff_results["metrics"]
     delay_offline_metrics = delay_results["offlineEvaluation"]["metrics"]
-    delay_production_metrics = delay_results[
-        "productionLikeEvaluation"
-    ]["metrics"]
+    delay_production_metrics = delay_results["productionLikeEvaluation"]["metrics"]
 
     traffic_pass = (
-            traffic_metrics["macroF1"] >= 0.75
-            and traffic_metrics["balancedAccuracy"] >= 0.75
-            and traffic_metrics.get("ece", 1.0) <= 0.05
+        traffic_metrics["macroF1"] >= 0.75
+        and traffic_metrics["balancedAccuracy"] >= 0.75
+        and traffic_metrics.get("ece", 1.0) <= 0.05
     )
     staff_pass = (
-            staff_metrics["overallMae"] <= 0.50
-            and staff_metrics["roundedWithinOneCellRate"] >= 0.95
+        staff_metrics["overallMae"] <= 0.50
+        and staff_metrics["roundedWithinOneCellRate"] >= 0.95
     )
     delay_offline_pass = (
-            delay_offline_metrics["macroF1"] >= 0.75
-            and delay_offline_metrics["severeErrors"]["rate"] <= 0.01
-            and delay_offline_metrics.get("ece", 1.0) <= 0.05
+        delay_offline_metrics["macroF1"] >= 0.75
+        and delay_offline_metrics["severeErrors"]["rate"] <= 0.01
+        and delay_offline_metrics.get("ece", 1.0) <= 0.05
     )
     delay_production_pass = (
-            delay_production_metrics["macroF1"] >= 0.73
-            and delay_production_metrics["severeErrors"]["rate"] <= 0.02
+        delay_production_metrics["macroF1"] >= 0.73
+        and delay_production_metrics["severeErrors"]["rate"] <= 0.02
     )
 
     return {
@@ -1401,6 +1335,7 @@ def build_project_verdicts(
 # Construirea raportului text
 # ---------------------------------------------------------------------------
 
+
 def format_percentage(value: float) -> str:
     """Formateaza o proportie ca procent cu doua zecimale."""
 
@@ -1408,8 +1343,8 @@ def format_percentage(value: float) -> str:
 
 
 def format_classifier_section(
-        title: str,
-        evaluation: Mapping[str, Any],
+    title: str,
+    evaluation: Mapping[str, Any],
 ) -> str:
     """Formateaza sectiunea text pentru un clasificator."""
 
@@ -1424,7 +1359,7 @@ def format_classifier_section(
         f"Macro F1: {metrics['macroF1']:.4f}",
         f"Weighted F1: {metrics['weightedF1']:.4f}",
         f"MCC: {metrics['mcc']:.4f}",
-        ]
+    ]
 
     optional_metrics = [
         ("ROC-AUC macro OVR", "rocAucMacroOvr"),
@@ -1510,26 +1445,14 @@ def build_text_report(report: Mapping[str, Any]) -> str:
             "Randuri in grupuri cu aceleasi 11 caracteristici de baza: "
             f"{dataset_quality['rowsInDuplicateBaseFeatureGroups']}"
         ),
-        (
-            "Distributie trafic: "
-            f"{dataset_quality['trafficDistribution']}"
-        ),
-        (
-            "Distributie intarziere: "
-            f"{dataset_quality['delayDistribution']}"
-        ),
+        (f"Distributie trafic: {dataset_quality['trafficDistribution']}"),
+        (f"Distributie intarziere: {dataset_quality['delayDistribution']}"),
         "",
         format_classifier_section("MODEL TRAFIC", traffic),
         "",
         "Comparatie cu DummyClassifier:",
-        (
-            "Accuracy dummy: "
-            f"{traffic['dummyBaseline']['accuracy']:.4f}"
-        ),
-        (
-            "Macro F1 dummy: "
-            f"{traffic['dummyBaseline']['macroF1']:.4f}"
-        ),
+        (f"Accuracy dummy: {traffic['dummyBaseline']['accuracy']:.4f}"),
+        (f"Macro F1 dummy: {traffic['dummyBaseline']['macroF1']:.4f}"),
         "",
         "Cross-validation trafic (5 folduri):",
         json.dumps(
@@ -1543,14 +1466,8 @@ def build_text_report(report: Mapping[str, Any]) -> str:
         f"MAE general: {staff_metrics['overallMae']:.4f}",
         f"RMSE general: {staff_metrics['overallRmse']:.4f}",
         f"R2 general: {staff_metrics['overallR2']:.4f}",
-        (
-            "Median absolute error: "
-            f"{staff_metrics['medianAbsoluteError']:.4f}"
-        ),
-        (
-            "Percentila 90 eroare absoluta: "
-            f"{staff_metrics['p90AbsoluteError']:.4f}"
-        ),
+        (f"Median absolute error: {staff_metrics['medianAbsoluteError']:.4f}"),
+        (f"Percentila 90 eroare absoluta: {staff_metrics['p90AbsoluteError']:.4f}"),
         (
             "Exact dupa rotunjire, per valoare: "
             f"{format_percentage(staff_metrics['roundedExactCellRate'])}"
@@ -1563,18 +1480,9 @@ def build_text_report(report: Mapping[str, Any]) -> str:
             "Toate cele 3 valori exacte simultan: "
             f"{format_percentage(staff_metrics['allThreeRoundedExactRate'])}"
         ),
-        (
-            "Subestimare: "
-            f"{format_percentage(staff_metrics['underestimateCellRate'])}"
-        ),
-        (
-            "Supraestimare: "
-            f"{format_percentage(staff_metrics['overestimateCellRate'])}"
-        ),
-        (
-            "Eroare rotunjita maxima: "
-            f"{staff_metrics['maximumRoundedError']}"
-        ),
+        (f"Subestimare: {format_percentage(staff_metrics['underestimateCellRate'])}"),
+        (f"Supraestimare: {format_percentage(staff_metrics['overestimateCellRate'])}"),
+        (f"Eroare rotunjita maxima: {staff_metrics['maximumRoundedError']}"),
         "",
         "Metrici pe rol:",
         json.dumps(
@@ -1584,18 +1492,9 @@ def build_text_report(report: Mapping[str, Any]) -> str:
         ),
         "",
         "Comparatie cu DummyRegressor:",
-        (
-            "MAE dummy: "
-            f"{staff['dummyBaseline']['overallMae']:.4f}"
-        ),
-        (
-            "RMSE dummy: "
-            f"{staff['dummyBaseline']['overallRmse']:.4f}"
-        ),
-        (
-            "R2 dummy: "
-            f"{staff['dummyBaseline']['overallR2']:.4f}"
-        ),
+        (f"MAE dummy: {staff['dummyBaseline']['overallMae']:.4f}"),
+        (f"RMSE dummy: {staff['dummyBaseline']['overallRmse']:.4f}"),
+        (f"R2 dummy: {staff['dummyBaseline']['overallR2']:.4f}"),
         "",
         "Cross-validation personal (5 folduri):",
         json.dumps(
@@ -1648,7 +1547,7 @@ def build_text_report(report: Mapping[str, Any]) -> str:
             "modelul de intarziere, deoarece foloseste necesarul de "
             "personal prezis de modelul de personal, exact ca aplicatia."
         ),
-        ]
+    ]
 
     return "\n".join(lines)
 
@@ -1656,6 +1555,7 @@ def build_text_report(report: Mapping[str, Any]) -> str:
 # ---------------------------------------------------------------------------
 # Orchestrarea evaluarii si salvarea rapoartelor
 # ---------------------------------------------------------------------------
+
 
 def build_file_metadata() -> JsonObject:
     """Construieste metadatele si hash-urile fisierelor evaluate."""
@@ -1757,14 +1657,8 @@ def evaluate_all_models() -> JsonObject:
     print(f"Raport JSON: {JSON_REPORT_FILE}")
     print(f"Raport text: {TEXT_REPORT_FILE}")
     print()
-    print(
-        "Trafic - Macro F1: "
-        f"{traffic_results['metrics']['macroF1']:.4f}"
-    )
-    print(
-        "Personal - MAE: "
-        f"{staff_results['metrics']['overallMae']:.4f}"
-    )
+    print(f"Trafic - Macro F1: {traffic_results['metrics']['macroF1']:.4f}")
+    print(f"Personal - MAE: {staff_results['metrics']['overallMae']:.4f}")
     print(
         "Intarziere offline - Macro F1: "
         f"{delay_results['offlineEvaluation']['metrics']['macroF1']:.4f}"

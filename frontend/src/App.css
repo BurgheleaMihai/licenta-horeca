@@ -353,9 +353,7 @@ body {
   padding: 36px;
   background-color: #ffffff;
   border-radius: 16px;
-  box-shadow:
-    0 4px 18px
-    rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
@@ -387,7 +385,6 @@ body {
   max-width: 100%;
   height: auto;
 }
-
 
 .menu-qr-warning {
   margin: 0 auto 20px auto;
@@ -2377,8 +2374,12 @@ button:hover {
   -moz-appearance: textfield;
 }
 
-.decision-label-grid .number-stepper input[type="number"]::-webkit-inner-spin-button,
-.decision-label-grid .number-stepper input[type="number"]::-webkit-outer-spin-button {
+.decision-label-grid
+  .number-stepper
+  input[type="number"]::-webkit-inner-spin-button,
+.decision-label-grid
+  .number-stepper
+  input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
   appearance: none;
   -webkit-appearance: none;

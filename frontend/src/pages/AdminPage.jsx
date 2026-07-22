@@ -41,9 +41,7 @@ const DECISION_UPDATED_AT_STORAGE_KEY = "adminDecisionUpdatedAt";
 
 const readStoredDecisionSummary = () => {
   try {
-    const storedValue = sessionStorage.getItem(
-      DECISION_SUMMARY_STORAGE_KEY,
-    );
+    const storedValue = sessionStorage.getItem(DECISION_SUMMARY_STORAGE_KEY);
 
     return storedValue ? JSON.parse(storedValue) : null;
   } catch (error) {
@@ -56,9 +54,7 @@ const readStoredDecisionSummary = () => {
 };
 
 const readStoredDecisionUpdatedAt = () => {
-  const storedValue = sessionStorage.getItem(
-    DECISION_UPDATED_AT_STORAGE_KEY,
-  );
+  const storedValue = sessionStorage.getItem(DECISION_UPDATED_AT_STORAGE_KEY);
 
   if (!storedValue) {
     return null;
@@ -225,12 +221,7 @@ const buildOperationalRecommendations = (decisionSummary) => {
   return recommendations;
 };
 
-const NumericStepper = ({
-  id,
-  label,
-  value,
-  onChange,
-}) => {
+const NumericStepper = ({ id, label, value, onChange }) => {
   const numericValue = Number(value) || 0;
 
   const currentValueRef = useRef(numericValue);
@@ -256,10 +247,7 @@ const NumericStepper = ({
   }, []);
 
   const changeValueBy = (difference) => {
-    const nextValue = Math.max(
-      0,
-      currentValueRef.current + difference,
-    );
+    const nextValue = Math.max(0, currentValueRef.current + difference);
 
     currentValueRef.current = nextValue;
     onChange(String(nextValue));
@@ -269,19 +257,14 @@ const NumericStepper = ({
     }
   };
 
-  const startHolding = (
-    event,
-    difference,
-  ) => {
+  const startHolding = (event, difference) => {
     event.preventDefault();
 
     stopHolding();
     changeValueBy(difference);
 
     try {
-      event.currentTarget.setPointerCapture(
-        event.pointerId,
-      );
+      event.currentTarget.setPointerCapture(event.pointerId);
     } catch {
       // Capturarea pointerului nu este obligatorie.
     }
@@ -293,10 +276,7 @@ const NumericStepper = ({
     }, 400);
   };
 
-  const handleKeyboardClick = (
-    event,
-    difference,
-  ) => {
+  const handleKeyboardClick = (event, difference) => {
     /*
      * Click-urile produse de mouse/touch sunt deja
      * tratate prin onPointerDown. detail === 0 indica
@@ -323,15 +303,11 @@ const NumericStepper = ({
         <button
           type="button"
           className="number-stepper-button"
-          onPointerDown={(event) =>
-            startHolding(event, -1)
-          }
+          onPointerDown={(event) => startHolding(event, -1)}
           onPointerUp={stopHolding}
           onPointerCancel={stopHolding}
           onPointerLeave={stopHolding}
-          onClick={(event) =>
-            handleKeyboardClick(event, -1)
-          }
+          onClick={(event) => handleKeyboardClick(event, -1)}
           disabled={numericValue <= 0}
           aria-label={`Scade ${label}`}
           title="Apasa sau tine apasat"
@@ -357,15 +333,11 @@ const NumericStepper = ({
         <button
           type="button"
           className="number-stepper-button"
-          onPointerDown={(event) =>
-            startHolding(event, 1)
-          }
+          onPointerDown={(event) => startHolding(event, 1)}
           onPointerUp={stopHolding}
           onPointerCancel={stopHolding}
           onPointerLeave={stopHolding}
-          onClick={(event) =>
-            handleKeyboardClick(event, 1)
-          }
+          onClick={(event) => handleKeyboardClick(event, 1)}
           aria-label={`Creste ${label}`}
           title="Apasa sau tine apasat"
         >
@@ -666,9 +638,7 @@ function AdminPage() {
     decisionSummary?.delayRisk === "NECUNOSCUT";
 
   const hasPendingPreviousPrediction =
-    !decisionSummary &&
-    !decisionLoading &&
-    latestUnlabeledRecord;
+    !decisionSummary && !decisionLoading && latestUnlabeledRecord;
 
   return (
     <div className="admin-page">
@@ -893,14 +863,12 @@ function AdminPage() {
                 <strong>Exista o predictie anterioara neetichetata.</strong>
 
                 <span>
-                  Inregistrarea #{latestUnlabeledRecord.id} din {" "}
+                  Inregistrarea #{latestUnlabeledRecord.id} din{" "}
                   {latestUnlabeledRecord.createdAt
-                    ? new Date(
-                        latestUnlabeledRecord.createdAt,
-                      ).toLocaleString()
-                    : "data necunoscuta"} este afisata in sectiunea de mai
-                  jos. Apasa „Actualizeaza predictiile” numai pentru o analiza
-                  noua a situatiei curente.
+                    ? new Date(latestUnlabeledRecord.createdAt).toLocaleString()
+                    : "data necunoscuta"}{" "}
+                  este afisata in sectiunea de mai jos. Apasa „Actualizeaza
+                  predictiile” numai pentru o analiza noua a situatiei curente.
                 </span>
               </>
             ) : (

@@ -1,43 +1,30 @@
 import { useEffect, useState } from "react";
-import {
-  getAllProducts,
-  saveFeedback,
-} from "../api/productApi";
+import { getAllProducts, saveFeedback } from "../api/productApi";
 
 function ClientMenuPage() {
   const [products, setProducts] = useState([]);
 
-  const [selectedCategory, setSelectedCategory] =
-    useState("ALL");
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
 
   const [maxPrice, setMaxPrice] = useState("");
 
-  const [onlyAvailable, setOnlyAvailable] =
-    useState(false);
+  const [onlyAvailable, setOnlyAvailable] = useState(false);
 
-  const [onlyVegetarian, setOnlyVegetarian] =
-    useState(false);
+  const [onlyVegetarian, setOnlyVegetarian] = useState(false);
 
-  const [onlyVegan, setOnlyVegan] =
-    useState(false);
+  const [onlyVegan, setOnlyVegan] = useState(false);
 
-  const [selectedMeatType, setSelectedMeatType] =
-    useState("ALL");
+  const [selectedMeatType, setSelectedMeatType] = useState("ALL");
 
-  const [loadingProducts, setLoadingProducts] =
-    useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  const [productError, setProductError] =
-    useState("");
+  const [productError, setProductError] = useState("");
 
-  const [feedbackRating, setFeedbackRating] =
-    useState(5);
+  const [feedbackRating, setFeedbackRating] = useState(5);
 
-  const [feedbackComment, setFeedbackComment] =
-    useState("");
+  const [feedbackComment, setFeedbackComment] = useState("");
 
-  const [feedbackMessage, setFeedbackMessage] =
-    useState("");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
     getAllProducts()
@@ -45,14 +32,9 @@ function ClientMenuPage() {
         setProducts(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea produselor:",
-          error
-        );
+        console.error("Eroare la incarcarea produselor:", error);
 
-        setProductError(
-          "Produsele nu au putut fi incarcate."
-        );
+        setProductError("Produsele nu au putut fi incarcate.");
       })
       .finally(() => {
         setLoadingProducts(false);
@@ -71,75 +53,50 @@ function ClientMenuPage() {
 
     saveFeedback(feedback)
       .then(() => {
-        setFeedbackMessage(
-          "Feedback-ul a fost trimis cu succes."
-        );
+        setFeedbackMessage("Feedback-ul a fost trimis cu succes.");
 
         setFeedbackRating(5);
         setFeedbackComment("");
       })
       .catch((error) => {
-        console.error(
-          "Eroare la trimiterea feedback-ului:",
-          error
-        );
+        console.error("Eroare la trimiterea feedback-ului:", error);
 
-        setFeedbackMessage(
-          "Feedback-ul nu a putut fi trimis."
-        );
+        setFeedbackMessage("Feedback-ul nu a putut fi trimis.");
       });
   };
 
   const categories = [
     "ALL",
     ...new Set(
-      products
-        .map(
-          (product) =>
-            product.category?.name
-        )
-        .filter(Boolean)
+      products.map((product) => product.category?.name).filter(Boolean),
     ),
   ];
 
-  const filteredProducts =
-    products.filter((product) => {
-      const matchesCategory =
-        selectedCategory === "ALL"
-        || product.category?.name
-          === selectedCategory;
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "ALL" || product.category?.name === selectedCategory;
 
-      const matchesPrice =
-        maxPrice === ""
-        || Number(product.price)
-          <= Number(maxPrice);
+    const matchesPrice =
+      maxPrice === "" || Number(product.price) <= Number(maxPrice);
 
-      const matchesAvailability =
-        !onlyAvailable
-        || product.available;
+    const matchesAvailability = !onlyAvailable || product.available;
 
-      const matchesVegetarian =
-        !onlyVegetarian
-        || product.vegetarian === true;
+    const matchesVegetarian = !onlyVegetarian || product.vegetarian === true;
 
-      const matchesVegan =
-        !onlyVegan
-        || product.vegan === true;
+    const matchesVegan = !onlyVegan || product.vegan === true;
 
-      const matchesMeatType =
-        selectedMeatType === "ALL"
-        || product.meatType
-          === selectedMeatType;
+    const matchesMeatType =
+      selectedMeatType === "ALL" || product.meatType === selectedMeatType;
 
-      return (
-        matchesCategory
-        && matchesPrice
-        && matchesAvailability
-        && matchesVegetarian
-        && matchesVegan
-        && matchesMeatType
-      );
-    });
+    return (
+      matchesCategory &&
+      matchesPrice &&
+      matchesAvailability &&
+      matchesVegetarian &&
+      matchesVegan &&
+      matchesMeatType
+    );
+  });
 
   if (loadingProducts) {
     return (
@@ -147,9 +104,7 @@ function ClientMenuPage() {
         <header className="menu-header">
           <h1>Meniu</h1>
 
-          <p>
-            Se incarca produsele...
-          </p>
+          <p>Se incarca produsele...</p>
         </header>
       </div>
     );
@@ -161,9 +116,7 @@ function ClientMenuPage() {
         <header className="menu-header">
           <h1>Meniu</h1>
 
-          <p className="error-message">
-            {productError}
-          </p>
+          <p className="error-message">{productError}</p>
         </header>
       </div>
     );
@@ -177,36 +130,23 @@ function ClientMenuPage() {
 
       <section className="filters-section">
         <div className="filter-group">
-          <label htmlFor="category-filter">
-            Categorie
-          </label>
+          <label htmlFor="category-filter">Categorie</label>
 
           <select
             id="category-filter"
             value={selectedCategory}
-            onChange={(event) =>
-              setSelectedCategory(
-                event.target.value
-              )
-            }
+            onChange={(event) => setSelectedCategory(event.target.value)}
           >
             {categories.map((category) => (
-              <option
-                key={category}
-                value={category}
-              >
-                {category === "ALL"
-                  ? "Toate categoriile"
-                  : category}
+              <option key={category} value={category}>
+                {category === "ALL" ? "Toate categoriile" : category}
               </option>
             ))}
           </select>
         </div>
 
         <div className="filter-group">
-          <label htmlFor="max-price-filter">
-            Pret maxim
-          </label>
+          <label htmlFor="max-price-filter">Pret maxim</label>
 
           <input
             id="max-price-filter"
@@ -214,9 +154,7 @@ function ClientMenuPage() {
             min="0"
             placeholder="Ex: 35"
             value={maxPrice}
-            onChange={(event) =>
-              setMaxPrice(event.target.value)
-            }
+            onChange={(event) => setMaxPrice(event.target.value)}
           />
         </div>
 
@@ -224,27 +162,17 @@ function ClientMenuPage() {
           <input
             type="checkbox"
             checked={onlyAvailable}
-            onChange={(event) =>
-              setOnlyAvailable(
-                event.target.checked
-              )
-            }
+            onChange={(event) => setOnlyAvailable(event.target.checked)}
           />
 
-          <span>
-            Afiseaza doar produse disponibile
-          </span>
+          <span>Afiseaza doar produse disponibile</span>
         </label>
 
         <label className="checkbox-filter">
           <input
             type="checkbox"
             checked={onlyVegetarian}
-            onChange={(event) =>
-              setOnlyVegetarian(
-                event.target.checked
-              )
-            }
+            onChange={(event) => setOnlyVegetarian(event.target.checked)}
           />
 
           <span>Vegetarian</span>
@@ -254,82 +182,48 @@ function ClientMenuPage() {
           <input
             type="checkbox"
             checked={onlyVegan}
-            onChange={(event) =>
-              setOnlyVegan(
-                event.target.checked
-              )
-            }
+            onChange={(event) => setOnlyVegan(event.target.checked)}
           />
 
           <span>Vegan</span>
         </label>
 
         <div className="filter-group">
-          <label htmlFor="meat-type-filter">
-            Tip carne
-          </label>
+          <label htmlFor="meat-type-filter">Tip carne</label>
 
           <select
             id="meat-type-filter"
             value={selectedMeatType}
-            onChange={(event) =>
-              setSelectedMeatType(
-                event.target.value
-              )
-            }
+            onChange={(event) => setSelectedMeatType(event.target.value)}
           >
-            <option value="ALL">
-              Toate
-            </option>
+            <option value="ALL">Toate</option>
 
-            <option value="none">
-              Fara carne
-            </option>
+            <option value="none">Fara carne</option>
 
-            <option value="porc">
-              Porc
-            </option>
+            <option value="porc">Porc</option>
 
-            <option value="vita">
-              Vita
-            </option>
+            <option value="vita">Vita</option>
           </select>
         </div>
       </section>
 
-      <p className="results-info">
-        Produse afisate:{" "}
-        {filteredProducts.length}
-      </p>
+      <p className="results-info">Produse afisate: {filteredProducts.length}</p>
 
       <section className="product-grid">
         {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className={
-              `product-card ${
-                product.available
-                  ? ""
-                  : "unavailable"
-              }`
-            }
+            className={`product-card ${product.available ? "" : "unavailable"}`}
           >
             <div className="product-card-header">
               <span className="product-category">
-                {product.category?.name
-                  || "Fara categorie"}
+                {product.category?.name || "Fara categorie"}
               </span>
 
               <span
-                className={
-                  product.available
-                    ? "available"
-                    : "not-available"
-                }
+                className={product.available ? "available" : "not-available"}
               >
-                {product.available
-                  ? "Disponibil"
-                  : "Indisponibil"}
+                {product.available ? "Disponibil" : "Indisponibil"}
               </span>
             </div>
 
@@ -338,93 +232,55 @@ function ClientMenuPage() {
             <p>{product.description}</p>
 
             <div className="product-card-footer">
-              <strong>
-                {Number(product.price)
-                  .toFixed(2)}{" "}
-                lei
-              </strong>
+              <strong>{Number(product.price).toFixed(2)} lei</strong>
             </div>
           </div>
         ))}
       </section>
 
       <section className="feedback-section">
-        <h2>
-          Spuneți-ne cum a fost experiența
-        </h2>
+        <h2>Spuneți-ne cum a fost experiența</h2>
 
-        <form
-          onSubmit={handleFeedbackSubmit}
-          className="feedback-form"
-        >
+        <form onSubmit={handleFeedbackSubmit} className="feedback-form">
           <div className="filter-group">
-            <label htmlFor="feedback-rating">
-              Rating
-            </label>
+            <label htmlFor="feedback-rating">Rating</label>
 
             <select
               id="feedback-rating"
               value={feedbackRating}
-              onChange={(event) =>
-                setFeedbackRating(
-                  event.target.value
-                )
-              }
+              onChange={(event) => setFeedbackRating(event.target.value)}
             >
-              <option value="5">
-                5 - Foarte bine
-              </option>
+              <option value="5">5 - Foarte bine</option>
 
-              <option value="4">
-                4 - Bine
-              </option>
+              <option value="4">4 - Bine</option>
 
-              <option value="3">
-                3 - Mediu
-              </option>
+              <option value="3">3 - Mediu</option>
 
-              <option value="2">
-                2 - Slab
-              </option>
+              <option value="2">2 - Slab</option>
 
-              <option value="1">
-                1 - Foarte slab
-              </option>
+              <option value="1">1 - Foarte slab</option>
             </select>
           </div>
 
           <div className="feedback-comment-group">
-            <label htmlFor="feedback-comment">
-              Comentariu
-            </label>
+            <label htmlFor="feedback-comment">Comentariu</label>
 
             <textarea
               id="feedback-comment"
               value={feedbackComment}
-              onChange={(event) =>
-                setFeedbackComment(
-                  event.target.value
-                )
-              }
-              placeholder={
-                "Scrie un comentariu optional..."
-              }
+              onChange={(event) => setFeedbackComment(event.target.value)}
+              placeholder={"Scrie un comentariu optional..."}
               rows="4"
             />
           </div>
 
-          <button
-            type="submit"
-            className="feedback-button"
-          >
+          <button type="submit" className="feedback-button">
             Trimite feedback
           </button>
         </form>
 
         {feedbackMessage && (
-          <p className="feedback-message">
-            {feedbackMessage}
-          </p>
+          <p className="feedback-message">{feedbackMessage}</p>
         )}
       </section>
     </div>

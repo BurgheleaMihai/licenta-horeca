@@ -162,7 +162,7 @@ class RoleStaffRegressor(RegressorMixin, BaseEstimator):
         )
 
     def _require_fitted_state(
-            self,
+        self,
     ) -> tuple[GradientBoostingRegressor, np.ndarray]:
         """Returneaza atributele invatate dupa verificarea starii modelului."""
 
@@ -233,9 +233,9 @@ class RoleStaffRegressor(RegressorMixin, BaseEstimator):
         index_by_name = {name: index for index, name in enumerate(FEATURE_COLUMNS)}
 
         for name, importance in zip(
-                selected_feature_names,
-                model.feature_importances_,
-                strict=True,
+            selected_feature_names,
+            model.feature_importances_,
+            strict=True,
         ):
             full_importances[index_by_name[str(name)]] = float(importance)
 
@@ -274,9 +274,9 @@ class RoleSpecificStaffRegressor(RegressorMixin, BaseEstimator):
         if isinstance(target, pd.DataFrame):
             if all(column in target.columns for column in TARGET_COLUMNS):
                 values = target.loc[
-                         :,
-                         TARGET_COLUMNS,
-                         ].to_numpy(dtype=float)
+                    :,
+                    TARGET_COLUMNS,
+                ].to_numpy(dtype=float)
             elif target.shape[1] == len(TARGET_COLUMNS):
                 # La reantrenare, coloanele pot avea denumiri precum
                 # actual_waiters, actual_kitchen_staff si actual_bar_staff.
@@ -303,9 +303,9 @@ class RoleSpecificStaffRegressor(RegressorMixin, BaseEstimator):
         return self.estimators_
 
     def fit(
-            self,
-            features: FeatureInput,
-            target: TargetInput,
+        self,
+        features: FeatureInput,
+        target: TargetInput,
     ) -> Self:
         """Antreneaza separat regresorul fiecarui rol."""
 
@@ -342,8 +342,8 @@ class RoleSpecificStaffRegressor(RegressorMixin, BaseEstimator):
         return np.column_stack(predictions)
 
     def get_role_estimator(
-            self,
-            role_or_index: str | int,
+        self,
+        role_or_index: str | int,
     ) -> RoleStaffRegressor:
         """Returneaza regresorul asociat unui rol sau unui index."""
 

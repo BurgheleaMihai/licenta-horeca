@@ -56,27 +56,12 @@ const variantTypeLabels = {
   TEXT: "Varianta text",
 };
 
-const stockTypes = [
-  "AUXILIARY",
-  "WAREHOUSE",
-  "FRUIT_AND_VEGETABLE",
-];
+const stockTypes = ["AUXILIARY", "WAREHOUSE", "FRUIT_AND_VEGETABLE"];
 
-const measurementUnits = [
-  "PIECE",
-  "GRAM",
-  "KILOGRAM",
-  "MILLILITER",
-  "LITER",
-];
+const measurementUnits = ["PIECE", "GRAM", "KILOGRAM", "MILLILITER", "LITER"];
 
 const categoriesByStockType = {
-  AUXILIARY: [
-    "PACKAGING",
-    "CONSUMABLE",
-    "BEVERAGE_INGREDIENT",
-    "OTHER",
-  ],
+  AUXILIARY: ["PACKAGING", "CONSUMABLE", "BEVERAGE_INGREDIENT", "OTHER"],
   WAREHOUSE: [
     "MEAT",
     "DAIRY",
@@ -86,22 +71,16 @@ const categoriesByStockType = {
     "OTHER_INGREDIENT",
     "OTHER",
   ],
-  FRUIT_AND_VEGETABLE: [
-    "FRUIT",
-    "VEGETABLE",
-    "OTHER",
-  ],
+  FRUIT_AND_VEGETABLE: ["FRUIT", "VEGETABLE", "OTHER"],
 };
 
 function AdminStockConfigurationPage() {
   const [supplies, setSupplies] = useState([]);
   const [formData, setFormData] = useState(initialFormData);
   const [editingSupplyId, setEditingSupplyId] = useState(null);
-  const [selectedStockType, setSelectedStockType] =
-    useState("ALL");
+  const [selectedStockType, setSelectedStockType] = useState("ALL");
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -109,18 +88,12 @@ function AdminStockConfigurationPage() {
   }, []);
 
   const productNames = useMemo(() => {
-    return [...new Set(
-      supplies
-        .map((supply) => supply.name)
-        .filter(Boolean)
-    )].sort((firstName, secondName) =>
-      firstName.localeCompare(
-        secondName,
-        "ro",
-        {
-          sensitivity: "base",
-        }
-      )
+    return [
+      ...new Set(supplies.map((supply) => supply.name).filter(Boolean)),
+    ].sort((firstName, secondName) =>
+      firstName.localeCompare(secondName, "ro", {
+        sensitivity: "base",
+      }),
     );
   }, [supplies]);
 
@@ -128,8 +101,7 @@ function AdminStockConfigurationPage() {
     const groups = {};
 
     supplies.forEach((supply) => {
-      const groupKey =
-        `${supply.stockType}-${supply.name}`;
+      const groupKey = `${supply.stockType}-${supply.name}`;
 
       if (!groups[groupKey]) {
         groups[groupKey] = {
@@ -145,33 +117,21 @@ function AdminStockConfigurationPage() {
     return Object.values(groups)
       .map((group) => ({
         ...group,
-        supplies: [...group.supplies].sort(
-          (firstSupply, secondSupply) => {
-            const firstVariant =
-              firstSupply.variantName || "";
+        supplies: [...group.supplies].sort((firstSupply, secondSupply) => {
+          const firstVariant = firstSupply.variantName || "";
 
-            const secondVariant =
-              secondSupply.variantName || "";
+          const secondVariant = secondSupply.variantName || "";
 
-            return firstVariant.localeCompare(
-              secondVariant,
-              "ro",
-              {
-                numeric: true,
-                sensitivity: "base",
-              }
-            );
-          }
-        ),
+          return firstVariant.localeCompare(secondVariant, "ro", {
+            numeric: true,
+            sensitivity: "base",
+          });
+        }),
       }))
       .sort((firstGroup, secondGroup) =>
-        firstGroup.name.localeCompare(
-          secondGroup.name,
-          "ro",
-          {
-            sensitivity: "base",
-          }
-        )
+        firstGroup.name.localeCompare(secondGroup.name, "ro", {
+          sensitivity: "base",
+        }),
       );
   }, [supplies]);
 
@@ -183,14 +143,9 @@ function AdminStockConfigurationPage() {
         setSupplies(response.data);
       })
       .catch((error) => {
-        console.error(
-          "Eroare la incarcarea articolelor de stoc:",
-          error
-        );
+        console.error("Eroare la incarcarea articolelor de stoc:", error);
 
-        setErrorMessage(
-          "Articolele de stoc nu au putut fi incarcate."
-        );
+        setErrorMessage("Articolele de stoc nu au putut fi incarcate.");
       });
   };
 
@@ -205,19 +160,11 @@ function AdminStockConfigurationPage() {
   };
 
   const handleInputChange = (event) => {
-    const {
-      name,
-      value,
-      type,
-      checked,
-    } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setFormData((currentFormData) => ({
       ...currentFormData,
-      [name]:
-        type === "checkbox"
-          ? checked
-          : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -235,27 +182,22 @@ function AdminStockConfigurationPage() {
     }
 
     const selectedProductSupply = supplies.find(
-      (supply) => supply.name === selectedValue
+      (supply) => supply.name === selectedValue,
     );
 
     setFormData((currentFormData) => ({
       ...currentFormData,
       productSelection: selectedValue,
       name: selectedValue,
-      stockType:
-        selectedProductSupply?.stockType ||
-        currentFormData.stockType,
-      category:
-        selectedProductSupply?.category ||
-        currentFormData.category,
+      stockType: selectedProductSupply?.stockType || currentFormData.stockType,
+      category: selectedProductSupply?.category || currentFormData.category,
     }));
   };
 
   const handleStockTypeChange = (event) => {
     const newStockType = event.target.value;
 
-    const firstAvailableCategory =
-      categoriesByStockType[newStockType][0];
+    const firstAvailableCategory = categoriesByStockType[newStockType][0];
 
     setFormData((currentFormData) => ({
       ...currentFormData,
@@ -278,67 +220,39 @@ function AdminStockConfigurationPage() {
 
   const validateForm = () => {
     if (!formData.name.trim()) {
-      setErrorMessage(
-        "Denumirea produsului este obligatorie."
-      );
+      setErrorMessage("Denumirea produsului este obligatorie.");
 
       return false;
     }
 
-    const currentQuantity = Number(
-      formData.currentQuantity
-    );
+    const currentQuantity = Number(formData.currentQuantity);
 
-    const minimumQuantity = Number(
-      formData.minimumQuantity
-    );
+    const minimumQuantity = Number(formData.minimumQuantity);
 
-    if (
-      Number.isNaN(currentQuantity) ||
-      Number.isNaN(minimumQuantity)
-    ) {
-      setErrorMessage(
-        "Cantitatile introduse trebuie sa fie numere."
-      );
+    if (Number.isNaN(currentQuantity) || Number.isNaN(minimumQuantity)) {
+      setErrorMessage("Cantitatile introduse trebuie sa fie numere.");
 
       return false;
     }
 
-    if (
-      currentQuantity < 0 ||
-      minimumQuantity < 0
-    ) {
-      setErrorMessage(
-        "Cantitatile nu pot fi negative."
-      );
+    if (currentQuantity < 0 || minimumQuantity < 0) {
+      setErrorMessage("Cantitatile nu pot fi negative.");
 
       return false;
     }
 
-    if (
-      formData.variantType === "TEXT" &&
-      !formData.variantName.trim()
-    ) {
-      setErrorMessage(
-        "Denumirea variantei este obligatorie."
-      );
+    if (formData.variantType === "TEXT" && !formData.variantName.trim()) {
+      setErrorMessage("Denumirea variantei este obligatorie.");
 
       return false;
     }
 
-    if (
-      formData.variantType === "MEASUREMENT"
-    ) {
-      const specificationValue = Number(
-        formData.specificationValue
-      );
+    if (formData.variantType === "MEASUREMENT") {
+      const specificationValue = Number(formData.specificationValue);
 
-      if (
-        Number.isNaN(specificationValue) ||
-        specificationValue <= 0
-      ) {
+      if (Number.isNaN(specificationValue) || specificationValue <= 0) {
         setErrorMessage(
-          "Valoarea variantei trebuie sa fie mai mare decat zero."
+          "Valoarea variantei trebuie sa fie mai mare decat zero.",
         );
 
         return false;
@@ -357,29 +271,19 @@ function AdminStockConfigurationPage() {
       stockType: formData.stockType,
       category: formData.category,
       baseUnit: formData.baseUnit,
-      currentQuantity: Number(
-        formData.currentQuantity
-      ),
-      minimumQuantity: Number(
-        formData.minimumQuantity
-      ),
+      currentQuantity: Number(formData.currentQuantity),
+      minimumQuantity: Number(formData.minimumQuantity),
       active: formData.active,
     };
 
     if (formData.variantType === "TEXT") {
-      supplyData.variantName =
-        formData.variantName.trim();
+      supplyData.variantName = formData.variantName.trim();
     }
 
-    if (
-      formData.variantType === "MEASUREMENT"
-    ) {
-      supplyData.specificationValue = Number(
-        formData.specificationValue
-      );
+    if (formData.variantType === "MEASUREMENT") {
+      supplyData.specificationValue = Number(formData.specificationValue);
 
-      supplyData.specificationUnit =
-        formData.specificationUnit;
+      supplyData.specificationUnit = formData.specificationUnit;
     }
 
     return supplyData;
@@ -400,10 +304,7 @@ function AdminStockConfigurationPage() {
     setSaving(true);
 
     const request = editingSupplyId
-      ? updateAuxiliarySupply(
-          editingSupplyId,
-          supplyData
-        )
+      ? updateAuxiliarySupply(editingSupplyId, supplyData)
       : createAuxiliarySupply(supplyData);
 
     request
@@ -411,21 +312,18 @@ function AdminStockConfigurationPage() {
         setSuccessMessage(
           editingSupplyId
             ? "Varianta de stoc a fost modificata."
-            : "Varianta de stoc a fost adaugata."
+            : "Varianta de stoc a fost adaugata.",
         );
 
         resetForm();
         loadSupplies();
       })
       .catch((error) => {
-        console.error(
-          "Eroare la salvarea variantei:",
-          error
-        );
+        console.error("Eroare la salvarea variantei:", error);
 
         setErrorMessage(
           error.response?.data?.message ||
-            "Varianta de stoc nu a putut fi salvata."
+            "Varianta de stoc nu a putut fi salvata.",
         );
       })
       .finally(() => {
@@ -434,10 +332,7 @@ function AdminStockConfigurationPage() {
   };
 
   const determineVariantType = (supply) => {
-    if (
-      supply.specificationValue != null &&
-      supply.specificationUnit
-    ) {
+    if (supply.specificationValue != null && supply.specificationUnit) {
       return "MEASUREMENT";
     }
 
@@ -449,8 +344,7 @@ function AdminStockConfigurationPage() {
   };
 
   const handleEdit = (supply) => {
-    const variantType =
-      determineVariantType(supply);
+    const variantType = determineVariantType(supply);
 
     setEditingSupplyId(supply.id);
     setSuccessMessage("");
@@ -460,29 +354,17 @@ function AdminStockConfigurationPage() {
       productSelection: supply.name,
       name: supply.name || "",
       variantType,
-      variantName:
-        variantType === "TEXT"
-          ? supply.variantName || ""
-          : "",
+      variantName: variantType === "TEXT" ? supply.variantName || "" : "",
       specificationValue:
         supply.specificationValue != null
           ? String(supply.specificationValue)
           : "",
-      specificationUnit:
-        supply.specificationUnit ||
-        "MILLILITER",
-      stockType:
-        supply.stockType || "AUXILIARY",
-      category:
-        supply.category || "OTHER",
-      baseUnit:
-        supply.baseUnit || "PIECE",
-      currentQuantity: String(
-        supply.currentQuantity ?? 0
-      ),
-      minimumQuantity: String(
-        supply.minimumQuantity ?? 0
-      ),
+      specificationUnit: supply.specificationUnit || "MILLILITER",
+      stockType: supply.stockType || "AUXILIARY",
+      category: supply.category || "OTHER",
+      baseUnit: supply.baseUnit || "PIECE",
+      currentQuantity: String(supply.currentQuantity ?? 0),
+      minimumQuantity: String(supply.minimumQuantity ?? 0),
       active: supply.active ?? true,
     });
 
@@ -498,7 +380,7 @@ function AdminStockConfigurationPage() {
       : supply.name;
 
     const confirmed = globalThis.confirm(
-      `Sigur doresti sa stergi "${completeName}"?`
+      `Sigur doresti sa stergi "${completeName}"?`,
     );
 
     if (!confirmed) {
@@ -510,9 +392,7 @@ function AdminStockConfigurationPage() {
 
     deleteAuxiliarySupply(supply.id)
       .then(() => {
-        setSuccessMessage(
-          "Varianta de stoc a fost stearsa."
-        );
+        setSuccessMessage("Varianta de stoc a fost stearsa.");
 
         if (editingSupplyId === supply.id) {
           resetForm();
@@ -521,14 +401,11 @@ function AdminStockConfigurationPage() {
         loadSupplies();
       })
       .catch((error) => {
-        console.error(
-          "Eroare la stergerea variantei:",
-          error
-        );
+        console.error("Eroare la stergerea variantei:", error);
 
         setErrorMessage(
           "Varianta nu a putut fi stearsa. " +
-            "Verifica daca are intrari de stoc salvate."
+            "Verifica daca are intrari de stoc salvate.",
         );
       });
   };
@@ -537,83 +414,56 @@ function AdminStockConfigurationPage() {
     selectedStockType === "ALL"
       ? groupedSupplies
       : groupedSupplies.filter(
-          (group) =>
-            group.stockType === selectedStockType
+          (group) => group.stockType === selectedStockType,
         );
 
-  const availableCategories =
-    categoriesByStockType[
-      formData.stockType
-    ] || ["OTHER"];
+  const availableCategories = categoriesByStockType[formData.stockType] || [
+    "OTHER",
+  ];
 
-  const selectedExistingProduct =
-    formData.productSelection !== "NEW";
+  const selectedExistingProduct = formData.productSelection !== "NEW";
 
   return (
     <div className="stock-configuration-page">
       <header className="stock-configuration-header">
         <h1>Configurare stocuri</h1>
 
-        <p>
-          Configureaza produsele de baza si
-          variantele acestora.
-        </p>
+        <p>Configureaza produsele de baza si variantele acestora.</p>
 
-        <button
-          type="button"
-          onClick={handleBackToAdmin}
-        >
+        <button type="button" onClick={handleBackToAdmin}>
           Inapoi la panoul de administrare
         </button>
       </header>
 
       {errorMessage && (
-        <p className="error-message stock-page-message">
-          {errorMessage}
-        </p>
+        <p className="error-message stock-page-message">{errorMessage}</p>
       )}
 
       {successMessage && (
-        <p className="feedback-message stock-page-message">
-          {successMessage}
-        </p>
+        <p className="feedback-message stock-page-message">{successMessage}</p>
       )}
 
       <section className="stock-configuration-section">
         <h2>
-          {editingSupplyId
-            ? "Modifica varianta"
-            : "Adauga produs sau varianta"}
+          {editingSupplyId ? "Modifica varianta" : "Adauga produs sau varianta"}
         </h2>
 
-        <form
-          className="stock-configuration-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="stock-configuration-form" onSubmit={handleSubmit}>
           <div className="stock-form-grid">
             <div className="filter-group">
-              <label htmlFor="product-selection">
-                Produs de baza
-              </label>
+              <label htmlFor="product-selection">Produs de baza</label>
 
               <select
                 id="product-selection"
                 name="productSelection"
                 value={formData.productSelection}
-                onChange={
-                  handleProductSelectionChange
-                }
+                onChange={handleProductSelectionChange}
                 disabled={Boolean(editingSupplyId)}
               >
-                <option value="NEW">
-                  Produs nou
-                </option>
+                <option value="NEW">Produs nou</option>
 
                 {productNames.map((productName) => (
-                  <option
-                    key={productName}
-                    value={productName}
-                  >
+                  <option key={productName} value={productName}>
                     {productName}
                   </option>
                 ))}
@@ -622,9 +472,7 @@ function AdminStockConfigurationPage() {
 
             {!selectedExistingProduct && (
               <div className="filter-group">
-                <label htmlFor="stock-name">
-                  Denumire produs nou
-                </label>
+                <label htmlFor="stock-name">Denumire produs nou</label>
 
                 <input
                   id="stock-name"
@@ -639,9 +487,7 @@ function AdminStockConfigurationPage() {
 
             {selectedExistingProduct && (
               <div className="filter-group">
-                <label htmlFor="selected-name">
-                  Denumire produs
-                </label>
+                <label htmlFor="selected-name">Denumire produs</label>
 
                 <input
                   id="selected-name"
@@ -653,9 +499,7 @@ function AdminStockConfigurationPage() {
             )}
 
             <div className="filter-group">
-              <label htmlFor="variant-type">
-                Tip varianta
-              </label>
+              <label htmlFor="variant-type">Tip varianta</label>
 
               <select
                 id="variant-type"
@@ -663,13 +507,8 @@ function AdminStockConfigurationPage() {
                 value={formData.variantType}
                 onChange={handleVariantTypeChange}
               >
-                {Object.entries(
-                  variantTypeLabels
-                ).map(([value, label]) => (
-                  <option
-                    key={value}
-                    value={value}
-                  >
+                {Object.entries(variantTypeLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
                     {label}
                   </option>
                 ))}
@@ -678,9 +517,7 @@ function AdminStockConfigurationPage() {
 
             {formData.variantType === "TEXT" && (
               <div className="filter-group">
-                <label htmlFor="variant-name">
-                  Denumire varianta
-                </label>
+                <label htmlFor="variant-name">Denumire varianta</label>
 
                 <input
                   id="variant-name"
@@ -693,13 +530,10 @@ function AdminStockConfigurationPage() {
               </div>
             )}
 
-            {formData.variantType ===
-              "MEASUREMENT" && (
+            {formData.variantType === "MEASUREMENT" && (
               <>
                 <div className="filter-group">
-                  <label htmlFor="specification-value">
-                    Valoare varianta
-                  </label>
+                  <label htmlFor="specification-value">Valoare varianta</label>
 
                   <input
                     id="specification-value"
@@ -707,32 +541,23 @@ function AdminStockConfigurationPage() {
                     type="number"
                     min="1"
                     step="1"
-                    value={
-                      formData.specificationValue
-                    }
+                    value={formData.specificationValue}
                     onChange={handleInputChange}
                     placeholder="Exemplu: 200"
                   />
                 </div>
 
                 <div className="filter-group">
-                  <label htmlFor="specification-unit">
-                    Unitate varianta
-                  </label>
+                  <label htmlFor="specification-unit">Unitate varianta</label>
 
                   <select
                     id="specification-unit"
                     name="specificationUnit"
-                    value={
-                      formData.specificationUnit
-                    }
+                    value={formData.specificationUnit}
                     onChange={handleInputChange}
                   >
                     {measurementUnits.map((unit) => (
-                      <option
-                        key={unit}
-                        value={unit}
-                      >
+                      <option key={unit} value={unit}>
                         {unitLabels[unit]}
                       </option>
                     ))}
@@ -742,9 +567,7 @@ function AdminStockConfigurationPage() {
             )}
 
             <div className="filter-group">
-              <label htmlFor="stock-type">
-                Zona de stoc
-              </label>
+              <label htmlFor="stock-type">Zona de stoc</label>
 
               <select
                 id="stock-type"
@@ -754,10 +577,7 @@ function AdminStockConfigurationPage() {
                 disabled={selectedExistingProduct}
               >
                 {stockTypes.map((stockType) => (
-                  <option
-                    key={stockType}
-                    value={stockType}
-                  >
+                  <option key={stockType} value={stockType}>
                     {stockTypeLabels[stockType]}
                   </option>
                 ))}
@@ -765,9 +585,7 @@ function AdminStockConfigurationPage() {
             </div>
 
             <div className="filter-group">
-              <label htmlFor="stock-category">
-                Categorie
-              </label>
+              <label htmlFor="stock-category">Categorie</label>
 
               <select
                 id="stock-category"
@@ -776,23 +594,16 @@ function AdminStockConfigurationPage() {
                 onChange={handleInputChange}
                 disabled={selectedExistingProduct}
               >
-                {availableCategories.map(
-                  (category) => (
-                    <option
-                      key={category}
-                      value={category}
-                    >
-                      {categoryLabels[category]}
-                    </option>
-                  )
-                )}
+                {availableCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {categoryLabels[category]}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="filter-group">
-              <label htmlFor="base-unit">
-                Unitate stoc
-              </label>
+              <label htmlFor="base-unit">Unitate stoc</label>
 
               <select
                 id="base-unit"
@@ -801,10 +612,7 @@ function AdminStockConfigurationPage() {
                 onChange={handleInputChange}
               >
                 {measurementUnits.map((unit) => (
-                  <option
-                    key={unit}
-                    value={unit}
-                  >
+                  <option key={unit} value={unit}>
                     {unitLabels[unit]}
                   </option>
                 ))}
@@ -812,9 +620,7 @@ function AdminStockConfigurationPage() {
             </div>
 
             <div className="filter-group">
-              <label htmlFor="current-quantity">
-                Cantitate initiala
-              </label>
+              <label htmlFor="current-quantity">Cantitate initiala</label>
 
               <input
                 id="current-quantity"
@@ -828,9 +634,7 @@ function AdminStockConfigurationPage() {
             </div>
 
             <div className="filter-group">
-              <label htmlFor="minimum-quantity">
-                Prag minim
-              </label>
+              <label htmlFor="minimum-quantity">Prag minim</label>
 
               <input
                 id="minimum-quantity"
@@ -851,15 +655,11 @@ function AdminStockConfigurationPage() {
               checked={formData.active}
               onChange={handleInputChange}
             />
-
             Varianta activa
           </label>
 
           <div className="stock-form-actions">
-            <button
-              type="submit"
-              disabled={saving}
-            >
+            <button type="submit" disabled={saving}>
               {saving
                 ? "Se salveaza..."
                 : editingSupplyId
@@ -891,9 +691,7 @@ function AdminStockConfigurationPage() {
                 ? "stock-filter-button active-filter"
                 : "stock-filter-button"
             }
-            onClick={() =>
-              setSelectedStockType("ALL")
-            }
+            onClick={() => setSelectedStockType("ALL")}
           >
             Toate
           </button>
@@ -907,9 +705,7 @@ function AdminStockConfigurationPage() {
                   ? "stock-filter-button active-filter"
                   : "stock-filter-button"
               }
-              onClick={() =>
-                setSelectedStockType(stockType)
-              }
+              onClick={() => setSelectedStockType(stockType)}
             >
               {stockTypeLabels[stockType]}
             </button>
@@ -917,28 +713,18 @@ function AdminStockConfigurationPage() {
         </div>
 
         {filteredGroups.length === 0 ? (
-          <p>
-            Nu exista produse in aceasta zona.
-          </p>
+          <p>Nu exista produse in aceasta zona.</p>
         ) : (
           <div className="stock-product-groups">
             {filteredGroups.map((group) => (
               <div
-                key={
-                  `${group.stockType}-${group.name}`
-                }
+                key={`${group.stockType}-${group.name}`}
                 className="stock-product-group"
               >
                 <div className="stock-product-group-header">
                   <h3>{group.name}</h3>
 
-                  <span>
-                    {
-                      stockTypeLabels[
-                        group.stockType
-                      ]
-                    }
-                  </span>
+                  <span>{stockTypeLabels[group.stockType]}</span>
                 </div>
 
                 <div className="stock-items-grid">
@@ -951,33 +737,22 @@ function AdminStockConfigurationPage() {
                           : "stock-item-card inactive-stock-item"
                       }
                     >
-                      <h4>
-                        {supply.variantName ||
-                          "Varianta unica"}
-                      </h4>
+                      <h4>{supply.variantName || "Varianta unica"}</h4>
 
                       <p>
                         Categorie:{" "}
                         <strong>
-                          {categoryLabels[
-                            supply.category
-                          ] || supply.category}
+                          {categoryLabels[supply.category] || supply.category}
                         </strong>
                       </p>
 
-                      {supply.specificationValue !=
-                        null &&
+                      {supply.specificationValue != null &&
                         supply.specificationUnit && (
                           <p>
                             Specificatie:{" "}
                             <strong>
-                              {
-                                supply.specificationValue
-                              }{" "}
-                              {unitLabels[
-                                supply
-                                  .specificationUnit
-                              ]}
+                              {supply.specificationValue}{" "}
+                              {unitLabels[supply.specificationUnit]}
                             </strong>
                           </p>
                         )}
@@ -986,9 +761,7 @@ function AdminStockConfigurationPage() {
                         Cantitate:{" "}
                         <strong>
                           {supply.currentQuantity}{" "}
-                          {unitLabels[
-                            supply.baseUnit
-                          ] || supply.baseUnit}
+                          {unitLabels[supply.baseUnit] || supply.baseUnit}
                         </strong>
                       </p>
 
@@ -996,27 +769,19 @@ function AdminStockConfigurationPage() {
                         Prag minim:{" "}
                         <strong>
                           {supply.minimumQuantity}{" "}
-                          {unitLabels[
-                            supply.baseUnit
-                          ] || supply.baseUnit}
+                          {unitLabels[supply.baseUnit] || supply.baseUnit}
                         </strong>
                       </p>
 
                       <p>
                         Status:{" "}
-                        <strong>
-                          {supply.active
-                            ? "Activa"
-                            : "Inactiva"}
-                        </strong>
+                        <strong>{supply.active ? "Activa" : "Inactiva"}</strong>
                       </p>
 
                       <div className="stock-card-actions">
                         <button
                           type="button"
-                          onClick={() =>
-                            handleEdit(supply)
-                          }
+                          onClick={() => handleEdit(supply)}
                         >
                           Modifica
                         </button>
@@ -1024,9 +789,7 @@ function AdminStockConfigurationPage() {
                         <button
                           type="button"
                           className="danger-button"
-                          onClick={() =>
-                            handleDelete(supply)
-                          }
+                          onClick={() => handleDelete(supply)}
                         >
                           Sterge
                         </button>

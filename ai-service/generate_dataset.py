@@ -38,6 +38,7 @@ rng = np.random.default_rng(RANDOM_SEED)
 # Functii generale
 # ---------------------------------------------------------------------------
 
+
 def clamp(value, minimum, maximum):
     """Limiteaza o valoare la intervalul [minimum, maximum]."""
 
@@ -48,12 +49,13 @@ def clamp(value, minimum, maximum):
 # Trafic si context calendaristic
 # ---------------------------------------------------------------------------
 
+
 def get_base_traffic_score(
-        day_of_week,
-        hour,
-        is_exam_period,
-        is_holiday_period,
-        campus_event_level,
+    day_of_week,
+    hour,
+    is_exam_period,
+    is_holiday_period,
+    campus_event_level,
 ):
     """
     Calculeaza scorul de baza al traficului.
@@ -149,9 +151,7 @@ def label_traffic(traffic_score):
 def calculate_demand_intensity(operational_score):
     """Transforma scorul operational intr-o intensitate intre 0 si 1."""
 
-    intensity = 1.0 / (
-            1.0 + math.exp(-(operational_score - 2.0) / 1.8)
-    )
+    intensity = 1.0 / (1.0 + math.exp(-(operational_score - 2.0) / 1.8))
 
     return float(clamp(intensity, 0.0, 1.0))
 
@@ -159,6 +159,7 @@ def calculate_demand_intensity(operational_score):
 # ---------------------------------------------------------------------------
 # Recomandarea si prezenta personalului
 # ---------------------------------------------------------------------------
+
 
 def apply_managerial_variation(recommendation, minimum, maximum):
     """
@@ -175,49 +176,35 @@ def apply_managerial_variation(recommendation, minimum, maximum):
 
 
 def recommend_staff(
-        hour,
-        active_orders,
-        occupied_tables,
-        kitchen_load,
-        bar_load,
-        orders_last_30_min,
-        campus_event_level,
+    hour,
+    active_orders,
+    occupied_tables,
+    kitchen_load,
+    bar_load,
+    orders_last_30_min,
+    campus_event_level,
 ):
     """Estimeaza necesarul de ospatari, personal de bucatarie si bar."""
 
-    is_peak_interval = int(
-        11 <= hour <= 14 or 18 <= hour <= 21
-    )
+    is_peak_interval = int(11 <= hour <= 14 or 18 <= hour <= 21)
 
     waiter_pressure = (
-            occupied_tables / 4.0
-            + active_orders / 10.0
-            + orders_last_30_min / 18.0
-            + is_peak_interval * 0.20
-            + campus_event_level * 0.15
+        occupied_tables / 4.0
+        + active_orders / 10.0
+        + orders_last_30_min / 18.0
+        + is_peak_interval * 0.20
+        + campus_event_level * 0.15
     )
 
     kitchen_pressure = (
-            kitchen_load / 7.0
-            + active_orders / 15.0
-            + is_peak_interval * 0.15
+        kitchen_load / 7.0 + active_orders / 15.0 + is_peak_interval * 0.15
     )
 
-    bar_pressure = (
-            bar_load / 7.5
-            + campus_event_level * 0.20
-            + is_peak_interval * 0.10
-    )
+    bar_pressure = bar_load / 7.5 + campus_event_level * 0.20 + is_peak_interval * 0.10
 
-    recommended_waiters = math.ceil(
-        waiter_pressure + rng.normal(0.0, 0.18)
-    )
-    recommended_kitchen_staff = math.ceil(
-        kitchen_pressure + rng.normal(0.0, 0.18)
-    )
-    recommended_bar_staff = math.ceil(
-        bar_pressure + rng.normal(0.0, 0.16)
-    )
+    recommended_waiters = math.ceil(waiter_pressure + rng.normal(0.0, 0.18))
+    recommended_kitchen_staff = math.ceil(kitchen_pressure + rng.normal(0.0, 0.18))
+    recommended_bar_staff = math.ceil(bar_pressure + rng.normal(0.0, 0.16))
 
     recommended_waiters = apply_managerial_variation(
         recommended_waiters,
@@ -260,22 +247,16 @@ def generate_planned_staff(recommended_staff):
 
 
 def generate_active_staff(
-        planned_staff,
-        is_exam_period,
-        is_holiday_period,
-        recommended_staff,
+    planned_staff,
+    is_exam_period,
+    is_holiday_period,
+    recommended_staff,
 ):
     """Genereaza personalul prezent dupa absente si interventia managerului."""
 
-    absence_probability = (
-            0.05
-            + is_exam_period * 0.03
-            + is_holiday_period * 0.02
-    )
+    absence_probability = 0.05 + is_exam_period * 0.03 + is_holiday_period * 0.02
 
-    absent_staff = int(
-        rng.binomial(planned_staff, absence_probability)
-    )
+    absent_staff = int(rng.binomial(planned_staff, absence_probability))
     active_staff = planned_staff - absent_staff
 
     # Uneori managerul reuseste sa cheme un angajat suplimentar.
@@ -289,30 +270,31 @@ def generate_active_staff(
 # Risc de intarziere
 # ---------------------------------------------------------------------------
 
+
 def label_delay_risk(
-        orders_per_waiter,
-        kitchen_items_per_employee,
-        bar_items_per_employee,
-        waiter_deficit,
-        kitchen_deficit,
-        bar_deficit,
-        avg_preparation_time,
-        order_age_minutes,
-        recent_missed_shifts,
+    orders_per_waiter,
+    kitchen_items_per_employee,
+    bar_items_per_employee,
+    waiter_deficit,
+    kitchen_deficit,
+    bar_deficit,
+    avg_preparation_time,
+    order_age_minutes,
+    recent_missed_shifts,
 ):
     """Calculeaza si eticheteaza riscul operational de intarziere."""
 
     risk_score = (
-            orders_per_waiter * 0.45
-            + kitchen_items_per_employee * 0.45
-            + bar_items_per_employee * 0.35
-            + max(waiter_deficit, 0) * 0.90
-            + max(kitchen_deficit, 0) * 1.10
-            + max(bar_deficit, 0) * 0.70
-            + avg_preparation_time / 11.0
-            + order_age_minutes / 16.0
-            + recent_missed_shifts * 0.35
-            + rng.normal(0.0, 0.95)
+        orders_per_waiter * 0.45
+        + kitchen_items_per_employee * 0.45
+        + bar_items_per_employee * 0.35
+        + max(waiter_deficit, 0) * 0.90
+        + max(kitchen_deficit, 0) * 1.10
+        + max(bar_deficit, 0) * 0.70
+        + avg_preparation_time / 11.0
+        + order_age_minutes / 16.0
+        + recent_missed_shifts * 0.35
+        + rng.normal(0.0, 0.95)
     )
 
     if risk_score < 5.0:
@@ -327,6 +309,7 @@ def label_delay_risk(
 # ---------------------------------------------------------------------------
 # Generarea unui rand
 # ---------------------------------------------------------------------------
+
 
 def generate_row():
     """Genereaza o singura situatie operationala completa."""
@@ -350,23 +333,15 @@ def generate_row():
 
     # Cererea latenta nu este observata direct de model. Ea introduce variatii
     # pe care regulile calendaristice nu le pot explica perfect.
-    latent_demand_score = (
-            base_traffic_score + rng.normal(0.0, 1.35)
-    )
+    latent_demand_score = base_traffic_score + rng.normal(0.0, 1.35)
 
     # Eticheta si datele operationale primesc zgomot separat. Astfel,
     # distributiile claselor se suprapun intr-un mod mai realist.
-    traffic_label_score = (
-            latent_demand_score + rng.normal(0.0, 0.55)
-    )
+    traffic_label_score = latent_demand_score + rng.normal(0.0, 0.55)
     traffic_level = label_traffic(traffic_label_score)
 
-    operational_score = (
-            latent_demand_score + rng.normal(0.0, 0.90)
-    )
-    demand_intensity = calculate_demand_intensity(
-        operational_score
-    )
+    operational_score = latent_demand_score + rng.normal(0.0, 0.90)
+    demand_intensity = calculate_demand_intensity(operational_score)
 
     active_orders = int(
         clamp(
@@ -374,7 +349,7 @@ def generate_row():
                 rng.normal(
                     0.5 + 14.0 * demand_intensity,
                     1.8,
-                    )
+                )
             ),
             0,
             20,
@@ -383,23 +358,16 @@ def generate_row():
 
     occupied_probability = float(
         clamp(
-            0.03
-            + 0.85 * demand_intensity
-            + rng.normal(0.0, 0.04),
+            0.03 + 0.85 * demand_intensity + rng.normal(0.0, 0.04),
             0.02,
             0.98,
-            )
+        )
     )
-    occupied_tables = int(
-        rng.binomial(TOTAL_TABLES, occupied_probability)
-    )
+    occupied_tables = int(rng.binomial(TOTAL_TABLES, occupied_probability))
 
     estimated_occupancy = int(
         clamp(
-            round(
-                occupied_tables * 100 / TOTAL_TABLES
-                + rng.normal(0.0, 7.0)
-            ),
+            round(occupied_tables * 100 / TOTAL_TABLES + rng.normal(0.0, 7.0)),
             0,
             100,
         )
@@ -411,7 +379,7 @@ def generate_row():
                 rng.normal(
                     0.5 + 20.0 * demand_intensity,
                     3.0,
-                    )
+                )
             ),
             0,
             30,
@@ -420,10 +388,7 @@ def generate_row():
 
     item_count = int(
         clamp(
-            round(
-                active_orders * rng.uniform(1.0, 2.2)
-                + rng.normal(0.0, 2.0)
-            ),
+            round(active_orders * rng.uniform(1.0, 2.2) + rng.normal(0.0, 2.0)),
             0,
             40,
         )
@@ -440,9 +405,7 @@ def generate_row():
                 0.85,
             )
         )
-        kitchen_load = int(
-            rng.binomial(item_count, kitchen_share)
-        )
+        kitchen_load = int(rng.binomial(item_count, kitchen_share))
         bar_load = item_count - kitchen_load
 
     (
@@ -459,15 +422,9 @@ def generate_row():
         campus_event_level,
     )
 
-    planned_waiters = generate_planned_staff(
-        recommended_waiters
-    )
-    planned_kitchen = generate_planned_staff(
-        recommended_kitchen_staff
-    )
-    planned_bar = generate_planned_staff(
-        recommended_bar_staff
-    )
+    planned_waiters = generate_planned_staff(recommended_waiters)
+    planned_kitchen = generate_planned_staff(recommended_kitchen_staff)
+    planned_bar = generate_planned_staff(recommended_bar_staff)
 
     (
         active_waiters,
@@ -504,25 +461,13 @@ def generate_row():
     bar_deficit = recommended_bar_staff - active_bar
 
     orders_per_waiter = active_orders / max(active_waiters, 1)
-    kitchen_items_per_employee = (
-            kitchen_load / max(active_kitchen, 1)
-    )
-    bar_items_per_employee = (
-            bar_load / max(active_bar, 1)
-    )
-    occupancy_per_waiter = (
-            occupied_tables / max(active_waiters, 1)
-    )
+    kitchen_items_per_employee = kitchen_load / max(active_kitchen, 1)
+    bar_items_per_employee = bar_load / max(active_bar, 1)
+    occupancy_per_waiter = occupied_tables / max(active_waiters, 1)
 
-    total_planned_staff = (
-            planned_waiters + planned_kitchen + planned_bar
-    )
-    total_active_staff = (
-            active_waiters + active_kitchen + active_bar
-    )
-    scheduled_vs_present_ratio = (
-            total_active_staff / max(total_planned_staff, 1)
-    )
+    total_planned_staff = planned_waiters + planned_kitchen + planned_bar
+    total_active_staff = active_waiters + active_kitchen + active_bar
+    scheduled_vs_present_ratio = total_active_staff / max(total_planned_staff, 1)
 
     recent_missed_shifts = int(
         clamp(
@@ -531,7 +476,7 @@ def generate_row():
                 + max(
                     0.0,
                     1.0 - scheduled_vs_present_ratio,
-                    )
+                )
                 * 2.5
                 + is_exam_period * 0.15
             ),
@@ -555,9 +500,7 @@ def generate_row():
     )
 
     positive_total_deficit = (
-            max(waiter_deficit, 0)
-            + max(kitchen_deficit, 0)
-            + max(bar_deficit, 0)
+        max(waiter_deficit, 0) + max(kitchen_deficit, 0) + max(bar_deficit, 0)
     )
 
     order_age_minutes = int(
@@ -598,7 +541,6 @@ def generate_row():
         "orders_last_30_min": orders_last_30_min,
         "order_age_minutes": order_age_minutes,
         "item_count": item_count,
-
         # Programarea, prezenta si deficitul de personal.
         "planned_waiters": planned_waiters,
         "planned_kitchen": planned_kitchen,
@@ -612,7 +554,6 @@ def generate_row():
         "waiter_deficit": waiter_deficit,
         "kitchen_deficit": kitchen_deficit,
         "bar_deficit": bar_deficit,
-
         # Rapoarte operationale folosite de modelul de intarziere.
         "orders_per_waiter": round(orders_per_waiter, 3),
         "kitchen_items_per_employee": round(
@@ -631,13 +572,11 @@ def generate_row():
             scheduled_vs_present_ratio,
             3,
         ),
-
         # Context academic si operational suplimentar.
         "recent_missed_shifts": recent_missed_shifts,
         "is_exam_period": is_exam_period,
         "is_holiday_period": is_holiday_period,
         "campus_event_level": campus_event_level,
-
         # Etichete si rezultate asteptate.
         "traffic_level": traffic_level,
         "recommended_waiters": recommended_waiters,
@@ -650,6 +589,7 @@ def generate_row():
 # ---------------------------------------------------------------------------
 # Afisare si salvare
 # ---------------------------------------------------------------------------
+
 
 def print_dataset_summary(dataframe):
     """Afiseaza distributiile si cateva statistici de control."""
@@ -707,10 +647,7 @@ def print_dataset_summary(dataframe):
         .sum()
     )
 
-    print(
-        "Randuri cu cel putin un deficit de personal: "
-        f"{rows_with_staff_deficit}"
-    )
+    print(f"Randuri cu cel putin un deficit de personal: {rows_with_staff_deficit}")
     print(
         "Procent randuri cu deficit: "
         f"{rows_with_staff_deficit / len(dataframe) * 100:.2f}%"
