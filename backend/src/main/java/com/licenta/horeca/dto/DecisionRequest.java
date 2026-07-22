@@ -3,34 +3,103 @@ package com.licenta.horeca.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DecisionRequest {
-    @JsonProperty("day_of_week") private int dayOfWeek;
 
-    @JsonProperty("hour") private int hour;
+    @JsonProperty("day_of_week")
+    private int dayOfWeek;
 
-    @JsonProperty("active_orders") private int activeOrders;
+    @JsonProperty("hour")
+    private int hour;
 
-    @JsonProperty("occupied_tables") private int occupiedTables;
+    @JsonProperty("active_orders")
+    private int activeOrders;
 
-    @JsonProperty("estimated_occupancy") private int estimatedOccupancy;
+    @JsonProperty("occupied_tables")
+    private int occupiedTables;
 
-    @JsonProperty("kitchen_load") private int kitchenLoad;
+    @JsonProperty("estimated_occupancy")
+    private int estimatedOccupancy;
 
-    @JsonProperty("bar_load") private int barLoad;
+    @JsonProperty("kitchen_load")
+    private int kitchenLoad;
 
-    @JsonProperty("avg_preparation_time") private int avgPreparationTime;
+    @JsonProperty("bar_load")
+    private int barLoad;
 
-    @JsonProperty("orders_last_30_min") private int ordersLast30Min;
+    @JsonProperty("avg_preparation_time")
+    private int avgPreparationTime;
 
-    @JsonProperty("order_age_minutes") private int orderAgeMinutes;
+    @JsonProperty("orders_last_30_min")
+    private int ordersLast30Min;
 
-    @JsonProperty("item_count") private int itemCount;
+    @JsonProperty("order_age_minutes")
+    private int orderAgeMinutes;
 
-    public DecisionRequest() {}
+    @JsonProperty("item_count")
+    private int itemCount;
 
-    public DecisionRequest(int dayOfWeek, int hour, int activeOrders,
-                           int occupiedTables, int estimatedOccupancy, int kitchenLoad, int barLoad,
-                           int avgPreparationTime, int ordersLast30Min, int orderAgeMinutes,
-                           int itemCount) {
+    @JsonProperty("active_waiters")
+    private int activeWaiters;
+
+    @JsonProperty("active_kitchen")
+    private int activeKitchen;
+
+    @JsonProperty("active_bar")
+    private int activeBar;
+
+    public DecisionRequest() {
+    }
+
+    /*
+     * Constructor păstrat pentru compatibilitate
+     * cu testele și codul existent.
+     */
+    public DecisionRequest(
+            int dayOfWeek,
+            int hour,
+            int activeOrders,
+            int occupiedTables,
+            int estimatedOccupancy,
+            int kitchenLoad,
+            int barLoad,
+            int avgPreparationTime,
+            int ordersLast30Min,
+            int orderAgeMinutes,
+            int itemCount
+    ) {
+        this(
+                dayOfWeek,
+                hour,
+                activeOrders,
+                occupiedTables,
+                estimatedOccupancy,
+                kitchenLoad,
+                barLoad,
+                avgPreparationTime,
+                ordersLast30Min,
+                orderAgeMinutes,
+                itemCount,
+                0,
+                0,
+                0
+        );
+    }
+
+    public DecisionRequest(
+            int dayOfWeek,
+            int hour,
+            int activeOrders,
+            int occupiedTables,
+            int estimatedOccupancy,
+            int kitchenLoad,
+            int barLoad,
+            int avgPreparationTime,
+            int ordersLast30Min,
+            int orderAgeMinutes,
+            int itemCount,
+            int activeWaiters,
+            int activeKitchen,
+            int activeBar
+    ) {
         this.dayOfWeek = dayOfWeek;
         this.hour = hour;
         this.activeOrders = activeOrders;
@@ -42,6 +111,9 @@ public class DecisionRequest {
         this.ordersLast30Min = ordersLast30Min;
         this.orderAgeMinutes = orderAgeMinutes;
         this.itemCount = itemCount;
+        this.activeWaiters = activeWaiters;
+        this.activeKitchen = activeKitchen;
+        this.activeBar = activeBar;
     }
 
     public int getDayOfWeek() {
@@ -130,5 +202,29 @@ public class DecisionRequest {
 
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
+    }
+
+    public int getActiveWaiters() {
+        return activeWaiters;
+    }
+
+    public void setActiveWaiters(int activeWaiters) {
+        this.activeWaiters = activeWaiters;
+    }
+
+    public int getActiveKitchen() {
+        return activeKitchen;
+    }
+
+    public void setActiveKitchen(int activeKitchen) {
+        this.activeKitchen = activeKitchen;
+    }
+
+    public int getActiveBar() {
+        return activeBar;
+    }
+
+    public void setActiveBar(int activeBar) {
+        this.activeBar = activeBar;
     }
 }

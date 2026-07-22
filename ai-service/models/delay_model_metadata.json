@@ -1,0 +1,358 @@
+{
+  "modelName": "GradientBoostingClassifier",
+  "trainedAtUtc": "2026-07-21T23:52:42.552404+00:00",
+  "dataset": "C:\\Users\\burgh\\Desktop\\Licenta\\Proiect\\Cod\\ai-service\\data\\synthetic_horeca_dataset.csv",
+  "datasetRows": 5000,
+  "featureColumns": [
+    "day_of_week",
+    "hour",
+    "active_orders",
+    "occupied_tables",
+    "estimated_occupancy",
+    "kitchen_load",
+    "bar_load",
+    "avg_preparation_time",
+    "orders_last_30_min",
+    "order_age_minutes",
+    "item_count",
+    "active_waiters",
+    "active_kitchen",
+    "active_bar",
+    "waiter_deficit",
+    "kitchen_deficit",
+    "bar_deficit",
+    "orders_per_waiter",
+    "kitchen_items_per_employee",
+    "bar_items_per_employee",
+    "occupancy_per_waiter"
+  ],
+  "targetColumn": "delay_risk",
+  "classLabels": [
+    "SCAZUT",
+    "MEDIU",
+    "RIDICAT"
+  ],
+  "split": {
+    "trainRows": 3500,
+    "validationRows": 750,
+    "testRows": 750
+  },
+  "validationResults": {
+    "RandomForestClassifier": {
+      "accuracy": 0.7893333333333333,
+      "balancedAccuracy": 0.7899492929293714,
+      "macroPrecision": 0.8014258179205407,
+      "macroRecall": 0.7899492929293714,
+      "macroF1": 0.794370660355896,
+      "weightedF1": 0.791271079579995,
+      "matthewsCorrelationCoefficient": 0.6829788037710872,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8663793103448276,
+          "recall": 0.8072289156626506,
+          "f1": 0.8357588357588358,
+          "support": 249
+        },
+        "MEDIU": {
+          "precision": 0.6957928802588996,
+          "recall": 0.7733812949640287,
+          "f1": 0.7325383304940375,
+          "support": 278
+        },
+        "RIDICAT": {
+          "precision": 0.8421052631578947,
+          "recall": 0.7892376681614349,
+          "f1": 0.8148148148148148,
+          "support": 223
+        }
+      },
+      "confusionMatrix": [
+        [
+          201,
+          48,
+          0
+        ],
+        [
+          30,
+          215,
+          33
+        ],
+        [
+          1,
+          46,
+          176
+        ]
+      ]
+    },
+    "ExtraTreesClassifier": {
+      "accuracy": 0.7986666666666666,
+      "balancedAccuracy": 0.7985150914332557,
+      "macroPrecision": 0.8138139087427994,
+      "macroRecall": 0.7985150914332557,
+      "macroF1": 0.8039477293380508,
+      "weightedF1": 0.8008993846955275,
+      "matthewsCorrelationCoefficient": 0.6977579745055723,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8761061946902655,
+          "recall": 0.7951807228915663,
+          "f1": 0.8336842105263158,
+          "support": 249
+        },
+        "MEDIU": {
+          "precision": 0.7012578616352201,
+          "recall": 0.802158273381295,
+          "f1": 0.7483221476510067,
+          "support": 278
+        },
+        "RIDICAT": {
+          "precision": 0.8640776699029126,
+          "recall": 0.7982062780269058,
+          "f1": 0.8298368298368298,
+          "support": 223
+        }
+      },
+      "confusionMatrix": [
+        [
+          198,
+          51,
+          0
+        ],
+        [
+          27,
+          223,
+          28
+        ],
+        [
+          1,
+          44,
+          178
+        ]
+      ]
+    },
+    "GradientBoostingClassifier": {
+      "accuracy": 0.8013333333333333,
+      "balancedAccuracy": 0.802063217328239,
+      "macroPrecision": 0.812957157784744,
+      "macroRecall": 0.802063217328239,
+      "macroF1": 0.8062552963119689,
+      "weightedF1": 0.8031091281168132,
+      "matthewsCorrelationCoefficient": 0.7011088811746149,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8706896551724138,
+          "recall": 0.8112449799196787,
+          "f1": 0.83991683991684,
+          "support": 249
+        },
+        "MEDIU": {
+          "precision": 0.711038961038961,
+          "recall": 0.7877697841726619,
+          "f1": 0.7474402730375427,
+          "support": 278
+        },
+        "RIDICAT": {
+          "precision": 0.8571428571428571,
+          "recall": 0.8071748878923767,
+          "f1": 0.8314087759815243,
+          "support": 223
+        }
+      },
+      "confusionMatrix": [
+        [
+          202,
+          47,
+          0
+        ],
+        [
+          29,
+          219,
+          30
+        ],
+        [
+          1,
+          42,
+          180
+        ]
+      ]
+    },
+    "HistGradientBoostingClassifier": {
+      "accuracy": 0.768,
+      "balancedAccuracy": 0.7707153419303565,
+      "macroPrecision": 0.7752128851206005,
+      "macroRecall": 0.7707153419303565,
+      "macroF1": 0.7725976219597089,
+      "weightedF1": 0.7685689380161727,
+      "matthewsCorrelationCoefficient": 0.6502683730240707,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8149606299212598,
+          "recall": 0.8313253012048193,
+          "f1": 0.8230616302186878,
+          "support": 249
+        },
+        "MEDIU": {
+          "precision": 0.6829268292682927,
+          "recall": 0.7050359712230215,
+          "f1": 0.6938053097345133,
+          "support": 278
+        },
+        "RIDICAT": {
+          "precision": 0.8277511961722488,
+          "recall": 0.7757847533632287,
+          "f1": 0.8009259259259259,
+          "support": 223
+        }
+      },
+      "confusionMatrix": [
+        [
+          207,
+          42,
+          0
+        ],
+        [
+          46,
+          196,
+          36
+        ],
+        [
+          1,
+          49,
+          173
+        ]
+      ]
+    }
+  },
+  "testMetrics": {
+    "accuracy": 0.808,
+    "balancedAccuracy": 0.8103256440717003,
+    "macroPrecision": 0.8135776746617868,
+    "macroRecall": 0.8103256440717003,
+    "macroF1": 0.811782742335215,
+    "weightedF1": 0.8084542701775657,
+    "matthewsCorrelationCoefficient": 0.7106110969619724,
+    "classMetrics": {
+      "SCAZUT": {
+        "precision": 0.856,
+        "recall": 0.8594377510040161,
+        "f1": 0.8577154308617234,
+        "support": 249
+      },
+      "MEDIU": {
+        "precision": 0.7342657342657343,
+        "recall": 0.7553956834532374,
+        "f1": 0.7446808510638298,
+        "support": 278
+      },
+      "RIDICAT": {
+        "precision": 0.8504672897196262,
+        "recall": 0.8161434977578476,
+        "f1": 0.8329519450800915,
+        "support": 223
+      }
+    },
+    "confusionMatrix": [
+      [
+        214,
+        35,
+        0
+      ],
+      [
+        36,
+        210,
+        32
+      ],
+      [
+        0,
+        41,
+        182
+      ]
+    ]
+  },
+  "featureImportance": [
+    {
+      "feature": "item_count",
+      "importance": 0.2598381624491036
+    },
+    {
+      "feature": "kitchen_items_per_employee",
+      "importance": 0.18545097148148992
+    },
+    {
+      "feature": "bar_items_per_employee",
+      "importance": 0.11259776289371892
+    },
+    {
+      "feature": "avg_preparation_time",
+      "importance": 0.10390534244489993
+    },
+    {
+      "feature": "orders_per_waiter",
+      "importance": 0.08740363067702536
+    },
+    {
+      "feature": "kitchen_deficit",
+      "importance": 0.08274263936291845
+    },
+    {
+      "feature": "waiter_deficit",
+      "importance": 0.06042716773903952
+    },
+    {
+      "feature": "order_age_minutes",
+      "importance": 0.053459778617843866
+    },
+    {
+      "feature": "bar_deficit",
+      "importance": 0.011628593134864248
+    },
+    {
+      "feature": "occupancy_per_waiter",
+      "importance": 0.007409191866951354
+    },
+    {
+      "feature": "estimated_occupancy",
+      "importance": 0.004913943468593645
+    },
+    {
+      "feature": "active_orders",
+      "importance": 0.004866226482659193
+    },
+    {
+      "feature": "active_kitchen",
+      "importance": 0.004841750623715248
+    },
+    {
+      "feature": "bar_load",
+      "importance": 0.0041798497224114
+    },
+    {
+      "feature": "orders_last_30_min",
+      "importance": 0.0040044269541271065
+    },
+    {
+      "feature": "hour",
+      "importance": 0.0030172222972177365
+    },
+    {
+      "feature": "kitchen_load",
+      "importance": 0.0027802448077544808
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.0019219553823526321
+    },
+    {
+      "feature": "occupied_tables",
+      "importance": 0.0018408179343650717
+    },
+    {
+      "feature": "active_bar",
+      "importance": 0.001832982427271037
+    },
+    {
+      "feature": "active_waiters",
+      "importance": 0.0009373392316772412
+    }
+  ]
+}

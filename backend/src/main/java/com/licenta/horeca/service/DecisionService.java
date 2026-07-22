@@ -2,6 +2,7 @@ package com.licenta.horeca.service;
 
 import com.licenta.horeca.dto.DecisionRequest;
 import com.licenta.horeca.dto.DecisionResponse;
+import com.licenta.horeca.dto.shift.ActiveStaffSummaryResponse;
 import com.licenta.horeca.entity.DecisionTrainingRecord;
 import com.licenta.horeca.entity.Order;
 import com.licenta.horeca.entity.OrderItem;
@@ -9,6 +10,11 @@ import com.licenta.horeca.entity.TableSession;
 import com.licenta.horeca.enums.OrderStatus;
 import com.licenta.horeca.repository.DecisionTrainingRecordRepository;
 import com.licenta.horeca.repository.TableSessionRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,29 +28,46 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 public class DecisionService {
 
-    private static final String AI_SERVICE_URL = "http://127.0.0.1:5000/predict/all";
-    private static final String AI_RETRAIN_URL = "http://127.0.0.1:5000/retrain";
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DecisionService.class);
+
+    private static final String AI_SERVICE_URL =
+            "http://127.0.0.1:5000/predict/all";
+
+    private static final String AI_RETRAIN_URL =
+            "http://127.0.0.1:5000/retrain";
 
     private final RestTemplate restTemplate;
     private final RestTemplate retrainingRestTemplate;
     private final OrderService orderService;
+    private final EmployeeShiftService employeeShiftService;
     private final TableSessionRepository tableSessionRepository;
-    private final DecisionTrainingRecordRepository decisionTrainingRecordRepository;
+    private final DecisionTrainingRecordRepository
+            decisionTrainingRecordRepository;
     private final String retrainToken;
 
-    public DecisionService(OrderService orderService, TableSessionRepository tableSessionRepository, DecisionTrainingRecordRepository decisionTrainingRecordRepository, @Value("${ai.service.retrain-token}") String retrainToken) {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+    public DecisionService(
+            OrderService orderService,
+            EmployeeShiftService employeeShiftService,
+            TableSessionRepository tableSessionRepository,
+            DecisionTrainingRecordRepository
+                    decisionTrainingRecordRepository,
+            @Value("${ai.service.retrain-token}")
+            String retrainToken
+    ) {
+        SimpleClientHttpRequestFactory requestFactory =
+                new SimpleClientHttpRequestFactory();
+
         requestFactory.setConnectTimeout(3000);
         requestFactory.setReadTimeout(3000);
 
-        SimpleClientHttpRequestFactory retrainingRequestFactory = new SimpleClientHttpRequestFactory();
+        SimpleClientHttpRequestFactory
+                retrainingRequestFactory =
+                new SimpleClientHttpRequestFactory();
+
         retrainingRequestFactory.setConnectTimeout(3000);
 
         /*
@@ -53,191 +76,437 @@ public class DecisionService {
          */
         retrainingRequestFactory.setReadTimeout(120000);
 
-        this.restTemplate = new RestTemplate(requestFactory);
-        this.retrainingRestTemplate = new RestTemplate(retrainingRequestFactory);
+        this.restTemplate =
+                new RestTemplate(requestFactory);
+
+        this.retrainingRestTemplate =
+                new RestTemplate(
+                        retrainingRequestFactory
+                );
+
         this.orderService = orderService;
-        this.tableSessionRepository = tableSessionRepository;
-        this.decisionTrainingRecordRepository = decisionTrainingRecordRepository;
+
+        this.employeeShiftService =
+                employeeShiftService;
+
+        this.tableSessionRepository =
+                tableSessionRepository;
+
+        this.decisionTrainingRecordRepository =
+                decisionTrainingRecordRepository;
+
         this.retrainToken = retrainToken;
     }
 
     public DecisionResponse getDecisionSummary() {
-        System.out.println("=== AM INTRAT IN DECISION SERVICE ===");
-        DecisionRequest request = buildCurrentDecisionRequest();
-        System.out.println("=== TRIMIT REQUEST CATRE AI SERVICE ===");
+        DecisionRequest request =
+                buildCurrentDecisionRequest();
 
         try {
-            DecisionResponse response = restTemplate.postForObject(AI_SERVICE_URL, request, DecisionResponse.class);
+            DecisionResponse response =
+                    restTemplate.postForObject(
+                            AI_SERVICE_URL,
+                            request,
+                            DecisionResponse.class
+                    );
 
             if (response == null) {
-                System.out.println("=== AI SERVICE A RETURNAT RASPUNS GOL ===");
-                saveDecisionTrainingRecord(request, null);
-                return buildFallbackResponse();
+                LOGGER.warn(
+                        "AI Service a returnat un răspuns gol. "
+                                + "Se folosește răspunsul de rezervă."
+                );
+
+                saveDecisionTrainingRecord(
+                        request,
+                        null
+                );
+
+                return buildFallbackResponse(request);
             }
 
-            System.out.println("=== RASPUNS PRIMIT DE LA AI SERVICE ===");
-            saveDecisionTrainingRecord(request, response);
+            applyStaffingComparison(
+                    request,
+                    response
+            );
+
+            LOGGER.info(
+                    "Predicția AI a fost primită cu succes."
+            );
+
+            saveDecisionTrainingRecord(
+                    request,
+                    response
+            );
+
             return response;
+
         } catch (RestClientException exception) {
-            System.out.println("=== AI SERVICE NU A RASPUNS ===");
-            System.out.println(exception.getMessage());
-            saveDecisionTrainingRecord(request, null);
-            return buildFallbackResponse();
+            LOGGER.warn(
+                    "AI Service nu este disponibil. "
+                            + "Se folosește răspunsul de rezervă: {}",
+                    exception.getMessage()
+            );
+
+            saveDecisionTrainingRecord(
+                    request,
+                    null
+            );
+
+            return buildFallbackResponse(request);
         }
     }
 
     public ResponseEntity<String> retrainModels() {
-        System.out.println("=== TRIMIT CERERE DE REANTRENARE ===");
-
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Retrain-Token", retrainToken);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        headers.set(
+                "X-Retrain-Token",
+                retrainToken
+        );
+
+        headers.setAccept(
+                List.of(
+                        MediaType.APPLICATION_JSON
+                )
+        );
+
+        HttpEntity<Void> request =
+                new HttpEntity<>(headers);
+
+        LOGGER.info(
+                "A fost trimisă cererea de reantrenare."
+        );
 
         try {
-            ResponseEntity<String> response = retrainingRestTemplate.exchange(AI_RETRAIN_URL, HttpMethod.POST, request, String.class);
-            System.out.println("=== RASPUNS REANTRENARE PRIMIT ===");
+            ResponseEntity<String> response =
+                    retrainingRestTemplate.exchange(
+                            AI_RETRAIN_URL,
+                            HttpMethod.POST,
+                            request,
+                            String.class
+                    );
+
+            LOGGER.info(
+                    "Reantrenarea modelelor s-a încheiat "
+                            + "cu statusul {}.",
+                    response.getStatusCode()
+            );
+
             return response;
+
         } catch (HttpStatusCodeException exception) {
             /*
              * Păstrăm statusul și corpul trimise
              * de AI Service. De exemplu, status 400
              * când nu există încă 30 de înregistrări.
              */
-            MediaType responseContentType = MediaType.APPLICATION_JSON;
+            MediaType responseContentType =
+                    MediaType.APPLICATION_JSON;
 
-            if (exception.getResponseHeaders() != null && exception.getResponseHeaders().getContentType() != null) {
-                responseContentType = exception.getResponseHeaders().getContentType();
+            if (
+                    exception.getResponseHeaders()
+                            != null
+                            && exception
+                            .getResponseHeaders()
+                            .getContentType()
+                            != null
+            ) {
+                responseContentType =
+                        exception
+                                .getResponseHeaders()
+                                .getContentType();
             }
 
-            System.out.println("=== REANTRENAREA A FOST RESPINSA ===");
-            System.out.println(exception.getResponseBodyAsString());
+            LOGGER.warn(
+                    "Cererea de reantrenare a fost respinsă "
+                            + "cu statusul {}.",
+                    exception.getStatusCode()
+            );
 
-            return ResponseEntity.status(exception.getStatusCode()).contentType(responseContentType).body(exception.getResponseBodyAsString());
+            LOGGER.debug(
+                    "Răspunsul AI Service la reantrenare: {}",
+                    exception.getResponseBodyAsString()
+            );
+
+            return ResponseEntity
+                    .status(
+                            exception.getStatusCode()
+                    )
+                    .contentType(
+                            responseContentType
+                    )
+                    .body(
+                            exception
+                                    .getResponseBodyAsString()
+                    );
+
         } catch (RestClientException exception) {
-            System.out.println("=== AI SERVICE NU ESTE DISPONIBIL PENTRU REANTRENARE ===");
-            System.out.println(exception.getMessage());
+            LOGGER.warn(
+                    "AI Service nu este disponibil "
+                            + "pentru reantrenare: {}",
+                    exception.getMessage()
+            );
 
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).contentType(MediaType.APPLICATION_JSON).body("""
-                    {
-                      "status": "error",
-                      "modelsReplaced": false,
-                      "message": "AI Service nu este disponibil."
-                    }
-                    """);
+            return ResponseEntity
+                    .status(
+                            HttpStatus
+                                    .SERVICE_UNAVAILABLE
+                    )
+                    .contentType(
+                            MediaType.APPLICATION_JSON
+                    )
+                    .body(
+                            """
+                            {
+                              "status": "error",
+                              "modelsReplaced": false,
+                              "message": "AI Service nu este disponibil."
+                            }
+                            """
+                    );
         }
     }
 
-    private void saveDecisionTrainingRecord(DecisionRequest request, DecisionResponse response) {
-        DecisionTrainingRecord record = new DecisionTrainingRecord();
+    private void saveDecisionTrainingRecord(
+            DecisionRequest request,
+            DecisionResponse response
+    ) {
+        DecisionTrainingRecord record =
+                new DecisionTrainingRecord();
 
-        record.setCreatedAt(LocalDateTime.now());
-        record.setDayOfWeek(request.getDayOfWeek());
-        record.setHour(request.getHour());
-        record.setActiveOrders(request.getActiveOrders());
-        record.setOccupiedTables(request.getOccupiedTables());
-        record.setEstimatedOccupancy(request.getEstimatedOccupancy());
-        record.setKitchenLoad(request.getKitchenLoad());
-        record.setBarLoad(request.getBarLoad());
-        record.setAvgPreparationTime(request.getAvgPreparationTime());
-        record.setOrdersLast30Min(request.getOrdersLast30Min());
-        record.setOrderAgeMinutes(request.getOrderAgeMinutes());
-        record.setItemCount(request.getItemCount());
+        record.setCreatedAt(
+                LocalDateTime.now()
+        );
+
+        record.setDayOfWeek(
+                request.getDayOfWeek()
+        );
+
+        record.setHour(
+                request.getHour()
+        );
+
+        record.setActiveOrders(
+                request.getActiveOrders()
+        );
+
+        record.setOccupiedTables(
+                request.getOccupiedTables()
+        );
+
+        record.setEstimatedOccupancy(
+                request.getEstimatedOccupancy()
+        );
+
+        record.setKitchenLoad(
+                request.getKitchenLoad()
+        );
+
+        record.setBarLoad(
+                request.getBarLoad()
+        );
+
+        record.setAvgPreparationTime(
+                request.getAvgPreparationTime()
+        );
+
+        record.setOrdersLast30Min(
+                request.getOrdersLast30Min()
+        );
+
+        record.setOrderAgeMinutes(
+                request.getOrderAgeMinutes()
+        );
+
+        record.setItemCount(
+                request.getItemCount()
+        );
 
         if (response != null) {
-            record.setPredictedTrafficLevel(response.getTrafficLevel());
-            record.setRecommendedWaiters(response.getRecommendedWaiters());
-            record.setRecommendedKitchenStaff(response.getRecommendedKitchenStaff());
-            record.setRecommendedBarStaff(response.getRecommendedBarStaff());
-            record.setPredictedDelayRisk(response.getDelayRisk());
+            record.setPredictedTrafficLevel(
+                    response.getTrafficLevel()
+            );
+
+            record.setRecommendedWaiters(
+                    response.getRecommendedWaiters()
+            );
+
+            record.setRecommendedKitchenStaff(
+                    response
+                            .getRecommendedKitchenStaff()
+            );
+
+            record.setRecommendedBarStaff(
+                    response.getRecommendedBarStaff()
+            );
+
+            record.setPredictedDelayRisk(
+                    response.getDelayRisk()
+            );
         }
 
-        decisionTrainingRecordRepository.save(record);
-        System.out.println("=== DATELE PENTRU REANTRENARE AU FOST SALVATE ===");
+        decisionTrainingRecordRepository.save(
+                record
+        );
+
+        LOGGER.debug(
+                "Înregistrarea pentru reantrenare "
+                        + "a fost salvată."
+        );
     }
 
-    private DecisionRequest buildCurrentDecisionRequest() {
-        System.out.println("=== INCEP SA CONSTRUIESC DATELE PENTRU AI ===");
+    private DecisionRequest
+    buildCurrentDecisionRequest() {
+        LocalDateTime now =
+                LocalDateTime.now();
 
-        LocalDateTime now = LocalDateTime.now();
-        int dayOfWeek = now.getDayOfWeek().getValue() - 1;
-        int hour = now.getHour();
+        int dayOfWeek =
+                now.getDayOfWeek()
+                        .getValue() - 1;
 
-        System.out.println("Citesc comenzile active...");
-        List<Order> activeOrdersList = orderService.getActiveOrders();
+        int hour =
+                now.getHour();
 
-        System.out.println("Comenzi active citite: " + activeOrdersList.size());
-        System.out.println("Calculez activeOrders...");
-        int activeOrders = activeOrdersList.size();
+        List<Order> activeOrdersList =
+                orderService.getActiveOrders();
 
-        System.out.println("Calculez occupiedTables...");
-        int occupiedTables = countOccupiedTables();
+        int activeOrders =
+                activeOrdersList.size();
 
-        System.out.println("Calculez estimatedOccupancy...");
-        int estimatedOccupancy = calculateEstimatedOccupancy(occupiedTables);
+        int occupiedTables =
+                countOccupiedTables();
 
-        System.out.println("Calculez kitchenLoad...");
-        int kitchenLoad = calculateKitchenLoad(activeOrdersList);
+        int estimatedOccupancy =
+                calculateEstimatedOccupancy(
+                        occupiedTables
+                );
 
-        System.out.println("Calculez barLoad...");
-        int barLoad = calculateBarLoad(activeOrdersList);
+        int kitchenLoad =
+                calculateKitchenLoad(
+                        activeOrdersList
+                );
 
-        System.out.println("Setez avgPreparationTime...");
+        int barLoad =
+                calculateBarLoad(
+                        activeOrdersList
+                );
+
         int avgPreparationTime = 20;
 
-        System.out.println("Calculez ordersLast30Min...");
-        int ordersLast30Min = orderService.countOrdersCreatedAfter(now.minusMinutes(30));
+        int ordersLast30Min =
+                orderService
+                        .countOrdersCreatedAfter(
+                                now.minusMinutes(30)
+                        );
 
-        System.out.println("Calculez orderAgeMinutes...");
-        int orderAgeMinutes = calculateOldestActiveOrderAge(activeOrdersList, now);
+        int orderAgeMinutes =
+                calculateOldestActiveOrderAge(
+                        activeOrdersList,
+                        now
+                );
 
-        System.out.println("Calculez itemCount...");
-        int itemCount = calculateUnfinishedItemCount(activeOrdersList);
+        int itemCount =
+                calculateUnfinishedItemCount(
+                        activeOrdersList
+                );
 
-        System.out.println("=== DATE TRIMISE CATRE AI SERVICE ===");
-        System.out.println("dayOfWeek = " + dayOfWeek);
-        System.out.println("hour = " + hour);
-        System.out.println("activeOrders = " + activeOrders);
-        System.out.println("occupiedTables = " + occupiedTables);
-        System.out.println("estimatedOccupancy = " + estimatedOccupancy);
-        System.out.println("kitchenLoad = " + kitchenLoad);
-        System.out.println("barLoad = " + barLoad);
-        System.out.println("avgPreparationTime = " + avgPreparationTime);
-        System.out.println("ordersLast30Min = " + ordersLast30Min);
-        System.out.println("orderAgeMinutes = " + orderAgeMinutes);
-        System.out.println("itemCount = " + itemCount);
-        System.out.println("=====================================");
+        ActiveStaffSummaryResponse activeStaffSummary =
+                employeeShiftService
+                        .getActiveStaffSummary();
 
-        return new DecisionRequest(dayOfWeek, hour, activeOrders, occupiedTables, estimatedOccupancy, kitchenLoad, barLoad, avgPreparationTime, ordersLast30Min, orderAgeMinutes, itemCount);
+        int activeWaiters =
+                Math.toIntExact(
+                        activeStaffSummary.getWaiters()
+                );
+
+        int activeKitchen =
+                Math.toIntExact(
+                        activeStaffSummary
+                                .getKitchenEmployees()
+                );
+
+        int activeBar =
+                Math.toIntExact(
+                        activeStaffSummary.getBarEmployees()
+                );
+
+        LOGGER.debug(
+                "Date AI: dayOfWeek={}, hour={}, "
+                        + "activeOrders={}, occupiedTables={}, "
+                        + "estimatedOccupancy={}, kitchenLoad={}, "
+                        + "barLoad={}, avgPreparationTime={}, "
+                        + "ordersLast30Min={}, orderAgeMinutes={}, "
+                        + "itemCount={}, activeWaiters={}, "
+                        + "activeKitchen={}, activeBar={}",
+                dayOfWeek,
+                hour,
+                activeOrders,
+                occupiedTables,
+                estimatedOccupancy,
+                kitchenLoad,
+                barLoad,
+                avgPreparationTime,
+                ordersLast30Min,
+                orderAgeMinutes,
+                itemCount,
+                activeWaiters,
+                activeKitchen,
+                activeBar
+        );
+
+        return new DecisionRequest(
+                dayOfWeek,
+                hour,
+                activeOrders,
+                occupiedTables,
+                estimatedOccupancy,
+                kitchenLoad,
+                barLoad,
+                avgPreparationTime,
+                ordersLast30Min,
+                orderAgeMinutes,
+                itemCount,
+                activeWaiters,
+                activeKitchen,
+                activeBar
+        );
     }
 
     private int countOccupiedTables() {
-        System.out.println("Citesc sesiunile active ale meselor...");
+        List<TableSession> sessions =
+                tableSessionRepository
+                        .findByActiveTrue();
 
-        List<TableSession> sessions = tableSessionRepository.findByActiveTrue();
-        int occupiedTables = sessions.size();
-
-        System.out.println("Mese ocupate: " + occupiedTables);
-        return occupiedTables;
+        return sessions.size();
     }
 
-    private int calculateEstimatedOccupancy(int occupiedTables) {
+    private int calculateEstimatedOccupancy(
+            int occupiedTables
+    ) {
         int totalTables = 12;
 
         if (totalTables == 0) {
             return 0;
         }
 
-        return Math.min(100, (occupiedTables * 100) / totalTables);
+        return Math.min(
+                100,
+                (occupiedTables * 100)
+                        / totalTables
+        );
     }
 
-    private int calculateKitchenLoad(List<Order> activeOrdersList) {
+    private int calculateKitchenLoad(
+            List<Order> activeOrdersList
+    ) {
         int kitchenLoad = 0;
 
         for (Order order : activeOrdersList) {
             for (OrderItem item : order.getItems()) {
-                if (isUnfinishedItem(item) && isKitchenItem(item)) {
+                if (
+                        isUnfinishedItem(item)
+                                && isKitchenItem(item)
+                ) {
                     kitchenLoad++;
                 }
             }
@@ -246,12 +515,17 @@ public class DecisionService {
         return kitchenLoad;
     }
 
-    private int calculateBarLoad(List<Order> activeOrdersList) {
+    private int calculateBarLoad(
+            List<Order> activeOrdersList
+    ) {
         int barLoad = 0;
 
         for (Order order : activeOrdersList) {
             for (OrderItem item : order.getItems()) {
-                if (isUnfinishedItem(item) && isBarItem(item)) {
+                if (
+                        isUnfinishedItem(item)
+                                && isBarItem(item)
+                ) {
                     barLoad++;
                 }
             }
@@ -260,34 +534,90 @@ public class DecisionService {
         return barLoad;
     }
 
-    private boolean isUnfinishedItem(OrderItem item) {
-        return item.getStatus() != OrderStatus.GATA;
+    private boolean isUnfinishedItem(
+            OrderItem item
+    ) {
+        return item.getStatus()
+                != OrderStatus.GATA;
     }
 
-    private boolean isKitchenItem(OrderItem item) {
-        if (item.getProduct() == null || item.getProduct().getCategory() == null) {
+    private boolean isKitchenItem(
+            OrderItem item
+    ) {
+        if (
+                item.getProduct() == null
+                        || item.getProduct()
+                        .getCategory() == null
+        ) {
             return false;
         }
 
-        String categoryName = item.getProduct().getCategory().getName();
-        return !categoryName.equalsIgnoreCase("Bauturi");
+        String categoryName =
+                item.getProduct()
+                        .getCategory()
+                        .getName();
+
+        return !categoryName
+                .equalsIgnoreCase(
+                        "Bauturi"
+                );
     }
 
-    private boolean isBarItem(OrderItem item) {
-        if (item.getProduct() == null || item.getProduct().getCategory() == null) {
+    private boolean isBarItem(
+            OrderItem item
+    ) {
+        if (
+                item.getProduct() == null
+                        || item.getProduct()
+                        .getCategory() == null
+        ) {
             return false;
         }
 
-        String categoryName = item.getProduct().getCategory().getName();
-        return categoryName.equalsIgnoreCase("Bauturi");
+        String categoryName =
+                item.getProduct()
+                        .getCategory()
+                        .getName();
+
+        return categoryName
+                .equalsIgnoreCase(
+                        "Bauturi"
+                );
     }
 
-    private int calculateOldestActiveOrderAge(List<Order> activeOrdersList, LocalDateTime now) {
-        int age = activeOrdersList.stream().filter(order -> order.getCreatedAt() != null).mapToInt(order -> (int) Duration.between(order.getCreatedAt(), now).toMinutes()).max().orElse(0);
-        return Math.min(age, 40);
+    private int calculateOldestActiveOrderAge(
+            List<Order> activeOrdersList,
+            LocalDateTime now
+    ) {
+        int age =
+                activeOrdersList
+                        .stream()
+                        .filter(
+                                order ->
+                                        order.getCreatedAt()
+                                                != null
+                        )
+                        .mapToInt(
+                                order ->
+                                        (int) Duration
+                                                .between(
+                                                        order.getCreatedAt(),
+                                                        now
+                                                )
+                                                .toMinutes()
+                        )
+                        .max()
+                        .orElse(0);
+
+        return Math.min(
+                age,
+                40
+        );
     }
 
-    private int calculateUnfinishedItemCount(List<Order> activeOrdersList) {
+    private int calculateUnfinishedItemCount(
+            List<Order> activeOrdersList
+    ) {
         int itemCount = 0;
 
         for (Order order : activeOrdersList) {
@@ -301,14 +631,116 @@ public class DecisionService {
         return itemCount;
     }
 
-    private DecisionResponse buildFallbackResponse() {
-        DecisionResponse response = new DecisionResponse();
+    private void applyStaffingComparison(
+            DecisionRequest request,
+            DecisionResponse response
+    ) {
+        int activeWaiters =
+                request.getActiveWaiters();
 
-        response.setTrafficLevel("NECUNOSCUT");
-        response.setRecommendedWaiters(0);
-        response.setRecommendedKitchenStaff(0);
-        response.setRecommendedBarStaff(0);
-        response.setDelayRisk("NECUNOSCUT");
+        int activeKitchen =
+                request.getActiveKitchen();
+
+        int activeBar =
+                request.getActiveBar();
+
+        int waiterDeficit =
+                response.getRecommendedWaiters()
+                        - activeWaiters;
+
+        int kitchenDeficit =
+                response.getRecommendedKitchenStaff()
+                        - activeKitchen;
+
+        int barDeficit =
+                response.getRecommendedBarStaff()
+                        - activeBar;
+
+        /*
+         * Un surplus într-un rol nu anulează automat
+         * deficitul din alt rol.
+         */
+        int totalStaffDeficit =
+                Math.max(waiterDeficit, 0)
+                        + Math.max(kitchenDeficit, 0)
+                        + Math.max(barDeficit, 0);
+
+        response.setActiveWaiters(
+                activeWaiters
+        );
+
+        response.setActiveKitchenStaff(
+                activeKitchen
+        );
+
+        response.setActiveBarStaff(
+                activeBar
+        );
+
+        response.setWaiterDeficit(
+                waiterDeficit
+        );
+
+        response.setKitchenDeficit(
+                kitchenDeficit
+        );
+
+        response.setBarDeficit(
+                barDeficit
+        );
+
+        response.setTotalStaffDeficit(
+                totalStaffDeficit
+        );
+    }
+
+    private DecisionResponse
+    buildFallbackResponse(
+            DecisionRequest request
+    ) {
+        DecisionResponse response =
+                new DecisionResponse();
+
+        response.setTrafficLevel(
+                "NECUNOSCUT"
+        );
+
+        response.setRecommendedWaiters(
+                0
+        );
+
+        response.setRecommendedKitchenStaff(
+                0
+        );
+
+        response.setRecommendedBarStaff(
+                0
+        );
+
+        response.setDelayRisk(
+                "NECUNOSCUT"
+        );
+
+        response.setActiveWaiters(
+                request.getActiveWaiters()
+        );
+
+        response.setActiveKitchenStaff(
+                request.getActiveKitchen()
+        );
+
+        response.setActiveBarStaff(
+                request.getActiveBar()
+        );
+
+        /*
+         * Nu declarăm deficit sau surplus când
+         * serviciul AI nu a returnat recomandări.
+         */
+        response.setWaiterDeficit(0);
+        response.setKitchenDeficit(0);
+        response.setBarDeficit(0);
+        response.setTotalStaffDeficit(0);
 
         return response;
     }

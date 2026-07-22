@@ -1,15 +1,15 @@
-import axios from "axios";
+﻿import apiClient from "./apiClient";
 
 const API_URL = "/api/tables";
 
 export const getAllTables = () => {
-  return axios.get(API_URL);
+  return apiClient.get(API_URL);
 };
 
 export const getActiveTables = () => {
-  return axios.get(`${API_URL}/active`);
+  return apiClient.get(`${API_URL}/active`);
 };
 
 export const getTableById = (tableId) => {
-  return axios.get(`${API_URL}/${tableId}`);
+  return apiClient.get(`${API_URL}/${tableId}`);
 };

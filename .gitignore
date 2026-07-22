@@ -82,3 +82,6 @@ logs/
 .DS_Store
 Thumbs.db
 desktop.ini
+# Copii de siguranta generate la reantrenarea AI
+ai-service/models_backup_*/
+ai-service/reports_backup_*/

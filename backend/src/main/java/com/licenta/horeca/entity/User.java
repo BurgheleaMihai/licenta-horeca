@@ -16,7 +16,8 @@ public class User {
     // Parola utilizatorului
     @Column(nullable = false) private String password;
 
-    // Marcheaza activitatea in sistem
+    // Indică dacă utilizatorul are un cont activ și se poate autentifica.
+    // Nu reprezintă prezența angajatului într-o tură.
     @Column(nullable = false) private boolean active = true;
 
     // Un utilizator are un singur rol.

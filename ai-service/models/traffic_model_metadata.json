@@ -1,0 +1,874 @@
+{
+  "modelName": "GradientBoostingClassifier",
+  "trainedAtUtc": "2026-07-21T23:52:20.891178+00:00",
+  "dataset": "C:\\Users\\burgh\\Desktop\\Licenta\\Proiect\\Cod\\ai-service\\data\\synthetic_horeca_dataset.csv",
+  "datasetRows": 5000,
+  "featureColumns": [
+    "day_of_week",
+    "hour",
+    "active_orders",
+    "occupied_tables",
+    "estimated_occupancy",
+    "kitchen_load",
+    "bar_load",
+    "avg_preparation_time",
+    "orders_last_30_min",
+    "order_age_minutes",
+    "item_count"
+  ],
+  "targetColumn": "traffic_level",
+  "classLabels": [
+    "SCAZUT",
+    "MEDIU",
+    "RIDICAT"
+  ],
+  "classDistribution": {
+    "SCAZUT": 1993,
+    "MEDIU": 2222,
+    "RIDICAT": 785
+  },
+  "split": {
+    "trainRows": 3500,
+    "validationRows": 750,
+    "testRows": 750
+  },
+  "selectionCriterion": [
+    "crossValidationMacroF1Mean",
+    "crossValidationBalancedAccuracyMean",
+    "lowerCrossValidationGeneralizationGap",
+    "validationLogLoss"
+  ],
+  "baselineValidationMetrics": {
+    "accuracy": 0.444,
+    "balancedAccuracy": 0.3333333333333333,
+    "macroPrecision": 0.148,
+    "macroRecall": 0.3333333333333333,
+    "macroF1": 0.20498614958448755,
+    "weightedF1": 0.2730415512465374,
+    "matthewsCorrelationCoefficient": 0.0,
+    "classMetrics": {
+      "SCAZUT": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 299
+      },
+      "MEDIU": {
+        "precision": 0.444,
+        "recall": 1.0,
+        "f1": 0.6149584487534626,
+        "support": 333
+      },
+      "RIDICAT": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 118
+      }
+    },
+    "confusionMatrix": [
+      [
+        0,
+        299,
+        0
+      ],
+      [
+        0,
+        333,
+        0
+      ],
+      [
+        0,
+        118,
+        0
+      ]
+    ],
+    "normalizedConfusionMatrix": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "severeErrors": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "logLoss": 1.0180936074650335,
+    "rocAucMacroOvr": 0.5,
+    "rocAucWeightedOvr": 0.5,
+    "multiclassBrierScore": 0.619175238095238,
+    "expectedCalibrationError": 0.0002857142857142225,
+    "averageConfidence": 0.44428571428571423,
+    "calibrationBins": [
+      {
+        "lowerBound": 0.4,
+        "upperBound": 0.5,
+        "count": 750,
+        "accuracy": 0.444,
+        "averageConfidence": 0.44428571428571423
+      }
+    ]
+  },
+  "validationResults": {
+    "RandomForestClassifier": {
+      "accuracy": 0.7746666666666666,
+      "balancedAccuracy": 0.7827328490556199,
+      "macroPrecision": 0.7503558494800533,
+      "macroRecall": 0.7827328490556199,
+      "macroF1": 0.7620583218902373,
+      "weightedF1": 0.7738515795600546,
+      "matthewsCorrelationCoefficient": 0.6461442722066447,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8312101910828026,
+          "recall": 0.8729096989966555,
+          "f1": 0.8515497553017944,
+          "support": 299
+        },
+        "MEDIU": {
+          "precision": 0.7847222222222222,
+          "recall": 0.6786786786786787,
+          "f1": 0.7278582930756844,
+          "support": 333
+        },
+        "RIDICAT": {
+          "precision": 0.6351351351351351,
+          "recall": 0.7966101694915254,
+          "f1": 0.706766917293233,
+          "support": 118
+        }
+      },
+      "confusionMatrix": [
+        [
+          261,
+          38,
+          0
+        ],
+        [
+          53,
+          226,
+          54
+        ],
+        [
+          0,
+          24,
+          94
+        ]
+      ],
+      "normalizedConfusionMatrix": [
+        [
+          0.8729096989966555,
+          0.12709030100334448,
+          0.0
+        ],
+        [
+          0.15915915915915915,
+          0.6786786786786787,
+          0.16216216216216217
+        ],
+        [
+          0.0,
+          0.2033898305084746,
+          0.7966101694915254
+        ]
+      ],
+      "severeErrors": {
+        "count": 0,
+        "rate": 0.0
+      },
+      "logLoss": 0.49623692887309845,
+      "rocAucMacroOvr": 0.9186329363558702,
+      "rocAucWeightedOvr": 0.9100093758443524,
+      "multiclassBrierScore": 0.31245351075131733,
+      "expectedCalibrationError": 0.03763818997630022,
+      "averageConfidence": 0.7741120279070826,
+      "calibrationBins": [
+        {
+          "lowerBound": 0.4,
+          "upperBound": 0.5,
+          "count": 5,
+          "accuracy": 0.4,
+          "averageConfidence": 0.487159886007751
+        },
+        {
+          "lowerBound": 0.5,
+          "upperBound": 0.6000000000000001,
+          "count": 101,
+          "accuracy": 0.504950495049505,
+          "averageConfidence": 0.5556110637996721
+        },
+        {
+          "lowerBound": 0.6000000000000001,
+          "upperBound": 0.7000000000000001,
+          "count": 145,
+          "accuracy": 0.7034482758620689,
+          "averageConfidence": 0.652826534533196
+        },
+        {
+          "lowerBound": 0.7000000000000001,
+          "upperBound": 0.8,
+          "count": 172,
+          "accuracy": 0.7906976744186046,
+          "averageConfidence": 0.750103730911221
+        },
+        {
+          "lowerBound": 0.8,
+          "upperBound": 0.9,
+          "count": 148,
+          "accuracy": 0.831081081081081,
+          "averageConfidence": 0.8486604340201941
+        },
+        {
+          "lowerBound": 0.9,
+          "upperBound": 1.0,
+          "count": 179,
+          "accuracy": 0.9329608938547486,
+          "averageConfidence": 0.9650953664663364
+        }
+      ]
+    },
+    "ExtraTreesClassifier": {
+      "accuracy": 0.7826666666666666,
+      "balancedAccuracy": 0.7921589181721828,
+      "macroPrecision": 0.7590197189136605,
+      "macroRecall": 0.7921589181721828,
+      "macroF1": 0.7713061666899984,
+      "weightedF1": 0.7824872169061968,
+      "matthewsCorrelationCoefficient": 0.6582930772698705,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8436482084690554,
+          "recall": 0.8662207357859532,
+          "f1": 0.8547854785478548,
+          "support": 299
+        },
+        "MEDIU": {
+          "precision": 0.7891156462585034,
+          "recall": 0.6966966966966966,
+          "f1": 0.7400318979266348,
+          "support": 333
+        },
+        "RIDICAT": {
+          "precision": 0.6442953020134228,
+          "recall": 0.8135593220338984,
+          "f1": 0.7191011235955056,
+          "support": 118
+        }
+      },
+      "confusionMatrix": [
+        [
+          259,
+          40,
+          0
+        ],
+        [
+          48,
+          232,
+          53
+        ],
+        [
+          0,
+          22,
+          96
+        ]
+      ],
+      "normalizedConfusionMatrix": [
+        [
+          0.8662207357859532,
+          0.13377926421404682,
+          0.0
+        ],
+        [
+          0.14414414414414414,
+          0.6966966966966966,
+          0.15915915915915915
+        ],
+        [
+          0.0,
+          0.1864406779661017,
+          0.8135593220338984
+        ]
+      ],
+      "severeErrors": {
+        "count": 0,
+        "rate": 0.0
+      },
+      "logLoss": 0.4891103527127543,
+      "rocAucMacroOvr": 0.9202467754887245,
+      "rocAucWeightedOvr": 0.9114188958580813,
+      "multiclassBrierScore": 0.31151708770528147,
+      "expectedCalibrationError": 0.03403426360314921,
+      "averageConfidence": 0.758691927293749,
+      "calibrationBins": [
+        {
+          "lowerBound": 0.4,
+          "upperBound": 0.5,
+          "count": 2,
+          "accuracy": 0.5,
+          "averageConfidence": 0.4911592063096662
+        },
+        {
+          "lowerBound": 0.5,
+          "upperBound": 0.6000000000000001,
+          "count": 119,
+          "accuracy": 0.6050420168067226,
+          "averageConfidence": 0.5555317136430569
+        },
+        {
+          "lowerBound": 0.6000000000000001,
+          "upperBound": 0.7000000000000001,
+          "count": 155,
+          "accuracy": 0.6774193548387096,
+          "averageConfidence": 0.6518750504501137
+        },
+        {
+          "lowerBound": 0.7000000000000001,
+          "upperBound": 0.8,
+          "count": 201,
+          "accuracy": 0.8109452736318408,
+          "averageConfidence": 0.7518179041197223
+        },
+        {
+          "lowerBound": 0.8,
+          "upperBound": 0.9,
+          "count": 105,
+          "accuracy": 0.8380952380952381,
+          "averageConfidence": 0.8449148489755426
+        },
+        {
+          "lowerBound": 0.9,
+          "upperBound": 1.0,
+          "count": 168,
+          "accuracy": 0.9404761904761905,
+          "averageConfidence": 0.958668228832767
+        }
+      ]
+    },
+    "GradientBoostingClassifier": {
+      "accuracy": 0.7866666666666666,
+      "balancedAccuracy": 0.7679178810350512,
+      "macroPrecision": 0.7636128305506297,
+      "macroRecall": 0.7679178810350512,
+      "macroF1": 0.7656726885877138,
+      "weightedF1": 0.7864729759878835,
+      "matthewsCorrelationCoefficient": 0.6563536426249197,
+      "classMetrics": {
+        "SCAZUT": {
+          "precision": 0.8552631578947368,
+          "recall": 0.8695652173913043,
+          "f1": 0.8623548922056384,
+          "support": 299
+        },
+        "MEDIU": {
+          "precision": 0.7661538461538462,
+          "recall": 0.7477477477477478,
+          "f1": 0.756838905775076,
+          "support": 333
+        },
+        "RIDICAT": {
+          "precision": 0.6694214876033058,
+          "recall": 0.6864406779661016,
+          "f1": 0.6778242677824268,
+          "support": 118
+        }
+      },
+      "confusionMatrix": [
+        [
+          260,
+          39,
+          0
+        ],
+        [
+          44,
+          249,
+          40
+        ],
+        [
+          0,
+          37,
+          81
+        ]
+      ],
+      "normalizedConfusionMatrix": [
+        [
+          0.8695652173913043,
+          0.13043478260869565,
+          0.0
+        ],
+        [
+          0.13213213213213212,
+          0.7477477477477478,
+          0.12012012012012012
+        ],
+        [
+          0.0,
+          0.3135593220338983,
+          0.6864406779661016
+        ]
+      ],
+      "severeErrors": {
+        "count": 0,
+        "rate": 0.0
+      },
+      "logLoss": 0.4817456831893832,
+      "rocAucMacroOvr": 0.9208728031517502,
+      "rocAucWeightedOvr": 0.9123160238544127,
+      "multiclassBrierScore": 0.30144267564396765,
+      "expectedCalibrationError": 0.03413397169447052,
+      "averageConfidence": 0.8063802901171742,
+      "calibrationBins": [
+        {
+          "lowerBound": 0.4,
+          "upperBound": 0.5,
+          "count": 7,
+          "accuracy": 0.2857142857142857,
+          "averageConfidence": 0.48602827770914486
+        },
+        {
+          "lowerBound": 0.5,
+          "upperBound": 0.6000000000000001,
+          "count": 78,
+          "accuracy": 0.6153846153846154,
+          "averageConfidence": 0.5495155351293712
+        },
+        {
+          "lowerBound": 0.6000000000000001,
+          "upperBound": 0.7000000000000001,
+          "count": 105,
+          "accuracy": 0.5619047619047619,
+          "averageConfidence": 0.6546355505037329
+        },
+        {
+          "lowerBound": 0.7000000000000001,
+          "upperBound": 0.8,
+          "count": 120,
+          "accuracy": 0.7583333333333333,
+          "averageConfidence": 0.7560846472368576
+        },
+        {
+          "lowerBound": 0.8,
+          "upperBound": 0.9,
+          "count": 196,
+          "accuracy": 0.8469387755102041,
+          "averageConfidence": 0.8553167699337316
+        },
+        {
+          "lowerBound": 0.9,
+          "upperBound": 1.0,
+          "count": 244,
+          "accuracy": 0.9180327868852459,
+          "averageConfidence": 0.9484091414979484
+        }
+      ]
+    }
+  },
+  "testMetrics": {
+    "accuracy": 0.792,
+    "balancedAccuracy": 0.7754194324097995,
+    "macroPrecision": 0.792201277399716,
+    "macroRecall": 0.7754194324097995,
+    "macroF1": 0.7830896870932268,
+    "weightedF1": 0.7919276847895769,
+    "matthewsCorrelationCoefficient": 0.6615568256395239,
+    "classMetrics": {
+      "SCAZUT": {
+        "precision": 0.8378378378378378,
+        "recall": 0.8294314381270903,
+        "f1": 0.8336134453781513,
+        "support": 299
+      },
+      "MEDIU": {
+        "precision": 0.7557471264367817,
+        "recall": 0.7874251497005988,
+        "f1": 0.7712609970674487,
+        "support": 334
+      },
+      "RIDICAT": {
+        "precision": 0.7830188679245284,
+        "recall": 0.7094017094017094,
+        "f1": 0.7443946188340808,
+        "support": 117
+      }
+    },
+    "confusionMatrix": [
+      [
+        248,
+        51,
+        0
+      ],
+      [
+        48,
+        263,
+        23
+      ],
+      [
+        0,
+        34,
+        83
+      ]
+    ],
+    "normalizedConfusionMatrix": [
+      [
+        0.8294314381270903,
+        0.1705685618729097,
+        0.0
+      ],
+      [
+        0.1437125748502994,
+        0.7874251497005988,
+        0.0688622754491018
+      ],
+      [
+        0.0,
+        0.2905982905982906,
+        0.7094017094017094
+      ]
+    ],
+    "severeErrors": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "logLoss": 0.4646455697161527,
+    "rocAucMacroOvr": 0.9278880451579496,
+    "rocAucWeightedOvr": 0.9166950279809198,
+    "multiclassBrierScore": 0.2891435309596235,
+    "expectedCalibrationError": 0.011238469002433579,
+    "averageConfidence": 0.8031548025582533,
+    "calibrationBins": [
+      {
+        "lowerBound": 0.4,
+        "upperBound": 0.5,
+        "count": 6,
+        "accuracy": 0.5,
+        "averageConfidence": 0.4947708472387298
+      },
+      {
+        "lowerBound": 0.5,
+        "upperBound": 0.6000000000000001,
+        "count": 94,
+        "accuracy": 0.5531914893617021,
+        "averageConfidence": 0.554330610424398
+      },
+      {
+        "lowerBound": 0.6000000000000001,
+        "upperBound": 0.7000000000000001,
+        "count": 81,
+        "accuracy": 0.6049382716049383,
+        "averageConfidence": 0.6514371948261316
+      },
+      {
+        "lowerBound": 0.7000000000000001,
+        "upperBound": 0.8,
+        "count": 143,
+        "accuracy": 0.7412587412587412,
+        "averageConfidence": 0.7573548096099759
+      },
+      {
+        "lowerBound": 0.8,
+        "upperBound": 0.9,
+        "count": 188,
+        "accuracy": 0.8457446808510638,
+        "averageConfidence": 0.8551593204538631
+      },
+      {
+        "lowerBound": 0.9,
+        "upperBound": 1.0,
+        "count": 238,
+        "accuracy": 0.9453781512605042,
+        "averageConfidence": 0.947278557373507
+      }
+    ]
+  },
+  "candidateCrossValidation": {
+    "RandomForestClassifier": {
+      "accuracy": {
+        "validationMean": 0.7663529411764707,
+        "validationStd": 0.016020747793458096,
+        "trainMean": 0.9423529411764706,
+        "trainStd": 0.002029198624783587,
+        "generalizationGap": 0.17599999999999993,
+        "foldValues": [
+          0.7929411764705883,
+          0.76,
+          0.7458823529411764,
+          0.7741176470588236,
+          0.7588235294117647
+        ]
+      },
+      "balancedAccuracy": {
+        "validationMean": 0.7722267029297343,
+        "validationStd": 0.016191196099497072,
+        "trainMean": 0.9554553826551327,
+        "trainStd": 0.0015134103807572768,
+        "generalizationGap": 0.18322867972539847,
+        "foldValues": [
+          0.7942405998608452,
+          0.7743210862291751,
+          0.7460822122130962,
+          0.78149612881735,
+          0.7649934875282048
+        ]
+      },
+      "macroF1": {
+        "validationMean": 0.7559940901611395,
+        "validationStd": 0.017502780006530244,
+        "trainMean": 0.9396539872341823,
+        "trainStd": 0.0023013065646855448,
+        "generalizationGap": 0.18365989707304275,
+        "foldValues": [
+          0.781612682000422,
+          0.7506661745686323,
+          0.7295424836601306,
+          0.7670861590638235,
+          0.7510629515126895
+        ]
+      }
+    },
+    "ExtraTreesClassifier": {
+      "accuracy": {
+        "validationMean": 0.768,
+        "validationStd": 0.017770548318587497,
+        "trainMean": 0.9298823529411765,
+        "trainStd": 0.0030486255340823254,
+        "generalizationGap": 0.16188235294117648,
+        "foldValues": [
+          0.7823529411764706,
+          0.7752941176470588,
+          0.7329411764705882,
+          0.7741176470588236,
+          0.7752941176470588
+        ]
+      },
+      "balancedAccuracy": {
+        "validationMean": 0.7775599315108156,
+        "validationStd": 0.01636407733153942,
+        "trainMean": 0.9449691974908081,
+        "trainStd": 0.002409678148374409,
+        "generalizationGap": 0.1674092659799925,
+        "foldValues": [
+          0.7829537790723942,
+          0.7911654751431184,
+          0.745390249217268,
+          0.7829012959661213,
+          0.7853888581551761
+        ]
+      },
+      "macroF1": {
+        "validationMean": 0.7592081433240289,
+        "validationStd": 0.019657315046085005,
+        "trainMean": 0.9242263281198515,
+        "trainStd": 0.0030145307712599973,
+        "generalizationGap": 0.16501818479582264,
+        "foldValues": [
+          0.7703234936962035,
+          0.7665937843071697,
+          0.7200234526748354,
+          0.7680327952309938,
+          0.7710671907109422
+        ]
+      }
+    },
+    "GradientBoostingClassifier": {
+      "accuracy": {
+        "validationMean": 0.7844705882352941,
+        "validationStd": 0.01976190456338454,
+        "trainMean": 0.8391176470588236,
+        "trainStd": 0.004847144488106505,
+        "generalizationGap": 0.05464705882352949,
+        "foldValues": [
+          0.8129411764705883,
+          0.7952941176470588,
+          0.7564705882352941,
+          0.788235294117647,
+          0.7694117647058824
+        ]
+      },
+      "balancedAccuracy": {
+        "validationMean": 0.7643879165282267,
+        "validationStd": 0.02111038888588283,
+        "trainMean": 0.8247194665982182,
+        "trainStd": 0.005874848963308486,
+        "generalizationGap": 0.06033155006999147,
+        "foldValues": [
+          0.7868955410486228,
+          0.7866634794130524,
+          0.7340194709119316,
+          0.7671633771861956,
+          0.7471977140813308
+        ]
+      },
+      "macroF1": {
+        "validationMean": 0.7689855150972289,
+        "validationStd": 0.021168822019704554,
+        "trainMean": 0.8305854731834549,
+        "trainStd": 0.005097763178835337,
+        "generalizationGap": 0.06159995808622598,
+        "foldValues": [
+          0.7948076383708109,
+          0.7811593848290994,
+          0.7349970306099562,
+          0.7784352064747541,
+          0.7555283152015234
+        ]
+      }
+    }
+  },
+  "selectedModelCrossValidation": {
+    "accuracy": {
+      "validationMean": 0.7844705882352941,
+      "validationStd": 0.01976190456338454,
+      "trainMean": 0.8391176470588236,
+      "trainStd": 0.004847144488106505,
+      "generalizationGap": 0.05464705882352949,
+      "foldValues": [
+        0.8129411764705883,
+        0.7952941176470588,
+        0.7564705882352941,
+        0.788235294117647,
+        0.7694117647058824
+      ]
+    },
+    "balancedAccuracy": {
+      "validationMean": 0.7643879165282267,
+      "validationStd": 0.02111038888588283,
+      "trainMean": 0.8247194665982182,
+      "trainStd": 0.005874848963308486,
+      "generalizationGap": 0.06033155006999147,
+      "foldValues": [
+        0.7868955410486228,
+        0.7866634794130524,
+        0.7340194709119316,
+        0.7671633771861956,
+        0.7471977140813308
+      ]
+    },
+    "macroF1": {
+      "validationMean": 0.7689855150972289,
+      "validationStd": 0.021168822019704554,
+      "trainMean": 0.8305854731834549,
+      "trainStd": 0.005097763178835337,
+      "generalizationGap": 0.06159995808622598,
+      "foldValues": [
+        0.7948076383708109,
+        0.7811593848290994,
+        0.7349970306099562,
+        0.7784352064747541,
+        0.7555283152015234
+      ]
+    }
+  },
+  "nativeFeatureImportance": [
+    {
+      "feature": "active_orders",
+      "importance": 0.6375323695660591
+    },
+    {
+      "feature": "orders_last_30_min",
+      "importance": 0.14228945531395348
+    },
+    {
+      "feature": "occupied_tables",
+      "importance": 0.09328991900556681
+    },
+    {
+      "feature": "hour",
+      "importance": 0.038638720934308333
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.03183096243146052
+    },
+    {
+      "feature": "estimated_occupancy",
+      "importance": 0.019055412226505683
+    },
+    {
+      "feature": "item_count",
+      "importance": 0.011977838497395555
+    },
+    {
+      "feature": "avg_preparation_time",
+      "importance": 0.006966728503163878
+    },
+    {
+      "feature": "order_age_minutes",
+      "importance": 0.0067643153006932116
+    },
+    {
+      "feature": "kitchen_load",
+      "importance": 0.006011638650019737
+    },
+    {
+      "feature": "bar_load",
+      "importance": 0.005642639570873738
+    }
+  ],
+  "permutationFeatureImportance": [
+    {
+      "feature": "active_orders",
+      "importanceMean": 0.10962598824449218,
+      "importanceStd": 0.009713091361554762
+    },
+    {
+      "feature": "orders_last_30_min",
+      "importanceMean": 0.10139910221179364,
+      "importanceStd": 0.010319908410952174
+    },
+    {
+      "feature": "occupied_tables",
+      "importanceMean": 0.05010322512979979,
+      "importanceStd": 0.010056056266233186
+    },
+    {
+      "feature": "day_of_week",
+      "importanceMean": 0.049009525997612366,
+      "importanceStd": 0.008699725350004996
+    },
+    {
+      "feature": "hour",
+      "importanceMean": 0.04550957802786215,
+      "importanceStd": 0.010450330290528774
+    },
+    {
+      "feature": "estimated_occupancy",
+      "importanceMean": 0.013013241588632951,
+      "importanceStd": 0.002425388266052709
+    },
+    {
+      "feature": "kitchen_load",
+      "importanceMean": 0.0019803444341235155,
+      "importanceStd": 0.002806649358636064
+    },
+    {
+      "feature": "item_count",
+      "importanceMean": 0.0009736144445111172,
+      "importanceStd": 0.0023380137470114843
+    },
+    {
+      "feature": "order_age_minutes",
+      "importanceMean": -0.0015957133497002784,
+      "importanceStd": 0.0024706560410720623
+    },
+    {
+      "feature": "bar_load",
+      "importanceMean": -0.0020176826110626543,
+      "importanceStd": 0.002964319966713805
+    },
+    {
+      "feature": "avg_preparation_time",
+      "importanceMean": -0.0025764910269978404,
+      "importanceStd": 0.002532866068972964
+    }
+  ]
+}

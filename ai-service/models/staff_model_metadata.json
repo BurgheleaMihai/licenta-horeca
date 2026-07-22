@@ -1,0 +1,272 @@
+{
+  "modelName": "RoleSpecificStaffRegressor",
+  "architecture": "three_role_specific_cloneable_regressors",
+  "trainedAtUtc": "2026-07-21T23:52:24.223747+00:00",
+  "dataset": "C:\\Users\\burgh\\Desktop\\Licenta\\Proiect\\Cod\\ai-service\\data\\synthetic_horeca_dataset.csv",
+  "datasetRows": 5000,
+  "featureColumns": [
+    "day_of_week",
+    "hour",
+    "active_orders",
+    "occupied_tables",
+    "estimated_occupancy",
+    "kitchen_load",
+    "bar_load",
+    "avg_preparation_time",
+    "orders_last_30_min",
+    "order_age_minutes",
+    "item_count"
+  ],
+  "targetColumns": [
+    "recommended_waiters",
+    "recommended_kitchen_staff",
+    "recommended_bar_staff"
+  ],
+  "roleFeatureColumns": {
+    "recommended_waiters": [
+      "day_of_week",
+      "hour",
+      "active_orders",
+      "occupied_tables",
+      "estimated_occupancy",
+      "orders_last_30_min"
+    ],
+    "recommended_kitchen_staff": [
+      "day_of_week",
+      "hour",
+      "active_orders",
+      "kitchen_load",
+      "item_count",
+      "avg_preparation_time"
+    ],
+    "recommended_bar_staff": [
+      "day_of_week",
+      "hour",
+      "bar_load",
+      "item_count",
+      "estimated_occupancy",
+      "orders_last_30_min"
+    ]
+  },
+  "split": {
+    "trainRows": 3500,
+    "validationRows": 750,
+    "testRows": 750
+  },
+  "acceptanceCriteria": {
+    "maximumRelativeR2Degradation": 0.1,
+    "maximumOverallMae": 0.5,
+    "minimumWithinOneRate": 0.95
+  },
+  "validationEvaluation": {
+    "trainMetrics": {
+      "overallMae": 0.29332474852762797,
+      "overallRmse": 0.41866048460140187,
+      "overallR2": 0.7626681412738989,
+      "roundedExactCellRate": 0.8026666666666666,
+      "roundedWithinOneCellRate": 0.9953333333333333,
+      "allThreeRoundedExactRate": 0.5245714285714286,
+      "underestimateCellRate": 0.11914285714285715,
+      "overestimateCellRate": 0.07819047619047619,
+      "maximumRoundedError": 2,
+      "perTarget": {
+        "recommended_waiters": {
+          "mae": 0.34436198934760265,
+          "rmse": 0.4583267379620057,
+          "r2": 0.9203305128128251,
+          "roundedExactRate": 0.7651428571428571,
+          "roundedWithinOneRate": 0.994,
+          "p90AbsoluteError": 0.7464376711990913,
+          "maximumRoundedError": 2
+        },
+        "recommended_kitchen_staff": {
+          "mae": 0.28693265057646594,
+          "rmse": 0.4168001564600688,
+          "r2": 0.8518116445344098,
+          "roundedExactRate": 0.808,
+          "roundedWithinOneRate": 0.9957142857142857,
+          "p90AbsoluteError": 0.7312366354335965,
+          "maximumRoundedError": 2
+        },
+        "recommended_bar_staff": {
+          "mae": 0.24867960565881533,
+          "rmse": 0.3768872974033633,
+          "r2": 0.5158622664744617,
+          "roundedExactRate": 0.8348571428571429,
+          "roundedWithinOneRate": 0.9962857142857143,
+          "p90AbsoluteError": 0.7490687365602792,
+          "maximumRoundedError": 2
+        }
+      }
+    },
+    "evaluationMetrics": {
+      "overallMae": 0.3198972312826416,
+      "overallRmse": 0.4574214864151449,
+      "overallR2": 0.7273861658566768,
+      "roundedExactCellRate": 0.7724444444444445,
+      "roundedWithinOneCellRate": 0.9928888888888889,
+      "allThreeRoundedExactRate": 0.472,
+      "underestimateCellRate": 0.13066666666666665,
+      "overestimateCellRate": 0.09688888888888889,
+      "maximumRoundedError": 2,
+      "perTarget": {
+        "recommended_waiters": {
+          "mae": 0.3967470043427056,
+          "rmse": 0.534216765341901,
+          "r2": 0.8910620697874759,
+          "roundedExactRate": 0.7146666666666667,
+          "roundedWithinOneRate": 0.9853333333333333,
+          "p90AbsoluteError": 0.8882559178719297,
+          "maximumRoundedError": 2
+        },
+        "recommended_kitchen_staff": {
+          "mae": 0.31276564535299445,
+          "rmse": 0.44237736083508933,
+          "r2": 0.8279261045356628,
+          "roundedExactRate": 0.7733333333333333,
+          "roundedWithinOneRate": 0.9973333333333333,
+          "p90AbsoluteError": 0.7775387513091155,
+          "maximumRoundedError": 2
+        },
+        "recommended_bar_staff": {
+          "mae": 0.25017904415222464,
+          "rmse": 0.38290725633100664,
+          "r2": 0.46317032324689156,
+          "roundedExactRate": 0.8293333333333334,
+          "roundedWithinOneRate": 0.996,
+          "p90AbsoluteError": 0.7268759882774284,
+          "maximumRoundedError": 2
+        }
+      }
+    },
+    "generalization": {
+      "maximumRelativeR2Degradation": 0.10214343372637175,
+      "perTarget": {
+        "recommended_waiters": {
+          "trainR2": 0.9203305128128251,
+          "evaluationR2": 0.8910620697874759,
+          "relativeDegradation": 0.031802100025886786
+        },
+        "recommended_kitchen_staff": {
+          "trainR2": 0.8518116445344098,
+          "evaluationR2": 0.8279261045356628,
+          "relativeDegradation": 0.02804087048117608
+        },
+        "recommended_bar_staff": {
+          "trainR2": 0.5158622664744617,
+          "evaluationR2": 0.46317032324689156,
+          "relativeDegradation": 0.10214343372637175
+        }
+      }
+    }
+  },
+  "testEvaluation": {
+    "trainMetrics": {
+      "overallMae": 0.2968027463311975,
+      "overallRmse": 0.42378326336608085,
+      "overallR2": 0.757786754414208,
+      "roundedExactCellRate": 0.7982745098039216,
+      "roundedWithinOneCellRate": 0.9949019607843137,
+      "allThreeRoundedExactRate": 0.5185882352941177,
+      "underestimateCellRate": 0.12266666666666666,
+      "overestimateCellRate": 0.07905882352941176,
+      "maximumRoundedError": 2,
+      "perTarget": {
+        "recommended_waiters": {
+          "mae": 0.35181758113139977,
+          "rmse": 0.469606564845299,
+          "r2": 0.9162721783935165,
+          "roundedExactRate": 0.7590588235294118,
+          "roundedWithinOneRate": 0.9929411764705882,
+          "p90AbsoluteError": 0.7655548184377794,
+          "maximumRoundedError": 2
+        },
+        "recommended_kitchen_staff": {
+          "mae": 0.2894038248393393,
+          "rmse": 0.41896513862382967,
+          "r2": 0.8494760332062198,
+          "roundedExactRate": 0.8014117647058824,
+          "roundedWithinOneRate": 0.9955294117647059,
+          "p90AbsoluteError": 0.7389979927615486,
+          "maximumRoundedError": 2
+        },
+        "recommended_bar_staff": {
+          "mae": 0.24918683302285352,
+          "rmse": 0.3777759253839877,
+          "r2": 0.5076120516428877,
+          "roundedExactRate": 0.8343529411764706,
+          "roundedWithinOneRate": 0.9962352941176471,
+          "p90AbsoluteError": 0.7351365314402079,
+          "maximumRoundedError": 2
+        }
+      }
+    },
+    "evaluationMetrics": {
+      "overallMae": 0.2989584312719944,
+      "overallRmse": 0.4315402058398135,
+      "overallR2": 0.7429164413940015,
+      "roundedExactCellRate": 0.7915555555555556,
+      "roundedWithinOneCellRate": 0.992,
+      "allThreeRoundedExactRate": 0.496,
+      "underestimateCellRate": 0.13822222222222222,
+      "overestimateCellRate": 0.07022222222222223,
+      "maximumRoundedError": 2,
+      "perTarget": {
+        "recommended_waiters": {
+          "mae": 0.36625014751172125,
+          "rmse": 0.48799236018905545,
+          "r2": 0.9108182402524734,
+          "roundedExactRate": 0.7346666666666667,
+          "roundedWithinOneRate": 0.9906666666666667,
+          "p90AbsoluteError": 0.8161371022356287,
+          "maximumRoundedError": 2
+        },
+        "recommended_kitchen_staff": {
+          "mae": 0.27579835631795285,
+          "rmse": 0.4112631879809469,
+          "r2": 0.8461765674924955,
+          "roundedExactRate": 0.8226666666666667,
+          "roundedWithinOneRate": 0.992,
+          "p90AbsoluteError": 0.732941005526198,
+          "maximumRoundedError": 2
+        },
+        "recommended_bar_staff": {
+          "mae": 0.25482678998630903,
+          "rmse": 0.38911038842167817,
+          "r2": 0.4717545164370355,
+          "roundedExactRate": 0.8173333333333334,
+          "roundedWithinOneRate": 0.9933333333333333,
+          "p90AbsoluteError": 0.7879928097077298,
+          "maximumRoundedError": 2
+        }
+      }
+    },
+    "generalization": {
+      "maximumRelativeR2Degradation": 0.0706396451577523,
+      "perTarget": {
+        "recommended_waiters": {
+          "trainR2": 0.9162721783935165,
+          "evaluationR2": 0.9108182402524734,
+          "relativeDegradation": 0.005952312281930687
+        },
+        "recommended_kitchen_staff": {
+          "trainR2": 0.8494760332062198,
+          "evaluationR2": 0.8461765674924955,
+          "relativeDegradation": 0.0038841186622663917
+        },
+        "recommended_bar_staff": {
+          "trainR2": 0.5076120516428877,
+          "evaluationR2": 0.4717545164370355,
+          "relativeDegradation": 0.0706396451577523
+        }
+      }
+    }
+  },
+  "acceptance": {
+    "overallMaePassed": true,
+    "withinOneRatePassed": true,
+    "generalizationPassed": true,
+    "accepted": true
+  },
+  "backupDirectory": "C:\\Users\\burgh\\Desktop\\Licenta\\Proiect\\Cod\\ai-service\\models\\backups\\20260721T235224Z"
+}

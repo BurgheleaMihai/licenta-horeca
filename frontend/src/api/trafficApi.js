@@ -1,15 +1,15 @@
-import axios from "axios";
+﻿import apiClient from "./apiClient";
 
 const TRAFFIC_URL = "/api/traffic";
 
 export const getTrafficSummary = () => {
-  return axios.get(`${TRAFFIC_URL}/summary`);
+  return apiClient.get(`${TRAFFIC_URL}/summary`);
 };
 
 export const registerEntry = () => {
-  return axios.post(`${TRAFFIC_URL}/entry`);
+  return apiClient.post(`${TRAFFIC_URL}/entry`);
 };
 
 export const registerExit = () => {
-  return axios.post(`${TRAFFIC_URL}/exit`);
+  return apiClient.post(`${TRAFFIC_URL}/exit`);
 };

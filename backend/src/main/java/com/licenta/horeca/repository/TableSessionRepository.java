@@ -7,9 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TableSessionRepository
         extends JpaRepository<TableSession, Long> {
-    Optional<TableSession> findBySessionCode(String sessionCode);
 
-    Optional<TableSession> findBySessionCodeAndActiveTrue(String sessionCode);
+    Optional<TableSession>
+    findBySessionCodeAndActiveTrue(
+            String sessionCode
+    );
 
     List<TableSession> findByActiveTrue();
+
+    boolean
+    existsByRestaurantTable_IdAndActiveTrue(
+            Long tableId
+    );
 }

@@ -8,6 +8,7 @@ function LoginPage() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    setErrorMessage("");
 
     try {
       const response = await login({
@@ -17,7 +18,13 @@ function LoginPage() {
 
       const user = response.data;
 
+      if (!user.token) {
+        setErrorMessage("Tokenul de autentificare nu a fost primit.");
+        return;
+      }
+
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", user.token);
 
       if (user.role === "WAITER") {
         globalThis.location.href = "/waiter";
@@ -30,9 +37,15 @@ function LoginPage() {
       } else if (user.role === "ADMIN") {
         globalThis.location.href = "/admin";
       } else {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
         setErrorMessage("Rol necunoscut.");
       }
     } catch {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
       setErrorMessage("Email sau parola incorecta.");
     }
   };
@@ -42,13 +55,20 @@ function LoginPage() {
       <h1>Autentificare angajat</h1>
 
       <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
 
         <input
           type="password"
           placeholder="Parola"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          required
         />
 
         <button type="submit">Login</button>
