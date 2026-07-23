@@ -8,7 +8,7 @@ import ClientMenuPage from "./pages/ClientMenuPage";
 import AdminEmployeesPage from "./pages/AdminEmployeesPage";
 import KitchenPage from "./pages/KitchenPage";
 import LoginPage from "./pages/LoginPage";
-import ManagerPage from "./pages/ManagerPage";
+import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
 import MenuQrPage from "./pages/MenuQrPage";
 import SensorSimulatorPage from "./pages/SensorSimulatorPage";
@@ -60,7 +60,7 @@ function App() {
 
     "/bar": renderProtectedPage(user, "BAR", BarPage),
 
-    "/manager": renderProtectedPage(user, "MANAGER", ManagerPage),
+    "/manager": renderProtectedPage(user, "MANAGER", ManagerDashboardPage),
 
     "/manager-supplies": renderProtectedPage(
       user,
