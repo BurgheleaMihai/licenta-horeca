@@ -3,16 +3,16 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminStatisticsPage from "./pages/AdminStatisticsPage";
 import AdminStockConfigurationPage from "./pages/AdminStockConfigurationPage";
 import AdminUnavailableSuppliesPage from "./pages/AdminUnavailableSuppliesPage";
-import BarPage from "./pages/BarPage";
+import BarDashboardPage from "./pages/BarDashboardPage";
 import ClientMenuPage from "./pages/ClientMenuPage";
 import AdminEmployeesPage from "./pages/AdminEmployeesPage";
-import KitchenPage from "./pages/KitchenPage";
+import KitchenDashboardPage from "./pages/KitchenDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
 import MenuQrPage from "./pages/MenuQrPage";
 import SensorSimulatorPage from "./pages/SensorSimulatorPage";
-import WaiterPage from "./pages/WaiterPage";
+import WaiterDashboardPage from "./pages/WaiterDashboardPage";
 import "./App.css";
 
 function renderProtectedPage(user, requiredRole, PageComponent) {
@@ -54,11 +54,11 @@ function App() {
 
     "/login": <LoginPage />,
 
-    "/waiter": renderProtectedPage(user, "WAITER", WaiterPage),
+    "/waiter": renderProtectedPage(user, "WAITER", WaiterDashboardPage),
 
-    "/kitchen": renderProtectedPage(user, "KITCHEN", KitchenPage),
+    "/kitchen": renderProtectedPage(user, "KITCHEN", KitchenDashboardPage),
 
-    "/bar": renderProtectedPage(user, "BAR", BarPage),
+    "/bar": renderProtectedPage(user, "BAR", BarDashboardPage),
 
     "/manager": renderProtectedPage(user, "MANAGER", ManagerDashboardPage),
 
