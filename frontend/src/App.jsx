@@ -11,7 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
 import ClientMenuQrPage from "./pages/ClientMenuQrPage";
-import SensorSimulatorPage from "./pages/SensorSimulatorPage";
+import TrafficSensorSimulatorPage from "./pages/TrafficSensorSimulatorPage";
 import WaiterDashboardPage from "./pages/WaiterDashboardPage";
 import "./App.css";
 
@@ -96,7 +96,7 @@ function App() {
 
     "/admin/employees": renderProtectedPage(user, "ADMIN", AdminEmployeesPage),
 
-    "/sensor-simulator": <SensorSimulatorPage />,
+    "/sensor-simulator": <TrafficSensorSimulatorPage />,
   };
 
   return routes[path] || <LoginPage />;
