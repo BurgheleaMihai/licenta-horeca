@@ -56,7 +56,29 @@ function useStockConfiguration() {
   };
 
   useEffect(() => {
-    loadSupplies();
+    let componentActive = true;
+
+    getAllAuxiliarySupplies()
+      .then((response) => {
+        if (!componentActive) {
+          return;
+        }
+
+        setSupplies(Array.isArray(response.data) ? response.data : []);
+      })
+      .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
+        console.error("Eroare la incarcarea articolelor de stoc:", error);
+
+        setErrorMessage("Articolele de stoc nu au putut fi incarcate.");
+      });
+
+    return () => {
+      componentActive = false;
+    };
   }, []);
 
   const resetForm = () => {

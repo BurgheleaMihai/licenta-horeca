@@ -58,7 +58,34 @@ function useAdminOrderHistory() {
   };
 
   useEffect(() => {
-    loadOrders();
+    let componentActive = true;
+
+    getAllOrders()
+      .then((response) => {
+        if (!componentActive) {
+          return;
+        }
+
+        setOrders(Array.isArray(response.data) ? response.data : []);
+      })
+      .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
+        console.error("Eroare la incarcarea istoricului comenzilor:", error);
+
+        setErrorMessage("Istoricul comenzilor nu a putut fi incarcat.");
+      })
+      .finally(() => {
+        if (componentActive) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      componentActive = false;
+    };
   }, []);
 
   const tableNumbers = useMemo(

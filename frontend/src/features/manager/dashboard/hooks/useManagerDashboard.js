@@ -45,7 +45,7 @@ function useManagerDashboard() {
     endTime: "23:59",
   });
 
-  const [statisticsLoading, setStatisticsLoading] = useState(false);
+  const [statisticsLoading, setStatisticsLoading] = useState(true);
 
   const [trafficSummary, setTrafficSummary] = useState({
     entries: 0,
@@ -81,16 +81,52 @@ function useManagerDashboard() {
       });
   };
 
-  const loadManagerData = () => {
-    setErrorMessage("");
+  useEffect(() => {
+    let componentActive = true;
 
-    loadStatistics(initialDate, "00:00", "23:59");
+    getOrderStatistics(initialDate, "00:00", "23:59")
+      .then((response) => {
+        if (!componentActive) {
+          return;
+        }
+
+        setStatistics(response.data);
+
+        setAppliedFilters({
+          date: initialDate,
+          startTime: "00:00",
+          endTime: "23:59",
+        });
+      })
+      .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
+        console.error("Eroare la incarcarea statisticilor:", error);
+
+        setErrorMessage(
+          error.response?.data?.message ||
+            "Statisticile nu au putut fi incarcate.",
+        );
+      })
+      .finally(() => {
+        if (componentActive) {
+          setStatisticsLoading(false);
+        }
+      });
 
     getActiveOrders()
       .then((response) => {
-        setActiveOrders(response.data);
+        if (componentActive) {
+          setActiveOrders(Array.isArray(response.data) ? response.data : []);
+        }
       })
       .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
         console.error("Eroare la incarcarea comenzilor active:", error);
 
         setErrorMessage("Comenzile active nu au putut fi incarcate.");
@@ -98,9 +134,15 @@ function useManagerDashboard() {
 
     getAllOrders()
       .then((response) => {
-        setAllOrders(response.data);
+        if (componentActive) {
+          setAllOrders(Array.isArray(response.data) ? response.data : []);
+        }
       })
       .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
         console.error("Eroare la incarcarea comenzilor:", error);
 
         setErrorMessage("Toate comenzile nu au putut fi incarcate.");
@@ -108,9 +150,15 @@ function useManagerDashboard() {
 
     getAllFeedback()
       .then((response) => {
-        setFeedbackList(response.data);
+        if (componentActive) {
+          setFeedbackList(Array.isArray(response.data) ? response.data : []);
+        }
       })
       .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
         console.error("Eroare la incarcarea feedback-ului:", error);
 
         setErrorMessage("Feedback-ul nu a putut fi incarcat.");
@@ -118,18 +166,24 @@ function useManagerDashboard() {
 
     getTrafficSummary()
       .then((response) => {
-        setTrafficSummary(response.data);
+        if (componentActive) {
+          setTrafficSummary(response.data);
+        }
       })
       .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
         console.error("Eroare la incarcarea datelor senzorilor:", error);
 
         setErrorMessage("Datele senzorilor nu au putut fi incarcate.");
       });
-  };
 
-  useEffect(() => {
-    loadManagerData();
-  }, []);
+    return () => {
+      componentActive = false;
+    };
+  }, [initialDate]);
 
   const handleStatisticsSubmit = (event) => {
     event.preventDefault();

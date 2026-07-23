@@ -71,7 +71,37 @@ function useEmployeeManagement() {
   };
 
   useEffect(() => {
-    loadEmployees();
+    let componentActive = true;
+
+    getEmployees()
+      .then((employeeList) => {
+        if (!componentActive) {
+          return;
+        }
+
+        setEmployees(Array.isArray(employeeList) ? employeeList : []);
+      })
+      .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
+        console.error("Eroare la incarcarea angajatilor:", error);
+
+        setErrorMessage(
+          error.response?.data?.message ||
+            "Angajatii nu au putut fi incarcati.",
+        );
+      })
+      .finally(() => {
+        if (componentActive) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      componentActive = false;
+    };
   }, []);
 
   const handleOpenCreateForm = () => {

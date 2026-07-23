@@ -31,7 +31,9 @@ function NumericStepper({ id, label, value, onChange }) {
    */
   const holdIntervalRef = useRef(null);
 
-  currentValueRef.current = numericValue;
+  useEffect(() => {
+    currentValueRef.current = numericValue;
+  }, [numericValue]);
 
   /*
    * Opreste temporizatoarele folosite pentru

@@ -50,22 +50,40 @@ function useAdminStatistics() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    setErrorMessage("");
+    let componentActive = true;
 
     Promise.all([getAllOrders(), getAllFeedback()])
       .then(([ordersResponse, feedbackResponse]) => {
-        setOrders(ordersResponse.data);
-        setFeedbackList(feedbackResponse.data);
+        if (!componentActive) {
+          return;
+        }
+
+        setOrders(
+          Array.isArray(ordersResponse.data) ? ordersResponse.data : [],
+        );
+
+        setFeedbackList(
+          Array.isArray(feedbackResponse.data) ? feedbackResponse.data : [],
+        );
       })
       .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
         console.error("Eroare la incarcarea statisticilor:", error);
 
         setErrorMessage("Datele pentru statistici nu au putut fi incarcate.");
       })
       .finally(() => {
-        setLoading(false);
+        if (componentActive) {
+          setLoading(false);
+        }
       });
+
+    return () => {
+      componentActive = false;
+    };
   }, []);
 
   const handlePeriodChange = (event) => {

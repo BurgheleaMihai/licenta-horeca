@@ -36,7 +36,7 @@ function useAdminDecisionDashboard() {
 
   const [latestUnlabeledRecord, setLatestUnlabeledRecord] = useState(null);
 
-  const [labelLoading, setLabelLoading] = useState(false);
+  const [labelLoading, setLabelLoading] = useState(true);
   const [labelSaving, setLabelSaving] = useState(false);
   const [labelError, setLabelError] = useState("");
   const [labelMessage, setLabelMessage] = useState("");
@@ -132,7 +132,36 @@ function useAdminDecisionDashboard() {
   };
 
   useEffect(() => {
-    loadLatestUnlabeledRecord();
+    getLatestUnlabeledDecisionRecord()
+      .then((response) => {
+        const record = response.data;
+
+        setLatestUnlabeledRecord(record);
+
+        setObservedTrafficLevel(record.predictedTrafficLevel || "SCAZUT");
+
+        setObservedDelayRisk(record.predictedDelayRisk || "SCAZUT");
+
+        setActualWaiters(String(record.recommendedWaiters ?? 0));
+
+        setActualKitchenStaff(String(record.recommendedKitchenStaff ?? 0));
+
+        setActualBarStaff(String(record.recommendedBarStaff ?? 0));
+      })
+      .catch((error) => {
+        if (error.response?.status === 404) {
+          setLatestUnlabeledRecord(null);
+
+          return;
+        }
+
+        console.error("Eroare la incarcarea predictiei neetichetate:", error);
+
+        setLabelError("Ultima predictie neetichetata nu a putut fi incarcata.");
+      })
+      .finally(() => {
+        setLabelLoading(false);
+      });
   }, []);
 
   /*

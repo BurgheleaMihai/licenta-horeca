@@ -119,9 +119,36 @@ function useManagerSupplies() {
   };
 
   useEffect(() => {
-    loadSupplies();
-  }, []);
+    let componentActive = true;
 
+    getAllActiveAuxiliarySupplies()
+      .then((response) => {
+        if (!componentActive) {
+          return;
+        }
+
+        const loadedSupplies = Array.isArray(response.data)
+          ? response.data
+          : [];
+
+        setSupplies(loadedSupplies);
+
+        setSelectedVariantIds(buildInitialVariantSelections(loadedSupplies));
+      })
+      .catch((error) => {
+        if (!componentActive) {
+          return;
+        }
+
+        console.error("Eroare la incarcarea stocurilor:", error);
+
+        setErrorMessage("Stocurile nu au putut fi incarcate.");
+      });
+
+    return () => {
+      componentActive = false;
+    };
+  }, []);
   const handleVariantSelectionChange = (groupKey, event) => {
     const selectedId = event.target.value;
 
