@@ -367,19 +367,19 @@ class OrderServiceTest {
         product2.setAvailable(true);
 
         OrderItem item1 = new OrderItem(product1, 1, BigDecimal.valueOf(32));
-
         item1.setStatus(OrderStatus.IN_PREPARARE);
 
         OrderItem item2 = new OrderItem(product2, 1, BigDecimal.valueOf(8));
-
         item2.setStatus(OrderStatus.IN_PREPARARE);
 
         order.addItem(item1);
         order.addItem(item2);
 
+        when(orderRepository.findOrderByItemIdForUpdate(1L)).thenReturn(Optional.of(order));
+
         when(orderItemRepository.findById(1L)).thenReturn(Optional.of(item1));
 
-        when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderItemRepository.existsByOrder_IdAndStatusNot(any(), any())).thenReturn(true);
 
         OrderItem updatedItem = orderService.updateOrderItemStatus(1L, OrderStatus.GATA);
 
@@ -387,9 +387,19 @@ class OrderServiceTest {
 
         assertEquals(OrderStatus.IN_PREPARARE, order.getStatus());
 
-        verify(orderItemRepository, times(1)).save(item1);
+        verify(orderRepository, times(1)).findOrderByItemIdForUpdate(1L);
 
-        verify(orderRepository, never()).save(order);
+        verify(orderItemRepository, times(1)).findById(1L);
+
+        verify(orderItemRepository, times(1)).flush();
+
+        verify(orderItemRepository, times(1)).existsByOrder_IdAndStatusNot(any(), any());
+
+        verify(orderRepository, times(1)).flush();
+
+        verify(orderItemRepository, never()).save(any(OrderItem.class));
+
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test
@@ -408,21 +418,19 @@ class OrderServiceTest {
         product2.setAvailable(true);
 
         OrderItem item1 = new OrderItem(product1, 1, BigDecimal.valueOf(32));
-
         item1.setStatus(OrderStatus.GATA);
 
         OrderItem item2 = new OrderItem(product2, 1, BigDecimal.valueOf(8));
-
         item2.setStatus(OrderStatus.IN_PREPARARE);
 
         order.addItem(item1);
         order.addItem(item2);
 
+        when(orderRepository.findOrderByItemIdForUpdate(2L)).thenReturn(Optional.of(order));
+
         when(orderItemRepository.findById(2L)).thenReturn(Optional.of(item2));
 
-        when(orderItemRepository.save(any(OrderItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderItemRepository.existsByOrder_IdAndStatusNot(any(), any())).thenReturn(false);
 
         OrderItem updatedItem = orderService.updateOrderItemStatus(2L, OrderStatus.GATA);
 
@@ -430,20 +438,37 @@ class OrderServiceTest {
 
         assertEquals(OrderStatus.GATA, order.getStatus());
 
-        verify(orderItemRepository, times(1)).save(item2);
+        verify(orderRepository, times(1)).findOrderByItemIdForUpdate(2L);
 
-        verify(orderRepository, times(1)).save(order);
+        verify(orderItemRepository, times(1)).findById(2L);
+
+        verify(orderItemRepository, times(1)).flush();
+
+        verify(orderItemRepository, times(1)).existsByOrder_IdAndStatusNot(any(), any());
+
+        verify(orderRepository, times(1)).flush();
+
+        verify(orderItemRepository, never()).save(any(OrderItem.class));
+
+        verify(orderRepository, never()).save(any(Order.class));
     }
+
 
     @Test
     void updateOrderItemStatusShouldRejectMissingOrderItem() {
-        when(orderItemRepository.findById(999L)).thenReturn(Optional.empty());
+        when(orderRepository.findOrderByItemIdForUpdate(999L)).thenReturn(Optional.empty());
 
         BusinessException exception = assertThrows(BusinessException.class, () -> orderService.updateOrderItemStatus(999L, OrderStatus.GATA));
 
         assertEquals("Produsul din comanda nu exista.", exception.getMessage());
 
-        verify(orderItemRepository, times(1)).findById(999L);
+        verify(orderRepository, times(1)).findOrderByItemIdForUpdate(999L);
+
+        verify(orderItemRepository, never()).findById(any());
+
+        verify(orderItemRepository, never()).flush();
+
+        verify(orderRepository, never()).flush();
 
         verify(orderItemRepository, never()).save(any(OrderItem.class));
 

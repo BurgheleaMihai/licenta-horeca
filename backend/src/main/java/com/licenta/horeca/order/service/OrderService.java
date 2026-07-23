@@ -13,6 +13,7 @@ import com.licenta.horeca.product.repository.ProductRepository;
 import com.licenta.horeca.table.entity.TableSession;
 import com.licenta.horeca.table.repository.TableSessionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -194,24 +195,42 @@ public class OrderService {
      * Actualizează un produs din comandă și marchează automat
      * întreaga comandă ca GATA atunci când toate produsele sunt gata.
      */
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public OrderItem updateOrderItemStatus(Long orderItemId, OrderStatus status) {
+        /*
+         * Blocarea comenzii trebuie să fie prima operație efectuată
+         * în cadrul tranzacției.
+         */
+        Order order = orderRepository.findOrderByItemIdForUpdate(orderItemId).orElseThrow(() -> new BusinessException("Produsul din comanda nu exista."));
+
+        /*
+         * Itemul este citit numai după obținerea blocării comenzii.
+         */
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(() -> new BusinessException("Produsul din comanda nu exista."));
 
         orderItem.setStatus(status);
 
-        OrderItem savedItem = orderItemRepository.save(orderItem);
+        /*
+         * Modificarea itemului este trimisă în baza de date înainte
+         * de verificarea tuturor itemelor comenzii.
+         */
+        orderItemRepository.flush();
 
-        Order order = savedItem.getOrder();
+        boolean hasItemsNotReady = orderItemRepository.existsByOrder_IdAndStatusNot(order.getId(), OrderStatus.GATA);
 
-        boolean allItemsReady = order.getItems().stream().allMatch(item -> item.getStatus() == OrderStatus.GATA);
-
-        if (allItemsReady) {
+        if (hasItemsNotReady) {
+            order.setStatus(OrderStatus.IN_PREPARARE);
+        } else {
             order.setStatus(OrderStatus.GATA);
-            orderRepository.save(order);
         }
 
-        return savedItem;
+        /*
+         * Order este deja o entitate administrată de Hibernate.
+         * Este suficient flush-ul, fără un nou save/merge.
+         */
+        orderRepository.flush();
+
+        return orderItem;
     }
 
     public static class OrderItemRequest {

@@ -16,7 +16,7 @@ public interface AuxiliarySupplyRepository extends JpaRepository<AuxiliarySupply
             ORDER BY
                 CASE supply.stockType
                     WHEN com.licenta.horeca.stock.enums.StockType.AUXILIARY THEN 1
-                    WHEN com.licenta.horeca.stockenums.StockType.WAREHOUSE THEN 2
+                    WHEN com.licenta.horeca.stock.enums.StockType.WAREHOUSE THEN 2
                     WHEN com.licenta.horeca.stock.enums.StockType.FRUIT_AND_VEGETABLE THEN 3
                     ELSE 4
                 END,
