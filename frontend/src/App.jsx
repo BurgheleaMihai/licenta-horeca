@@ -1,10 +1,11 @@
 import AdminOrderHistoryPage from "./pages/AdminOrderHistoryPage";
-import AdminPage from "./pages/AdminPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminStatisticsPage from "./pages/AdminStatisticsPage";
 import AdminStockConfigurationPage from "./pages/AdminStockConfigurationPage";
+import AdminUnavailableSuppliesPage from "./pages/AdminUnavailableSuppliesPage";
 import BarPage from "./pages/BarPage";
 import ClientMenuPage from "./pages/ClientMenuPage";
-import EmployeeManagementPage from "./pages/EmployeeManagementPage";
+import AdminEmployeesPage from "./pages/AdminEmployeesPage";
 import KitchenPage from "./pages/KitchenPage";
 import LoginPage from "./pages/LoginPage";
 import ManagerPage from "./pages/ManagerPage";
@@ -67,7 +68,7 @@ function App() {
       ManagerSuppliesPage,
     ),
 
-    "/admin": renderProtectedPage(user, "ADMIN", AdminPage),
+    "/admin": renderProtectedPage(user, "ADMIN", AdminDashboardPage),
 
     "/admin/statistics": renderProtectedPage(
       user,
@@ -87,11 +88,13 @@ function App() {
       AdminStockConfigurationPage,
     ),
 
-    "/admin/employees": renderProtectedPage(
+    "/admin/unavailable-supplies": renderProtectedPage(
       user,
       "ADMIN",
-      EmployeeManagementPage,
+      AdminUnavailableSuppliesPage,
     ),
+
+    "/admin/employees": renderProtectedPage(user, "ADMIN", AdminEmployeesPage),
 
     "/sensor-simulator": <SensorSimulatorPage />,
   };
