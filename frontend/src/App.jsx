@@ -1,19 +1,20 @@
-import AdminOrderHistoryPage from "./pages/AdminOrderHistoryPage";
+import "./App.css";
+
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminEmployeesPage from "./pages/AdminEmployeesPage";
+import AdminOrderHistoryPage from "./pages/AdminOrderHistoryPage";
 import AdminStatisticsPage from "./pages/AdminStatisticsPage";
 import AdminStockConfigurationPage from "./pages/AdminStockConfigurationPage";
 import AdminUnavailableSuppliesPage from "./pages/AdminUnavailableSuppliesPage";
 import BarDashboardPage from "./pages/BarDashboardPage";
 import ClientMenuPage from "./pages/ClientMenuPage";
-import AdminEmployeesPage from "./pages/AdminEmployeesPage";
+import ClientMenuQrPage from "./pages/ClientMenuQrPage";
 import KitchenDashboardPage from "./pages/KitchenDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
-import ClientMenuQrPage from "./pages/ClientMenuQrPage";
 import TrafficSensorSimulatorPage from "./pages/TrafficSensorSimulatorPage";
 import WaiterDashboardPage from "./pages/WaiterDashboardPage";
-import "./App.css";
 
 function renderProtectedPage(user, requiredRole, PageComponent) {
   if (!user || user.role !== requiredRole) {
@@ -32,6 +33,7 @@ function getStoredUser() {
     console.error("Utilizatorul salvat nu a putut fi citit:", error);
 
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
     return null;
   }
@@ -96,7 +98,11 @@ function App() {
 
     "/admin/employees": renderProtectedPage(user, "ADMIN", AdminEmployeesPage),
 
-    "/sensor-simulator": <TrafficSensorSimulatorPage />,
+    "/sensor-simulator": renderProtectedPage(
+      user,
+      "ADMIN",
+      TrafficSensorSimulatorPage,
+    ),
   };
 
   return routes[path] || <LoginPage />;

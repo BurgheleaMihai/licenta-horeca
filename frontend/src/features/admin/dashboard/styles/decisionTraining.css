@@ -1,0 +1,62 @@
+.decision-label-form {
+  margin-top: 24px;
+}
+
+.decision-label-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.decision-label-grid .filter-group {
+  min-width: 0;
+}
+
+.decision-label-grid .filter-group label {
+  min-height: 42px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.decision-label-grid input,
+.decision-label-grid select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.decision-label-form button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: #222222;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.decision-label-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.retraining-area {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid #dddddd;
+}
+
+.retraining-area h3 {
+  margin-bottom: 8px;
+}
+
+.retraining-area button {
+  margin-top: 10px;
+}

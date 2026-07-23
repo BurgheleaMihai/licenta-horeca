@@ -1,0 +1,546 @@
+/* DASHBOARD AI ADMIN */
+
+/* Toate sectiunile Admin folosesc aceeasi latime. */
+
+.decision-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.decision-section-header h2 {
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.decision-section-header p {
+  max-width: 680px;
+  margin: 0;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.decision-refresh-button {
+  min-width: 210px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 9px;
+  background-color: #222222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.decision-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.decision-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.decision-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.decision-summary-card {
+  min-height: 145px;
+  padding: 20px;
+  border: 1px solid #dddddd;
+  border-radius: 14px;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.decision-card-label {
+  color: #555555;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.decision-card-value {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.decision-update-time {
+  font-size: 24px;
+}
+
+.decision-summary-card small {
+  color: #666666;
+}
+
+.decision-level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 105px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 18px;
+}
+
+.decision-level-badge.low {
+  color: #176b3a;
+  background-color: #e9f7ef;
+}
+
+.decision-level-badge.medium {
+  color: #8a5a00;
+  background-color: #fff4d6;
+}
+
+.decision-level-badge.high {
+  color: #a12622;
+  background-color: #fdeceb;
+}
+
+.decision-level-badge.unknown {
+  color: #555555;
+  background-color: #eeeeee;
+}
+
+.staffing-comparison,
+.operational-recommendations {
+  padding: 22px;
+  border: 1px solid #dddddd;
+  border-radius: 14px;
+  background-color: #ffffff;
+}
+
+.decision-subsection-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.decision-subsection-heading h3 {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+}
+
+.decision-subsection-heading p {
+  margin: 0;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.staffing-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.staffing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.staffing-table th,
+.staffing-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e2e2e2;
+  text-align: center;
+}
+
+.staffing-table th:first-child,
+.staffing-table td:first-child {
+  text-align: left;
+}
+
+.staffing-table th {
+  color: #555555;
+  background-color: #f7f7f7;
+  font-size: 14px;
+}
+
+.staffing-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.staffing-status {
+  display: inline-block;
+  min-width: 100px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.staffing-status.deficit {
+  color: #a12622;
+  background-color: #fdeceb;
+}
+
+.staffing-status.surplus {
+  color: #235a84;
+  background-color: #eaf3fa;
+}
+
+.staffing-status.sufficient {
+  color: #176b3a;
+  background-color: #e9f7ef;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 12px;
+}
+
+.recommendation-item {
+  padding: 14px 16px;
+  border-left: 5px solid #777777;
+  border-radius: 9px;
+  background-color: #f5f5f5;
+  line-height: 1.5;
+}
+
+.recommendation-item.urgent {
+  border-left-color: #b42318;
+  background-color: #fff0ef;
+}
+
+.recommendation-item.warning {
+  border-left-color: #d28a00;
+  background-color: #fff8e6;
+}
+
+.recommendation-item.info {
+  border-left-color: #245b85;
+  background-color: #eef6fb;
+}
+
+.recommendation-item.success {
+  border-left-color: #198754;
+  background-color: #edf8f1;
+}
+
+.decision-empty-state {
+  margin: 12px 0 0 0;
+  padding: 22px;
+  border: 1px dashed #bbbbbb;
+  border-radius: 12px;
+  color: #666666;
+  text-align: center;
+}
+
+.decision-empty-state strong,
+.decision-empty-state span {
+  display: block;
+}
+
+.decision-empty-state strong {
+  margin-bottom: 8px;
+  color: #333333;
+}
+
+.decision-empty-state.has-pending-record {
+  border-style: solid;
+  border-color: #9dc2db;
+  color: #244b68;
+  background-color: #eef6fb;
+  line-height: 1.5;
+}
+
+.decision-fallback-warning {
+  margin: 0 0 20px 0;
+  padding: 14px 16px;
+  border: 1px solid #e3c36a;
+  border-radius: 10px;
+  color: #765300;
+  background-color: #fff8df;
+  font-weight: bold;
+}
+
+.decision-label-note {
+  margin: 16px 0 22px 0;
+  padding: 14px 16px;
+  border-left: 5px solid #245b85;
+  border-radius: 8px;
+  background-color: #eef6fb;
+  color: #333333;
+  line-height: 1.5;
+}
+
+@media (max-width: 1050px) {
+  .decision-label-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .decision-label-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .decision-label-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-label-grid .filter-group label {
+    min-height: 0;
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 700px) {
+  .decision-section-header {
+    align-items: stretch;
+  }
+
+  .decision-section-header h2,
+  .decision-section-header p {
+    text-align: center;
+  }
+
+  .decision-refresh-button {
+    width: 100%;
+  }
+
+  .decision-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staffing-comparison,
+  .operational-recommendations {
+    padding: 16px;
+  }
+
+  .staffing-table th,
+  .staffing-table td {
+    padding: 12px 8px;
+  }
+}
+
+/* FORMULAR ETICHETARE AI - VARIANTA COMPACTA */
+
+.decision-label-grid {
+  grid-template-columns:
+    minmax(170px, 1.15fr)
+    minmax(170px, 1.15fr)
+    minmax(135px, 0.9fr)
+    minmax(155px, 1fr)
+    minmax(135px, 0.9fr);
+  column-gap: 18px;
+  row-gap: 18px;
+}
+
+.decision-label-grid .filter-group label {
+  min-height: 38px;
+  padding: 0 4px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.decision-label-grid input[type="number"] {
+  width: 118px;
+  min-width: 0;
+  justify-self: center;
+  text-align: center;
+}
+
+.decision-label-grid select {
+  min-width: 0;
+}
+
+@media (max-width: 1050px) {
+  .decision-label-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .decision-label-grid input[type="number"] {
+    width: 100%;
+    max-width: 170px;
+  }
+}
+
+@media (max-width: 760px) {
+  .decision-label-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .decision-label-grid input[type="number"] {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .decision-label-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-label-grid input[type="number"] {
+    width: 100%;
+  }
+}
+
+/* FORMULAR ETICHETARE AI - STEPPER CIRCULAR */
+
+.decision-label-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.decision-label-grid {
+  width: 100%;
+  grid-template-columns:
+    210px
+    210px
+    repeat(3, 150px);
+  justify-content: center;
+  column-gap: 22px;
+  row-gap: 18px;
+}
+
+.decision-label-grid .filter-group {
+  width: 100%;
+  align-items: center;
+}
+
+.decision-label-grid .filter-group label {
+  min-height: 34px;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1.2;
+  align-items: center;
+}
+
+.decision-label-grid select {
+  width: 100%;
+  min-width: 0;
+}
+
+.compact-number-field {
+  justify-self: center;
+}
+
+.number-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.number-stepper .number-stepper-button {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border: 1px solid #c9c9c9;
+  border-radius: 50%;
+  background-color: #f3f3f3;
+  color: #222222;
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.number-stepper .number-stepper-button:hover:not(:disabled) {
+  opacity: 1;
+  background-color: #e8e8e8;
+  border-color: #999999;
+  transform: scale(1.05);
+}
+
+.number-stepper .number-stepper-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.number-stepper .number-stepper-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.decision-label-grid .number-stepper input[type="number"] {
+  width: 54px;
+  height: 40px;
+  min-width: 54px;
+  padding: 7px 4px;
+  border: 1px solid #cccccc;
+  border-radius: 12px;
+  background-color: #ffffff;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.decision-label-grid
+  .number-stepper
+  input[type="number"]::-webkit-inner-spin-button,
+.decision-label-grid
+  .number-stepper
+  input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.decision-label-form > button[type="submit"] {
+  align-self: center;
+}
+
+@media (max-width: 1040px) {
+  .decision-label-grid {
+    grid-template-columns: repeat(2, minmax(210px, 280px));
+  }
+
+  .compact-number-field {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 620px) {
+  .decision-label-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .decision-label-grid .filter-group,
+  .compact-number-field {
+    width: 100%;
+    max-width: 300px;
+    justify-self: center;
+  }
+}
+
+/* APASARE LUNGA PENTRU SELECTORUL NUMERIC */
+
+.number-stepper .number-stepper-button {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.number-stepper .number-stepper-button:focus-visible {
+  outline: 3px solid rgba(34, 34, 34, 0.22);
+  outline-offset: 3px;
+}

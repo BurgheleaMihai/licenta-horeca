@@ -1,0 +1,141 @@
+/* PAGINA STATISTICI ADMINISTRATOR */
+
+.admin-statistics-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.admin-statistics-header {
+  max-width: 1100px;
+  margin: 0 auto 32px auto;
+  text-align: center;
+}
+
+.admin-statistics-header h1 {
+  margin-bottom: 12px;
+  font-size: 42px;
+}
+
+.admin-statistics-header p {
+  margin: 0;
+  color: #666666;
+  font-size: 16px;
+}
+
+.admin-statistics-section {
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-statistics-section h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.admin-statistics-filter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+  align-items: end;
+  padding: 20px;
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+}
+
+.admin-statistics-filter .filter-group {
+  margin: 0;
+}
+
+.admin-statistics-filter input,
+.admin-statistics-filter select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 15px;
+}
+
+.admin-statistics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-statistics-actions button {
+  min-height: 40px;
+  padding: 10px 16px;
+  border: none;
+  background-color: #222222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.admin-statistics-summary {
+  margin: 20px 0 0 0;
+  text-align: center;
+  color: #444444;
+}
+
+.admin-statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.admin-statistics-card {
+  padding: 20px;
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.admin-statistics-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.admin-statistics-card p {
+  margin: 6px 0;
+  font-size: 18px;
+}
+
+.admin-statistics-message {
+  max-width: 1100px;
+  margin: 0 auto 20px auto;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .admin-statistics-page {
+    padding: 18px;
+  }
+
+  .admin-statistics-header h1 {
+    font-size: 32px;
+  }
+
+  .admin-statistics-section {
+    padding: 18px;
+  }
+
+  .admin-statistics-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-statistics-actions {
+    flex-direction: column;
+  }
+
+  .admin-statistics-actions button {
+    width: 100%;
+  }
+}

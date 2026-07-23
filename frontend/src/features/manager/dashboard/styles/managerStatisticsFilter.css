@@ -1,0 +1,81 @@
+/* FILTRARE STATISTICI MANAGER */
+
+.manager-statistics-filter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding: 18px;
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+}
+
+.manager-statistics-filter .filter-group {
+  margin: 0;
+}
+
+.manager-statistics-filter .filter-group input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 15px;
+}
+
+.manager-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.manager-filter-actions button {
+  min-height: 40px;
+  padding: 10px 16px;
+  border: none;
+  background-color: #222222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.manager-filter-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.manager-filter-summary {
+  margin: 0 0 10px 0;
+  text-align: center;
+  color: #444444;
+}
+
+.manager-filter-note {
+  margin: 0 0 22px 0;
+  text-align: center;
+  color: #666666;
+  font-size: 14px;
+}
+
+.manager-page-message {
+  max-width: 1000px;
+  margin: 0 auto 20px auto;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .manager-statistics-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-filter-actions {
+    flex-direction: column;
+  }
+
+  .manager-filter-actions button {
+    width: 100%;
+  }
+}

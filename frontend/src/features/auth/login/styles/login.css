@@ -1,0 +1,36 @@
+.login-container {
+  max-width: 520px;
+  margin: 70px auto;
+  padding: 32px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.login-container h1 {
+  font-size: 36px;
+  margin-bottom: 28px;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-container input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-size: 18px;
+  border: 1px solid #999;
+  border-radius: 6px;
+}
+
+.login-container button {
+  padding: 14px 18px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 6px;
+}

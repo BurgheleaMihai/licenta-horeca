@@ -1,0 +1,119 @@
+/* PAGINA COD QR MENIU */
+
+.menu-qr-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.menu-qr-card {
+  width: 100%;
+  max-width: 620px;
+  padding: 36px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.menu-qr-card h1 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 38px;
+}
+
+.menu-qr-description {
+  margin: 0 0 24px 0;
+  color: #555555;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.menu-qr-code {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 20px auto;
+  padding: 18px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 14px;
+}
+
+.menu-qr-code svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.menu-qr-warning {
+  margin: 0 auto 20px auto;
+  padding: 14px;
+  color: #856404;
+  background-color: #fff3cd;
+  border: 1px solid #ffe69c;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+.menu-qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.menu-qr-link,
+.menu-qr-back-button {
+  display: inline-block;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menu-qr-link {
+  color: #ffffff;
+  background-color: #222222;
+  text-decoration: none;
+}
+
+.menu-qr-back-button {
+  color: #222222;
+  background-color: #e5e5e5;
+}
+
+.menu-qr-link:hover,
+.menu-qr-back-button:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  .menu-qr-page {
+    padding: 18px;
+  }
+
+  .menu-qr-card {
+    padding: 24px 18px;
+  }
+
+  .menu-qr-card h1 {
+    font-size: 32px;
+  }
+
+  .menu-qr-code {
+    padding: 12px;
+  }
+
+  .menu-qr-actions {
+    flex-direction: column;
+  }
+
+  .menu-qr-link,
+  .menu-qr-back-button {
+    width: 100%;
+  }
+}

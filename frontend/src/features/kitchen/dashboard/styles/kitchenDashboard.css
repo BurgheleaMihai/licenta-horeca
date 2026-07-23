@@ -1,0 +1,75 @@
+/* PAGINA BUCATARIE */
+
+.kitchen-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.kitchen-header {
+  max-width: 1000px;
+  margin: 0 auto 32px auto;
+  text-align: center;
+}
+
+.kitchen-header h1 {
+  margin-bottom: 12px;
+  font-size: 36px;
+}
+
+.kitchen-header p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.kitchen-section {
+  max-width: 1000px;
+  margin: 0 auto 24px auto;
+  background-color: white;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.kitchen-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.kitchen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.kitchen-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.kitchen-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.kitchen-card p {
+  margin: 6px 0;
+}
+
+.kitchen-button {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #222;
+  color: white;
+  cursor: pointer;
+}
+
+.kitchen-button:hover {
+  background-color: #444;
+}

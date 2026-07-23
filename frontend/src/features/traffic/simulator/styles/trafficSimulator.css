@@ -1,0 +1,68 @@
+/* PAGINA SIMULATOR SENZORI */
+
+.sensor-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.sensor-header {
+  max-width: 1000px;
+  margin: 0 auto 32px auto;
+  text-align: center;
+}
+
+.sensor-header h1 {
+  margin-bottom: 12px;
+  font-size: 42px;
+}
+
+.sensor-header p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.sensor-section {
+  max-width: 1000px;
+  margin: 0 auto 24px auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.sensor-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.sensor-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.sensor-card h3 {
+  margin-top: 0;
+}
+
+.sensor-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.sensor-actions button {
+  padding: 12px 18px;
+  font-weight: bold;
+}

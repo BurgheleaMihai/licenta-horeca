@@ -1,0 +1,298 @@
+/* PAGINA ISTORIC COMENZI */
+
+.admin-order-history-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.admin-order-history-header {
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  text-align: center;
+}
+
+.admin-order-history-header h1 {
+  margin-bottom: 12px;
+  font-size: 42px;
+}
+
+.admin-order-history-header p {
+  margin: 0;
+  color: #666666;
+  font-size: 16px;
+}
+
+.admin-order-history-section {
+  max-width: 1200px;
+  margin: 0 auto 24px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-order-history-section h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Formularul principal */
+
+.admin-order-history-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  padding: 28px;
+  background-color: #fafafa;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+}
+
+/* Doua filtre pe fiecare rand */
+
+.admin-order-history-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 28px;
+  width: 100%;
+}
+
+.admin-order-history-fields .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  margin: 0;
+}
+
+.admin-order-history-fields label {
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.admin-order-history-fields input,
+.admin-order-history-fields select {
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid #bbbbbb;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 16px;
+}
+
+.admin-order-history-fields input:focus,
+.admin-order-history-fields select:focus {
+  border-color: #222222;
+  outline: 2px solid rgba(34, 34, 34, 0.12);
+}
+
+/* Cele patru butoane pe acelasi rand */
+
+.admin-order-history-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  padding-top: 24px;
+  border-top: 1px solid #dddddd;
+}
+
+.admin-order-history-actions button {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.history-primary-button {
+  background-color: #222222;
+  color: #ffffff;
+}
+
+.history-secondary-button {
+  background-color: #666666;
+  color: #ffffff;
+}
+
+.admin-order-history-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Rezumat rezultate */
+
+.admin-order-history-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 22px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 10px;
+}
+
+.admin-order-history-summary p {
+  margin: 0;
+}
+
+/* Tabel */
+
+.admin-order-history-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-order-history-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.admin-order-history-table th,
+.admin-order-history-table td {
+  padding: 13px;
+  border-bottom: 1px solid #dddddd;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-order-history-table th {
+  background-color: #f1f1f1;
+}
+
+.admin-order-history-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.order-history-details-button {
+  border: none;
+  background-color: #222222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.order-history-details-row td {
+  padding: 0;
+  background-color: #f8f8f8;
+}
+
+.order-history-details {
+  padding: 22px;
+}
+
+.order-history-details h3 {
+  margin-top: 22px;
+  margin-bottom: 16px;
+}
+
+.order-history-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.order-history-metadata p {
+  margin: 0;
+}
+
+.order-history-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.order-history-item {
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+}
+
+.order-history-item h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.order-history-item p {
+  margin: 6px 0;
+}
+
+/* Statusuri */
+
+.order-history-status {
+  display: inline-block;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background-color: #eeeeee;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.order-history-status-servita {
+  background-color: #d1e7dd;
+}
+
+.order-history-status-anulata {
+  background-color: #f8d7da;
+}
+
+/* Mesaje */
+
+.admin-order-history-message {
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  text-align: center;
+}
+
+.admin-order-history-empty {
+  margin: 0;
+  padding: 24px;
+  background-color: #fafafa;
+  border: 1px dashed #cccccc;
+  border-radius: 10px;
+  color: #666666;
+  text-align: center;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .admin-order-history-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-order-history-page {
+    padding: 18px;
+  }
+
+  .admin-order-history-header h1 {
+    font-size: 32px;
+  }
+
+  .admin-order-history-section {
+    padding: 18px;
+  }
+
+  .admin-order-history-filter {
+    padding: 18px;
+  }
+
+  .admin-order-history-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-order-history-actions {
+    grid-template-columns: 1fr;
+  }
+}

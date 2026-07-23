@@ -1,0 +1,75 @@
+/* PAGINA BAR */
+
+.bar-page {
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.bar-header {
+  max-width: 1000px;
+  margin: 0 auto 32px auto;
+  text-align: center;
+}
+
+.bar-header h1 {
+  margin-bottom: 12px;
+  font-size: 36px;
+}
+
+.bar-header p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.bar-section {
+  max-width: 1000px;
+  margin: 0 auto 24px auto;
+  background-color: white;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.bar-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.bar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.bar-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 18px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.bar-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.bar-card p {
+  margin: 6px 0;
+}
+
+.bar-button {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #222;
+  color: white;
+  cursor: pointer;
+}
+
+.bar-button:hover {
+  background-color: #444;
+}
