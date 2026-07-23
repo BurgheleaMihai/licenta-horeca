@@ -10,7 +10,7 @@ import KitchenDashboardPage from "./pages/KitchenDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ManagerDashboardPage from "./pages/ManagerDashboardPage";
 import ManagerSuppliesPage from "./pages/ManagerSuppliesPage";
-import MenuQrPage from "./pages/MenuQrPage";
+import ClientMenuQrPage from "./pages/ClientMenuQrPage";
 import SensorSimulatorPage from "./pages/SensorSimulatorPage";
 import WaiterDashboardPage from "./pages/WaiterDashboardPage";
 import "./App.css";
@@ -50,7 +50,7 @@ function App() {
   const routes = {
     "/": <ClientMenuPage />,
 
-    "/menu-qr": <MenuQrPage />,
+    "/menu-qr": <ClientMenuQrPage />,
 
     "/login": <LoginPage />,
 

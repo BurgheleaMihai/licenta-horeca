@@ -1,111 +1,41 @@
-import { useEffect, useState } from "react";
-import { getAllProducts, saveFeedback } from "../api/productApi";
+import ClientMenuHeader from "../features/client/menu/components/ClientMenuHeader";
+import MenuFeedbackSection from "../features/client/menu/components/MenuFeedbackSection";
+import MenuFiltersSection from "../features/client/menu/components/MenuFiltersSection";
+import MenuProductsSection from "../features/client/menu/components/MenuProductsSection";
+import useClientMenu from "../features/client/menu/hooks/useClientMenu";
 
 function ClientMenuPage() {
-  const [products, setProducts] = useState([]);
-
-  const [selectedCategory, setSelectedCategory] = useState("ALL");
-
-  const [maxPrice, setMaxPrice] = useState("");
-
-  const [onlyAvailable, setOnlyAvailable] = useState(false);
-
-  const [onlyVegetarian, setOnlyVegetarian] = useState(false);
-
-  const [onlyVegan, setOnlyVegan] = useState(false);
-
-  const [selectedMeatType, setSelectedMeatType] = useState("ALL");
-
-  const [loadingProducts, setLoadingProducts] = useState(true);
-
-  const [productError, setProductError] = useState("");
-
-  const [feedbackRating, setFeedbackRating] = useState(5);
-
-  const [feedbackComment, setFeedbackComment] = useState("");
-
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-
-  useEffect(() => {
-    getAllProducts()
-      .then((response) => {
-        setProducts(response.data);
-      })
-      .catch((error) => {
-        console.error("Eroare la incarcarea produselor:", error);
-
-        setProductError("Produsele nu au putut fi incarcate.");
-      })
-      .finally(() => {
-        setLoadingProducts(false);
-      });
-  }, []);
-
-  const handleFeedbackSubmit = (event) => {
-    event.preventDefault();
-
-    const feedback = {
-      rating: Number(feedbackRating),
-      comment: feedbackComment,
-    };
-
-    setFeedbackMessage("");
-
-    saveFeedback(feedback)
-      .then(() => {
-        setFeedbackMessage("Feedback-ul a fost trimis cu succes.");
-
-        setFeedbackRating(5);
-        setFeedbackComment("");
-      })
-      .catch((error) => {
-        console.error("Eroare la trimiterea feedback-ului:", error);
-
-        setFeedbackMessage("Feedback-ul nu a putut fi trimis.");
-      });
-  };
-
-  const categories = [
-    "ALL",
-    ...new Set(
-      products.map((product) => product.category?.name).filter(Boolean),
-    ),
-  ];
-
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "ALL" || product.category?.name === selectedCategory;
-
-    const matchesPrice =
-      maxPrice === "" || Number(product.price) <= Number(maxPrice);
-
-    const matchesAvailability = !onlyAvailable || product.available;
-
-    const matchesVegetarian = !onlyVegetarian || product.vegetarian === true;
-
-    const matchesVegan = !onlyVegan || product.vegan === true;
-
-    const matchesMeatType =
-      selectedMeatType === "ALL" || product.meatType === selectedMeatType;
-
-    return (
-      matchesCategory &&
-      matchesPrice &&
-      matchesAvailability &&
-      matchesVegetarian &&
-      matchesVegan &&
-      matchesMeatType
-    );
-  });
+  const {
+    categories,
+    filteredProducts,
+    selectedCategory,
+    maxPrice,
+    onlyAvailable,
+    onlyVegetarian,
+    onlyVegan,
+    selectedMeatType,
+    loadingProducts,
+    productError,
+    feedbackRating,
+    feedbackComment,
+    feedbackMessage,
+    handleCategoryChange,
+    handleMaxPriceChange,
+    handleAvailabilityChange,
+    handleVegetarianChange,
+    handleVeganChange,
+    handleMeatTypeChange,
+    handleFeedbackRatingChange,
+    handleFeedbackCommentChange,
+    handleFeedbackSubmit,
+  } = useClientMenu();
 
   if (loadingProducts) {
     return (
       <div className="client-menu-page">
-        <header className="menu-header">
-          <h1>Meniu</h1>
-
+        <ClientMenuHeader>
           <p>Se incarca produsele...</p>
-        </header>
+        </ClientMenuHeader>
       </div>
     );
   }
@@ -113,176 +43,43 @@ function ClientMenuPage() {
   if (productError) {
     return (
       <div className="client-menu-page">
-        <header className="menu-header">
-          <h1>Meniu</h1>
-
+        <ClientMenuHeader>
           <p className="error-message">{productError}</p>
-        </header>
+        </ClientMenuHeader>
       </div>
     );
   }
 
   return (
     <div className="client-menu-page">
-      <header className="menu-header">
-        <h1>Meniu</h1>
-      </header>
+      <ClientMenuHeader />
 
-      <section className="filters-section">
-        <div className="filter-group">
-          <label htmlFor="category-filter">Categorie</label>
+      <MenuFiltersSection
+        categories={categories}
+        selectedCategory={selectedCategory}
+        maxPrice={maxPrice}
+        onlyAvailable={onlyAvailable}
+        onlyVegetarian={onlyVegetarian}
+        onlyVegan={onlyVegan}
+        selectedMeatType={selectedMeatType}
+        onCategoryChange={handleCategoryChange}
+        onMaxPriceChange={handleMaxPriceChange}
+        onAvailabilityChange={handleAvailabilityChange}
+        onVegetarianChange={handleVegetarianChange}
+        onVeganChange={handleVeganChange}
+        onMeatTypeChange={handleMeatTypeChange}
+      />
 
-          <select
-            id="category-filter"
-            value={selectedCategory}
-            onChange={(event) => setSelectedCategory(event.target.value)}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category === "ALL" ? "Toate categoriile" : category}
-              </option>
-            ))}
-          </select>
-        </div>
+      <MenuProductsSection products={filteredProducts} />
 
-        <div className="filter-group">
-          <label htmlFor="max-price-filter">Pret maxim</label>
-
-          <input
-            id="max-price-filter"
-            type="number"
-            min="0"
-            placeholder="Ex: 35"
-            value={maxPrice}
-            onChange={(event) => setMaxPrice(event.target.value)}
-          />
-        </div>
-
-        <label className="checkbox-filter">
-          <input
-            type="checkbox"
-            checked={onlyAvailable}
-            onChange={(event) => setOnlyAvailable(event.target.checked)}
-          />
-
-          <span>Afiseaza doar produse disponibile</span>
-        </label>
-
-        <label className="checkbox-filter">
-          <input
-            type="checkbox"
-            checked={onlyVegetarian}
-            onChange={(event) => setOnlyVegetarian(event.target.checked)}
-          />
-
-          <span>Vegetarian</span>
-        </label>
-
-        <label className="checkbox-filter">
-          <input
-            type="checkbox"
-            checked={onlyVegan}
-            onChange={(event) => setOnlyVegan(event.target.checked)}
-          />
-
-          <span>Vegan</span>
-        </label>
-
-        <div className="filter-group">
-          <label htmlFor="meat-type-filter">Tip carne</label>
-
-          <select
-            id="meat-type-filter"
-            value={selectedMeatType}
-            onChange={(event) => setSelectedMeatType(event.target.value)}
-          >
-            <option value="ALL">Toate</option>
-
-            <option value="none">Fara carne</option>
-
-            <option value="porc">Porc</option>
-
-            <option value="vita">Vita</option>
-          </select>
-        </div>
-      </section>
-
-      <p className="results-info">Produse afisate: {filteredProducts.length}</p>
-
-      <section className="product-grid">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className={`product-card ${product.available ? "" : "unavailable"}`}
-          >
-            <div className="product-card-header">
-              <span className="product-category">
-                {product.category?.name || "Fara categorie"}
-              </span>
-
-              <span
-                className={product.available ? "available" : "not-available"}
-              >
-                {product.available ? "Disponibil" : "Indisponibil"}
-              </span>
-            </div>
-
-            <h2>{product.name}</h2>
-
-            <p>{product.description}</p>
-
-            <div className="product-card-footer">
-              <strong>{Number(product.price).toFixed(2)} lei</strong>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <section className="feedback-section">
-        <h2>Spuneți-ne cum a fost experiența</h2>
-
-        <form onSubmit={handleFeedbackSubmit} className="feedback-form">
-          <div className="filter-group">
-            <label htmlFor="feedback-rating">Rating</label>
-
-            <select
-              id="feedback-rating"
-              value={feedbackRating}
-              onChange={(event) => setFeedbackRating(event.target.value)}
-            >
-              <option value="5">5 - Foarte bine</option>
-
-              <option value="4">4 - Bine</option>
-
-              <option value="3">3 - Mediu</option>
-
-              <option value="2">2 - Slab</option>
-
-              <option value="1">1 - Foarte slab</option>
-            </select>
-          </div>
-
-          <div className="feedback-comment-group">
-            <label htmlFor="feedback-comment">Comentariu</label>
-
-            <textarea
-              id="feedback-comment"
-              value={feedbackComment}
-              onChange={(event) => setFeedbackComment(event.target.value)}
-              placeholder={"Scrie un comentariu optional..."}
-              rows="4"
-            />
-          </div>
-
-          <button type="submit" className="feedback-button">
-            Trimite feedback
-          </button>
-        </form>
-
-        {feedbackMessage && (
-          <p className="feedback-message">{feedbackMessage}</p>
-        )}
-      </section>
+      <MenuFeedbackSection
+        feedbackRating={feedbackRating}
+        feedbackComment={feedbackComment}
+        feedbackMessage={feedbackMessage}
+        onRatingChange={handleFeedbackRatingChange}
+        onCommentChange={handleFeedbackCommentChange}
+        onSubmit={handleFeedbackSubmit}
+      />
     </div>
   );
 }
